@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Management</title>
+</head>
+<body>
+<h2>User List</h2>
+<ul>
+    <li th:each="user : ${users}" th:text="${user.username}"></li>
+</ul>
+
+<h2>Add User</h2>
+<form th:action="@{/users}" method="post" th:object="${user}">
+    <input type="text" th:field="*{username}" placeholder="Username"/>
+    <input type="email" th:field="*{email}" placeholder="Email"/>
+    <input type="password" th:field="*{password}" placeholder="Password"/>
+    <button type="submit">Add</button>
+</form>
+</body>
+</html>
