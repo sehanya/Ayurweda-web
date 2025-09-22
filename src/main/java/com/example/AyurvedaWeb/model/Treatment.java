@@ -6,3 +6,4 @@ import jakarta.persistence.*;
 public class Treatment {
 
 }
+
