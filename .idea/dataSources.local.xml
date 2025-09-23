@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="dataSourceStorageLocal" created-in="IU-252.25557.131">
-    <data-source name="ayurlinkdb@localhost" uuid="a9dc9ec1-e465-410e-9911-941096af518d">
+    <data-source name="ayurlinkdb" uuid="bb0abefd-33db-4f07-a4fa-31fa66f70cd5">
       <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MSSQL" />
       <user-name>root</user-name>
       <schema-mapping />

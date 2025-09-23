@@ -1,7 +1,7 @@
 package com.example.AyurvedaWeb.controller;
 
 import com.example.AyurvedaWeb.model.User;
-import com.example.AyurvedaWeb.service.UserService;
+import com.example.AyurvedaWeb.service.UserDetailsServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/users")
 public class UserController {
-    private final UserService userService;
+    private final UserDetailsServiceImpl userService;
 
-    public UserController(UserService userService) {
+    public UserController(UserDetailsServiceImpl userService) {
         this.userService = userService;
     }
 
