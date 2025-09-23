@@ -8,9 +8,8 @@ position: relative;
     font-family: 'times new romans', serif;
   overflow: hidden;
 
-
-
 }
+
 .header::before{
     content: '';
   position: absolute;

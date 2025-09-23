@@ -5,16 +5,16 @@
     <title>Home page</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" th:href="css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" th:href="css/style.css">
-    <link rel="stylesheet" type="text/css" th:href="css/animate.css" >
-    <link rel="stylesheet" type="text/css" th:href="css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" th:href="css/responsive.css">
-    <script th:src="js/jquery.js"></script>
-    <script th:src="js/script.js"></script>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/animate.css}">
+    <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
 
-    <script th:src="js/bootstrap.min.js"></script>
-    <link rel="stylesheet" th:href="styles.css">
+    <script th:src="@{/js/jquery.js}"></script>
+    <script th:src="@{/js/script.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+
 
 </head>
 <body>
@@ -47,6 +47,7 @@
                     <li><a href="#LOGIN" class="nav-item"style="color: black;">LOGIN</a></li>
 
                 </ul>
+
             </div>
         </div>
     </nav>
@@ -54,7 +55,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="header-text">
-                <h1>NATURAL  THERAPUTIC  ESSENCEGLOW </h1>
+                <h1> NATURAL  THERAPEUTIC  ESSENCE </h1>
             </div>
 
         </div>
@@ -105,6 +106,31 @@
 
             </div>
 
+        </div>
+    </div>
+</section>
+
+<section class="contact-section" id="CONTACT">
+    <div class="contact-container">
+
+
+
+
+        <div class="contact-form wow fadeInRight">
+            <h2>Contact Us</h2>
+            <p>We'd love to hear from you! Fill out the form below to get in touch.</p>
+            <form action="#" method="post">
+                <label for="name">Your Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+                <label for="email">Your Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+                <label for="message">Your Message</label>
+                <textarea id="message" name="message" rows="5" placeholder="Enter your message" required></textarea>
+
+                <button type="submit">Send Message</button>
+            </form>
         </div>
     </div>
 </section>
