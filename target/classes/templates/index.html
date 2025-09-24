@@ -1,24 +1,139 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
 <head>
+    <title>Home page</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" th:href="css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" th:href="css/style.css">
-    <link rel="stylesheet" type="text/css" th:href="css/animate.css" >
-    <link rel="stylesheet" type="text/css" th:href="css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" th:href="css/responsive.css">
-    <script th:src="js/jquery.js"></script>
-    <script th:src="js/script.js"></script>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/animate.css}">
+    <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/responsive.css}">
 
-    <script th:src="js/bootstrap.min.js"></script>
+    <script th:src="@{/js/jquery.js}"></script>
+    <script th:src="@{/js/script.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
 
 
-    <link rel="stylesheet" th:href="styles.css">
 </head>
 <body>
+<header class="header" id="HOME">
+
+    <!--navigation-->
+    <nav class="navbar navbar-default navbar-fixed-top">
+
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"  aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="loso-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#HOME" class="nav-item" style="color: black;">HOME</a></li>
+                    <li><a href="#ABOUT" class="nav-item" style="color: black;">ABOUT US</a></li>
+                    <li><a href="#AYURVEDA INFO" class="nav-item"style="color: black;">AYURVEDA INFO</a></li>
+                    <li><a href="#TREATMENTS" class="nav-item"style="color: black;">TREATMENTS</a></li>
+                    <li><a href="#BOOK APPOINTMENT" class="nav-item"style="color: black;">BOOK APPOINTMENT</a></li>
+                    <li><a href="#CONTACT" class="nav-item"style="color: black;">CONTACT</a></li>
+                    <li><a href="#LOGIN" class="nav-item"style="color: black;">LOGIN</a></li>
+
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="header-text">
+                <h1> NATURAL  THERAPEUTIC  ESSENCE </h1>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+<section id="ABOUT">
+    <div>
 
 
+    </div>
+
+</section>
+<section>
+
+</section>
+<section id="AYURVEDA INFO" >
+    <div class="container wow fadeInLeft" >
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <div class="section-title-02">
+                    <h2>HISTORY OF AYURVEDA</h2>
+                    <p>Ayurveda is a science of life.It offers a body of wisdom designed to help people stay vital while realizing their full human potential.Sri Lanka's indigenous medicine has similar origins, linked to the 30,000 year old native habitants of the land known as the Balangoda man (manavaya). With its ancient history, traditional ayurveda medicine as it is practiced today in the country, is based on an indigenous heritage preserved over 3000 years.
+                        In Ayurveda concept is mainly divided into two types.</p>
+                    <div class="point-main-02">
+                        <ol>
+                            <li>Prevention from dieases
+                                <i>(Swastha sanrakshana)</i>
+                                <ol>Providing guidelines on ideal daily and seasonal routines, diet, behavior and the proper use of our senses,
+                                    Ayurveda reminds us that health is the balanced and dynamic integration between our environment, body, mind, and spirit</ol>
+                            </li>
+
+                            <li>Cure from diseases
+                                <i >(Athura prashamana)</i>
+                                <ol>Providing guidelines to cure diseases by using medicines theraputic methods and surgeries</ol>
+
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="section-title-03">
+                        <p>Ayurveda texts list out purificatory measures which not just restore, but also boost our bodily functions.Kshudra karma(Minor theraputic methods),Panchakarma (Major theraputic methods), Rasayana karma(Rejuvenation of body),Vajeekarana (increase sexuality) are natural theraputic pathways in ayurveda concept.</p>
+
+                        <a href="ayurvedaInfo.html">
+                            <button>Read More</button>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="contact-section" id="CONTACT">
+    <div class="contact-container">
+
+
+
+
+        <div class="contact-form wow fadeInRight">
+            <h2>Contact Us</h2>
+            <p>We'd love to hear from you! Fill out the form below to get in touch.</p>
+            <form action="#" method="post">
+                <label for="name">Your Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+                <label for="email">Your Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+                <label for="message">Your Message</label>
+                <textarea id="message" name="message" rows="5" placeholder="Enter your message" required></textarea>
+
+                <button type="submit">Send Message</button>
+            </form>
+        </div>
+    </div>
+</section>
 
 </body>
 </html>
