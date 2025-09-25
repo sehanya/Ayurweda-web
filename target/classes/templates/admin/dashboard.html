@@ -1,0 +1,301 @@
+<!-- src/main/resources/templates/dashboard/admin-dashboard.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AyurLink</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        .sidebar .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .dashboard-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="text-center mb-4">
+                    <i class="fas fa-leaf fa-2x text-white mb-2"></i>
+                    <h5 class="text-white">AyurLink Admin</h5>
+                    <small class="text-white-50" th:text="'Welcome, ' + ${username}">Welcome</small>
+                </div>
+
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/treatments">
+                            <i class="fas fa-spa me-2"></i>Treatments
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
+                        <a class="nav-link" href="/admin/users">
+                            <i class="fas fa-users-cog me-2"></i>Admin Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#appointments">
+                            <i class="fas fa-calendar-alt me-2"></i>Appointments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#doctors">
+                            <i class="fas fa-user-md me-2"></i>Doctors
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
+                        <a class="nav-link" href="#payments">
+                            <i class="fas fa-credit-card me-2"></i>Payment Summary
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
+                        <a class="nav-link" href="#reports">
+                            <i class="fas fa-chart-bar me-2"></i>Reports
+                        </a>
+                    </li>
+                </ul>
+
+                <hr class="my-3">
+
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#settings">
+                            <i class="fas fa-cog me-2"></i>Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/" target="_blank">
+                            <i class="fas fa-external-link-alt me-2"></i>View Site
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button type="submit" class="nav-link btn btn-link text-start w-100">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">
+                    <i class="fas fa-tachometer-alt me-2 text-success"></i>Admin Dashboard
+                </h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-download me-1"></i>Export
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card dashboard-card stats-card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-spa fa-2x mb-3"></i>
+                            <h4>25</h4>
+                            <p class="mb-0">Active Treatments</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card dashboard-card stats-card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-calendar-alt fa-2x mb-3"></i>
+                            <h4>142</h4>
+                            <p class="mb-0">Appointments Today</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card dashboard-card stats-card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-md fa-2x mb-3"></i>
+                            <h4>8</h4>
+                            <p class="mb-0">Active Doctors</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card dashboard-card stats-card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users fa-2x mb-3"></i>
+                            <h4>1,234</h4>
+                            <p class="mb-0">Total Patients</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <div class="card dashboard-card">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0">
+                                <i class="fas fa-bolt me-2 text-success"></i>Quick Actions
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="/admin/treatments/add" class="btn btn-outline-success">
+                                    <i class="fas fa-plus me-2"></i>Add New Treatment
+                                </a>
+                                <a href="#add-appointment" class="btn btn-outline-success">
+                                    <i class="fas fa-calendar-plus me-2"></i>Schedule Appointment
+                                </a>
+                                <a href="#add-doctor" class="btn btn-outline-success">
+                                    <i class="fas fa-user-plus me-2"></i>Add Doctor Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card dashboard-card">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0">
+                                <i class="fas fa-clock me-2 text-success"></i>Recent Activity
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-item mb-2">
+                                <i class="fas fa-plus-circle text-success me-2"></i>
+                                <small>New appointment scheduled - 2 mins ago</small>
+                            </div>
+                            <div class="activity-item mb-2">
+                                <i class="fas fa-edit text-warning me-2"></i>
+                                <small>Treatment updated - 15 mins ago</small>
+                            </div>
+                            <div class="activity-item mb-2">
+                                <i class="fas fa-user text-info me-2"></i>
+                                <small>New patient registered - 1 hour ago</small>
+                            </div>
+                            <div class="activity-item">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <small>Appointment completed - 2 hours ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Schedule -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card dashboard-card">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0">
+                                <i class="fas fa-calendar-day me-2 text-success"></i>Today's Appointments
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Patient</th>
+                                        <th>Doctor</th>
+                                        <th>Treatment</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>09:00 AM</td>
+                                        <td>John Doe</td>
+                                        <td>Dr. Ayurveda</td>
+                                        <td>Panchakarma</td>
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>10:30 AM</td>
+                                        <td>Jane Smith</td>
+                                        <td>Dr. Wellness</td>
+                                        <td>Herbal Consultation</td>
+                                        <td><span class="badge bg-primary">In Progress</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>02:00 PM</td>
+                                        <td>Mike Johnson</td>
+                                        <td>Dr. Healing</td>
+                                        <td>Massage Therapy</td>
+                                        <td><span class="badge bg-warning">Scheduled</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

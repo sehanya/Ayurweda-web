@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequestMapping("/home")
 public class HomeController {
     @GetMapping("/")
-    public String index() {
-        return "index"; // points to templates/index.html
+    public String home() {
+        return "home";
     }
 }
 
