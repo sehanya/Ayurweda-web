@@ -8,4 +8,10 @@ import org.springframework.web.bind.annotation.*;
 
 public class TreatmentController {
 
+    @GetMapping("/Treatment")
+    public String ayurvedaInfo()
+    {
+        return "Treatment";
+
+    }
 }

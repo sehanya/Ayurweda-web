@@ -1,8 +1,8 @@
 package com.example.AyurvedaWeb.service;
 
 import com.example.AyurvedaWeb.DTO.AdminDTO;
-import com.example.AyurvedaWeb.model.Admin;
 import com.example.AyurvedaWeb.model.Role;
+import com.example.AyurvedaWeb.model.Admin;
 import com.example.AyurvedaWeb.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
+
+
 
 @Service
 @Transactional

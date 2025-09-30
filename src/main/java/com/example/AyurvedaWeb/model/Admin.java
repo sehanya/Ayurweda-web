@@ -2,8 +2,15 @@ package com.example.AyurvedaWeb.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
 @Entity
+@Getter
+@Setter
 
 @Table(name = "admins")
 public class Admin {
