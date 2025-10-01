@@ -1,5 +1,6 @@
 package com.example.AyurvedaWeb.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -18,7 +19,8 @@ public class Doctor {
     private String contact;
 
     // One doctor can have many availability slots
-    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<DoctorAvailability> availability;
 
     // Constructors
