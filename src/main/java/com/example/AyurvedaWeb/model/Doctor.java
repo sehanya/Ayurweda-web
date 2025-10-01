@@ -1,9 +1,10 @@
 package com.example.AyurvedaWeb.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name="Doctor")
 public class Doctor {
 
     @Id

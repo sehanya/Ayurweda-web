@@ -2,8 +2,8 @@ package com.example.AyurvedaWeb.controller;
 
 import com.example.AyurvedaWeb.model.Doctor;
 import com.example.AyurvedaWeb.model.DoctorAvailability;
-import com.example.AyurvedaWeb.repository.DoctorRepository;
 import com.example.AyurvedaWeb.repository.DoctorAvailabilityRepository;
+import com.example.AyurvedaWeb.repository.DoctorRepository;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
