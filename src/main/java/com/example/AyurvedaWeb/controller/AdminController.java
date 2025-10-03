@@ -6,16 +6,18 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    @GetMapping("/admin")
+
+
+    @GetMapping("/dashboard")
     public String admin()
     {
-        return "dashboard";
+        return "admin/dashboard";
 
     }
     @GetMapping("/superadmin")
     public String superadmin()
     {
-        return "dashboard";
+        return "superadmin/dashboard";
 
     }
 }

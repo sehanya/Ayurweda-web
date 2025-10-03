@@ -12,12 +12,11 @@ public class HomeController {
     {
         return "home";
     }
-    @GetMapping("/ayurvedaInfo")
-    public String ayurvedaInfo()
-    {
-        return "ayurvedaInfo";
-
+    @GetMapping("/history")
+    public String history() {
+        return "history";
     }
+
 }
 
 

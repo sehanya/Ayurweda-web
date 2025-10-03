@@ -1,7 +1,5 @@
 package com.example.AyurvedaWeb.DTO;
 
-
-
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class TreatmentDTO {
+
     private Long id;
 
     @NotBlank(message = "Treatment name is required")
@@ -23,10 +22,7 @@ public class TreatmentDTO {
     @Min(value = 1, message = "Duration must be at least 1 minute")
     private Integer durationMinutes;
 
-    private Boolean isActive;
-
-    // Constructors
-    public TreatmentDTO() {}
+    private Boolean isActive = true;
 
     // Getters and Setters
     public Long getId() { return id; }

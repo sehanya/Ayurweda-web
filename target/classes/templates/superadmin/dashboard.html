@@ -1,847 +1,708 @@
-<!-- src/main/resources/templates/dashboard/super-admin-dashboard.html -->
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Dashboard - AyurLink</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ayurvedic Hospital —  Admin Dashboard</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
     <style>
-        .sidebar {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
-        }
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            transition: all 0.3s ease;
-        }
-        .sidebar .nav-link:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
-        }
-        .sidebar .nav-link.active {
-            color: white;
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .dashboard-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease;
-        }
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-        }
-        .stats-card-1 {
-            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
-            color: white;
-            border-radius: 15px;
-        }
-        .stats-card-2 {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            border-radius: 15px;
-        }
-        .stats-card-3 {
-            background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%);
-            color: white;
-            border-radius: 15px;
-        }
-        .stats-card-4 {
-            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
-            color: white;
-            border-radius: 15px;
-        }
-        .payment-summary {
-            background: linear-gradient(135deg, #17a2b8 0%, #6610f2 100%);
-            color: white;
-            border-radius: 15px;
-        }
+        body { background: #f6f7fb; }
+        .card-compact { padding: 0.75rem; border-radius: 12px; box-shadow: 0 6px 18px rgba(50,50,93,0.06); }
+        .kpi { font-weight: 700; font-size: 1.6rem; }
+        .kpi-sub { color: #6c757d; font-size: .85rem; }
+        .pointer { cursor: pointer; }
+        .small-muted { font-size: .85rem; color:#6c757d; }
+        /* layout tweaks */
+        .tab-pane { padding-top: 1rem; }
+        .table-wrap { max-height: 420px; overflow:auto; }
+        .actions-col { width: 140px; }
+
     </style>
 </head>
 <body>
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-            <div class="position-sticky pt-3">
-                <div class="text-center mb-4">
-                    <i class="fas fa-crown fa-2x text-white mb-2"></i>
-                    <h5 class="text-white">Super Admin</h5>
-                    <small class="text-white-50" th:text="'Welcome, ' + ${username}">Welcome</small>
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#">Ayurveda Admin </a>
+        <div class="d-flex align-items-center gap-2">
+            <div class="small-muted me-3">Signed in as <strong>admin</strong></div>
+            <button class="btn btn-outline-secondary btn-sm">Logout</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <div class="row mb-3">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h4 class="m-0">Dashboard</h4>
+            <div>
+                <div class="btn-group" role="group" aria-label="range">
+                    <button id="rangeWeekly" class="btn btn-sm btn-primary">Weekly</button>
+                    <button id="rangeMonthly" class="btn btn-sm btn-outline-primary">Monthly</button>
                 </div>
-
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/admin/dashboard">
-                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/users">
-                            <i class="fas fa-users-cog me-2"></i>Admin Users
-                            <img src="../static/images/ai-generated-8221928_960_720" width="1000" th:src="@{images/ai-generated-8221928_960_720}"/>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/treatments">
-                            <i class="fas fa-spa me-2"></i>Treatments
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#appointments">
-                            <i class="fas fa-calendar-alt me-2"></i>Appointments
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#doctors">
-                            <i class="fas fa-user-md me-2"></i>Doctors
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#payments">
-                            <i class="fas fa-credit-card me-2"></i>Payment Summary
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#reports">
-                            <i class="fas fa-chart-bar me-2"></i>Analytics & Reports
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#system">
-                            <i class="fas fa-cogs me-2"></i>System Settings
-                        </a>
-                    </li>
-                </ul>
-
-                <hr class="my-3">
-
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/" target="_blank">
-                            <i class="fas fa-external-link-alt me-2"></i>View Site
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <form th:action="@{/logout}" method="post" class="d-inline">
-                            <button type="submit" class="nav-link btn btn-link text-start w-100">
-                                <i class="fas fa-sign-out-alt me-2"></i>Logout
-                            </button>
-                        </form>
-                    </li>
-                </ul>
+                <button id="btnRefresh" class="btn btn-sm btn-outline-secondary ms-2">Refresh</button>
             </div>
-        </nav>
+        </div>
+    </div>
 
-        <!-- Main content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">
-                    <i class="fas fa-crown me-2" style="color: #6f42c1;"></i>Super Admin Dashboard
-                </h1>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="btn-group me-2">
-                        <button type="button" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-download me-1"></i>Export Report
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-success">
-                            <i class="fas fa-plus me-1"></i>Add Admin
-                        </button>
-                    </div>
-                </div>
-            </div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button">Home</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="doctors-tab" data-bs-toggle="tab" data-bs-target="#doctors" type="button">Doctors</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="treatments-tab" data-bs-toggle="tab" data-bs-target="#treatments" type="button">Treatments</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="activities-tab" data-bs-toggle="tab" data-bs-target="#activities" type="button">Admin Activities</button>
+        </li>
+    </ul>
 
-            <!-- Stats Cards -->
-            <div class="row mb-4">
-                <div class="col-md-3 mb-3">
-                    <div class="card dashboard-card stats-card-1">
-                        <div class="card-body text-center">
-                            <i class="fas fa-users-cog fa-2x mb-3"></i>
-                            <h4>5</h4>
-                            <p class="mb-0">Admin Users</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card dashboard-card stats-card-2">
-                        <div class="card-body text-center">
-                            <i class="fas fa-spa fa-2x mb-3"></i>
-                            <h4>25</h4>
-                            <p class="mb-0">Active Treatments</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card dashboard-card stats-card-3">
-                        <div class="card-body text-center">
-                            <i class="fas fa-calendar-alt fa-2x mb-3"></i>
-                            <h4>142</h4>
-                            <p class="mb-0">Today's Appointments</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card dashboard-card stats-card-4">
-                        <div class="card-body text-center">
-                            <i class="fas fa-user-md fa-2x mb-3"></i>
-                            <h4>8</h4>
-                            <p class="mb-0">Active Doctors</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="tab-content bg-transparent mt-3">
 
-            <!-- Payment Summary Cards -->
-            <div class="row mb-4">
-                <div class="col-md-4 mb-3">
-                    <div class="card dashboard-card payment-summary">
-                        <div class="card-body text-center">
-                            <i class="fas fa-calendar-day fa-2x mb-3"></i>
-                            <h4>$2,450</h4>
-                            <p class="mb-0">Today's Revenue</p>
-                            <small class="opacity-75">+12% from yesterday</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card dashboard-card payment-summary">
-                        <div class="card-body text-center">
-                            <i class="fas fa-calendar-week fa-2x mb-3"></i>
-                            <h4>$15,280</h4>
-                            <p class="mb-0">This Week</p>
-                            <small class="opacity-75">+8% from last week</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card dashboard-card payment-summary">
-                        <div class="card-body text-center">
-                            <i class="fas fa-calendar-alt fa-2x mb-3"></i>
-                            <h4>$48,920</h4>
-                            <p class="mb-0">This Month</p>
-                            <small class="opacity-75">+15% from last month</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Charts Row -->
-            <div class="row mb-4">
-                <div class="col-md-8 mb-3">
-                    <div class="card dashboard-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-chart-line me-2" style="color: #6f42c1;"></i>Revenue Trend (Last 7 Days)
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card dashboard-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-chart-pie me-2" style="color: #6f42c1;"></i>Treatment Distribution
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="treatmentChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin Management and System Status -->
-            <div class="row mb-4">
-                <div class="col-md-6 mb-3">
-                    <div class="card dashboard-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-users-cog me-2" style="color: #6f42c1;"></i>Admin User Management
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-grid gap-2">
-                                <a href="/admin/users/add" class="btn btn-primary">
-                                    <i class="fas fa-user-plus me-2"></i>Add New Admin
-                                </a>
-                                <a href="/admin/users" class="btn btn-outline-primary">
-                                    <i class="fas fa-list me-2"></i>View All Admins
-                                </a>
-                                <button class="btn btn-outline-warning" onclick="showInactiveAdmins()">
-                                    <i class="fas fa-user-slash me-2"></i>Manage Inactive Users
-                                </button>
+        <!-- HOME TAB (Small weekly summary) -->
+        <div class="tab-pane fade show active" id="home" role="tabpanel">
+            <div class="row g-3">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card-compact bg-white">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="small-muted">Active Treatments</div>
+                                <div id="kpiActiveTreatments" class="kpi">—</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="small-muted">This week</div>
+                                <div id="kpiTreatmentsDelta" class="small-muted">—</div>
                             </div>
                         </div>
+                        <div class="mt-2 small-muted">Click to view detailed treatments</div>
+                        <div class="mt-2">
+                            <a class="btn btn-sm btn-outline-primary" data-bs-toggle="tab" href="#treatments">Open Treatments</a>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <div class="card dashboard-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-server me-2" style="color: #6f42c1;"></i>System Status
-                            </h5>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="card-compact bg-white">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="small-muted">Active Doctors</div>
+                                <div id="kpiActiveDoctors" class="kpi">—</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="small-muted">This week</div>
+                                <div id="kpiDoctorsDelta" class="small-muted">—</div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-6 text-center">
-                                    <i class="fas fa-database fa-2x text-success mb-2"></i>
-                                    <p class="mb-0">Database</p>
-                                    <small class="text-success">Online</small>
-                                </div>
-                                <div class="col-6 text-center">
-                                    <i class="fas fa-server fa-2x text-success mb-2"></i>
-                                    <p class="mb-0">Server</p>
-                                    <small class="text-success">Running</small>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="text-center">
-                                <small class="text-muted">Last backup: 2 hours ago</small>
-                            </div>
+                        <div class="mt-2 small-muted">Click to view doctors participation</div>
+                        <div class="mt-2">
+                            <a class="btn btn-sm btn-outline-primary" data-bs-toggle="tab" href="#doctors">Open Doctors</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="card-compact bg-white">
+                        <div class="small-muted">Weekly Patients</div>
+                        <div id="kpiWeeklyPatients" class="kpi">—</div>
+                        <div class="small-muted">Total patients seen</div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="card-compact bg-white">
+                        <div class="small-muted">Weekly Payments</div>
+                        <div id="kpiWeeklyPayments" class="kpi">—</div>
+                        <div class="small-muted">Total revenue</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-lg-8">
+                    <div class="card-compact bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0">Payments Overview (<span id="rangeLabel">Weekly</span>)</h6>
+                            <div class="small-muted">Totals by day</div>
+                        </div>
+                        <canvas id="paymentsChart" height="130"></canvas>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card-compact bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0">Recent Admin Activities</h6>
+                            <small class="small-muted">Latest</small>
+                        </div>
+                        <ul id="recentActivities" class="list-group list-group-flush small">
+                            <!-- Filled by JS -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DOCTORS TAB -->
+        <div class="tab-pane fade" id="doctors" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="mb-0">Doctors — Participation</h5>
+                    <div class="small-muted">Shows weekly participation and detailed view</div>
+                </div>
+                <div>
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalAddDoctor">Add Doctor</button>
+                    <button class="btn btn-outline-secondary btn-sm ms-2" id="btnExportDoctors">Export CSV</button>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-7">
+                    <div class="card-compact bg-white">
+                        <h6>Doctor Weekly Participation</h6>
+                        <canvas id="doctorsChart" height="160"></canvas>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="card-compact bg-white">
+                        <h6 class="mb-2">Top Participating Doctors</h6>
+                        <div id="topDoctorsList" class="list-group">
+                            <!-- populated by JS -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Recent Admin Activities -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card dashboard-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-history me-2" style="color: #6f42c1;"></i>Recent Admin Activities
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th>Admin</th>
-                                        <th>Action</th>
-                                        <th>Target</th>
-                                        <th>Time</th>
-                                        <th>Status</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            <i class="fas fa-user-circle me-2"></i>admin1
-                                        </td>
-                                        <td>Added Treatment</td>
-                                        <td>Herbal Therapy</td>
-                                        <td>10 mins ago</td>
-                                        <td><span class="badge bg-success">Success</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <i class="fas fa-user-circle me-2"></i>admin2
-                                        </td>
-                                        <td>Updated Doctor Profile</td>
-                                        <td>Dr. Wellness</td>
-                                        <td>25 mins ago</td>
-                                        <td><span class="badge bg-success">Success</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <i class="fas fa-user-circle me-2"></i>admin1
-                                        </td>
-                                        <td>Scheduled Appointment</td>
-                                        <td>Patient #1234</td>
-                                        <td>1 hour ago</td>
-                                        <td><span class="badge bg-success">Success</span></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+            <div class="mt-3 card-compact bg-white">
+                <h6 class="mb-3">Detailed Doctor Participation</h6>
+                <div class="table-wrap">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Speciality</th>
+                            <th>Patients This Period</th>
+                            <th>Hours</th>
+                            <th class="actions-col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="doctorsTableBody">
+                        <!-- filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TREATMENTS TAB -->
+        <div class="tab-pane fade" id="treatments" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="mb-0">Treatments</h5>
+                    <div class="small-muted">Add / Remove treatments and see distribution</div>
+                </div>
+                <div>
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalAddTreatment">Add Treatment</button>
+                    <button class="btn btn-outline-secondary btn-sm ms-2" id="btnExportTreatments">Export CSV</button>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <div class="card-compact bg-white">
+                        <h6>Treatment Distribution</h6>
+                        <canvas id="treatmentPie" height="200"></canvas>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card-compact bg-white">
+                        <h6>Most Popular Treatments</h6>
+                        <div id="popularTreatments" class="list-group">
+                            <!-- JS -->
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
+
+            <div class="mt-3 card-compact bg-white">
+                <h6 class="mb-3">All Treatments</h6>
+                <div class="table-wrap">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Treatment</th>
+                            <th>Category</th>
+                            <th>Patients</th>
+                            <th>Price</th>
+                            <th class="actions-col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="treatmentsTableBody">
+                        <!-- filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN ACTIVITIES -->
+        <div class="tab-pane fade" id="activities" role="tabpanel">
+            <div class="card-compact bg-white">
+                <h6>Admin Activity Log</h6>
+                <div class="table-wrap mt-2">
+                    <table class="table table-sm">
+                        <thead>
+                        <tr><th>Time</th><th>Admin</th><th>Action</th><th>Details</th></tr>
+                        </thead>
+                        <tbody id="activitiesLogBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Revenue Chart
-    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    new Chart(revenueCtx, {
-        type: 'line',
-        data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            datasets: [{
-                label: 'Revenue ($)',
-                data: [1200, 1900, 3000, 2500, 2200, 3000, 2450],
-                borderColor: '#6f42c1',
-                backgroundColor: 'rgba(111, 66, 193, 0.1)',
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
-    });
-
-    // Treatment Distribution Chart
-    const treatmentCtx = document.getElementById('treatmentChart').getContext('2d');
-    new Chart(treatmentCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Panchakarma', 'Herbal', 'Massage', 'Consultation'],
-            datasets: [{
-                data: [35, 25, 20, 20],
-                backgroundColor: ['#6f42c1', '#e83e8c', '#28a745', '#ffc107']
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-</script>
-</body>
-</html><!-- src/main/resources/templates/dashboard/super-admin-dashboard.html -->
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Dashboard - AyurLink</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .sidebar {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
-        }
-        .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            transition: all 0.3s ease;
-        }
-        .sidebar .nav-link:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
-        }
-        .sidebar .nav-link.active {
-            color: white;
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .dashboard-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease;
-        }
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-        }
-        .stats-card-1 {
-            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
-            color: white;
-            border-radius: 15px;
-        }
-        .stats-card-2 {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            border-radius: 15px;
-        }
-        .stats-card-3 {
-            background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%);
-            color: white;
-            border-radius: 15px;
-        }
-        .stats-card-4 {
-            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
-            color: white;
-            border-radius: 15px;
-        }
-        .payment-summary {
-            background: linear-gradient(135deg, #17a2b8 0%, #6610f2 100%);
-            color: white;
-            border-radius: 15px;
-        }
-    </style>
-</head>
-<body>
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-            <div class="position-sticky pt-3">
-                <div class="text-center mb-4">
-                    <i class="fas fa-crown fa-2x text-white mb-2"></i>
-                    <h5 class="text-white">Super Admin</h5>
-                    <small class="text-white-50" th:text="'Welcome, ' + ${username}">Welcome</small>
-                </div>
-
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/admin/dashboard">
-                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/users">
-                            <i class="fas fa-users-cog me-2"></i>Admin Users
-                            <img src="../static/images/ai-generated-8221928_960_720" width="1000" th:src="@{images/ai-generated-8221928_960_720}"/>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/treatments">
-                            <i class="fas fa-spa me-2"></i>Treatments
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#appointments">
-                            <i class="fas fa-calendar-alt me-2"></i>Appointments
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#doctors">
-                            <i class="fas fa-user-md me-2"></i>Doctors
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#payments">
-                            <i class="fas fa-credit-card me-2"></i>Payment Summary
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#reports">
-                            <i class="fas fa-chart-bar me-2"></i>Analytics & Reports
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#system">
-                            <i class="fas fa-cogs me-2"></i>System Settings
-                        </a>
-                    </li>
-                </ul>
-
-                <hr class="my-3">
-
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/" target="_blank">
-                            <i class="fas fa-external-link-alt me-2"></i>View Site
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <form th:action="@{/logout}" method="post" class="d-inline">
-                            <button type="submit" class="nav-link btn btn-link text-start w-100">
-                                <i class="fas fa-sign-out-alt me-2"></i>Logout
-                            </button>
-                        </form>
-                    </li>
-                </ul>
+<!-- Modals -->
+<!-- Add Treatment -->
+<div class="modal fade" id="modalAddTreatment" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form id="formAddTreatment" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Treatment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-        </nav>
-
-        <!-- Main content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">
-                    <i class="fas fa-crown me-2" style="color: #6f42c1;"></i>Super Admin Dashboard
-                </h1>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="btn-group me-2">
-                        <button type="button" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-download me-1"></i>Export Report
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-success">
-                            <i class="fas fa-plus me-1"></i>Add Admin
-                        </button>
-                    </div>
+            <div class="modal-body">
+                <div class="mb-2">
+                    <label class="form-label">Treatment Name</label>
+                    <input required type="text" id="treatmentName" class="form-control" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Category</label>
+                    <input type="text" id="treatmentCategory" class="form-control" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Price (LKR)</label>
+                    <input required type="number" id="treatmentPrice" class="form-control" min="0" />
                 </div>
             </div>
-
-            <!-- Stats Cards -->
-            <div class="row mb-4">
-                <div class="col-md-3 mb-3">
-                    <div class="card dashboard-card stats-card-1">
-                        <div class="card-body text-center">
-                            <i class="fas fa-users-cog fa-2x mb-3"></i>
-                            <h4>5</h4>
-                            <p class="mb-0">Admin Users</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card dashboard-card stats-card-2">
-                        <div class="card-body text-center">
-                            <i class="fas fa-spa fa-2x mb-3"></i>
-                            <h4>25</h4>
-                            <p class="mb-0">Active Treatments</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card dashboard-card stats-card-3">
-                        <div class="card-body text-center">
-                            <i class="fas fa-calendar-alt fa-2x mb-3"></i>
-                            <h4>142</h4>
-                            <p class="mb-0">Today's Appointments</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card dashboard-card stats-card-4">
-                        <div class="card-body text-center">
-                            <i class="fas fa-user-md fa-2x mb-3"></i>
-                            <h4>8</h4>
-                            <p class="mb-0">Active Doctors</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Add Treatment</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             </div>
-
-            <!-- Payment Summary Cards -->
-            <div class="row mb-4">
-                <div class="col-md-4 mb-3">
-                    <div class="card dashboard-card payment-summary">
-                        <div class="card-body text-center">
-                            <i class="fas fa-calendar-day fa-2x mb-3"></i>
-                            <h4>$2,450</h4>
-                            <p class="mb-0">Today's Revenue</p>
-                            <small class="opacity-75">+12% from yesterday</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card dashboard-card payment-summary">
-                        <div class="card-body text-center">
-                            <i class="fas fa-calendar-week fa-2x mb-3"></i>
-                            <h4>$15,280</h4>
-                            <p class="mb-0">This Week</p>
-                            <small class="opacity-75">+8% from last week</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card dashboard-card payment-summary">
-                        <div class="card-body text-center">
-                            <i class="fas fa-calendar-alt fa-2x mb-3"></i>
-                            <h4>$48,920</h4>
-                            <p class="mb-0">This Month</p>
-                            <small class="opacity-75">+15% from last month</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Charts Row -->
-            <div class="row mb-4">
-                <div class="col-md-8 mb-3">
-                    <div class="card dashboard-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-chart-line me-2" style="color: #6f42c1;"></i>Revenue Trend (Last 7 Days)
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card dashboard-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-chart-pie me-2" style="color: #6f42c1;"></i>Treatment Distribution
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="treatmentChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin Management and System Status -->
-            <div class="row mb-4">
-                <div class="col-md-6 mb-3">
-                    <div class="card dashboard-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-users-cog me-2" style="color: #6f42c1;"></i>Admin User Management
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-grid gap-2">
-                                <a href="/admin/users/add" class="btn btn-primary">
-                                    <i class="fas fa-user-plus me-2"></i>Add New Admin
-                                </a>
-                                <a href="/admin/users" class="btn btn-outline-primary">
-                                    <i class="fas fa-list me-2"></i>View All Admins
-                                </a>
-                                <button class="btn btn-outline-warning" onclick="showInactiveAdmins()">
-                                    <i class="fas fa-user-slash me-2"></i>Manage Inactive Users
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div class="card dashboard-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-server me-2" style="color: #6f42c1;"></i>System Status
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-6 text-center">
-                                    <i class="fas fa-database fa-2x text-success mb-2"></i>
-                                    <p class="mb-0">Database</p>
-                                    <small class="text-success">Online</small>
-                                </div>
-                                <div class="col-6 text-center">
-                                    <i class="fas fa-server fa-2x text-success mb-2"></i>
-                                    <p class="mb-0">Server</p>
-                                    <small class="text-success">Running</small>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="text-center">
-                                <small class="text-muted">Last backup: 2 hours ago</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Admin Activities -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card dashboard-card">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-history me-2" style="color: #6f42c1;"></i>Recent Admin Activities
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th>Admin</th>
-                                        <th>Action</th>
-                                        <th>Target</th>
-                                        <th>Time</th>
-                                        <th>Status</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            <i class="fas fa-user-circle me-2"></i>admin1
-                                        </td>
-                                        <td>Added Treatment</td>
-                                        <td>Herbal Therapy</td>
-                                        <td>10 mins ago</td>
-                                        <td><span class="badge bg-success">Success</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <i class="fas fa-user-circle me-2"></i>admin2
-                                        </td>
-                                        <td>Updated Doctor Profile</td>
-                                        <td>Dr. Wellness</td>
-                                        <td>25 mins ago</td>
-                                        <td><span class="badge bg-success">Success</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <i class="fas fa-user-circle me-2"></i>admin1
-                                        </td>
-                                        <td>Scheduled Appointment</td>
-                                        <td>Patient #1234</td>
-                                        <td>1 hour ago</td>
-                                        <td><span class="badge bg-success">Success</span></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+        </form>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Add Doctor -->
+<div class="modal fade" id="modalAddDoctor" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form id="formAddDoctor" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Doctor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">
+                    <label class="form-label">Doctor Name</label>
+                    <input required type="text" id="doctorName" class="form-control" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Speciality</label>
+                    <input type="text" id="doctorSpeciality" class="form-control" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Availability (hours/week)</label>
+                    <input type="number" id="doctorHours" class="form-control" min="0" value="20" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Add Doctor</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Confirm Remove -->
+<div class="modal fade" id="modalConfirm" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Confirm</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body" id="confirmText">Are you sure?</div>
+            <div class="modal-footer">
+                <button id="confirmOk" class="btn btn-danger">Yes, remove</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    // Revenue Chart
-    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    new Chart(revenueCtx, {
-        type: 'line',
-        data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            datasets: [{
-                label: 'Revenue ($)',
-                data: [1200, 1900, 3000, 2500, 2200, 3000, 2450],
-                borderColor: '#6f42c1',
-                backgroundColor: 'rgba(111, 66, 193, 0.1)',
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
+    /*******************************
+     * Sample in-memory data store
+     * Replace with AJAX calls to your backend
+     *******************************/
+    let dataStore = {
+        range: 'weekly', // 'weekly' or 'monthly'
+        treatments: [
+            { id: 't1', name: 'Pizhichil', category: 'Oil Therapy', patients: 42, price: 5000 },
+            { id: 't2', name: 'Kizhi', category: 'Herbal Poultice', patients: 28, price: 4200 },
+            { id: 't3', name: 'Abhyanga', category: 'Massage', patients: 67, price: 2500 },
+            { id: 't4', name: 'Shirodhara', category: 'Head Therapy', patients: 18, price: 3500 },
+        ],
+        doctors: [
+            { id: 'd1', name: 'Dr. Soma', speciality: 'Panchakarma', hours: 24, patients: 32 },
+            { id: 'd2', name: 'Dr. Nimal', speciality: 'Surgery', hours: 20, patients: 20 },
+            { id: 'd3', name: 'Dr. Anu', speciality: 'Pediatrics', hours: 16, patients: 45 },
+        ],
+        activities: [
+            { time: '2025-10-01 09:15', admin: 'superadmin', action: 'Added Treatment', details: 'Added Pizhichil' },
+            { time: '2025-09-30 15:03', admin: 'admin2', action: 'Updated Doctor', details: 'Updated hours for Dr. Soma' },
+        ],
+        paymentsByDay: { // sample weekly
+            labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+            values: [12000, 18000, 9000, 14000, 15000, 22000, 8000]
         }
+    };
+
+    /*******************************
+     * Charts
+     *******************************/
+    let paymentsChart, doctorsChart, treatmentPie;
+
+    function initCharts() {
+        // Payments chart - line
+        const ctx = document.getElementById('paymentsChart').getContext('2d');
+        paymentsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [...dataStore.paymentsByDay.labels],
+                datasets: [{
+                    label: 'Payments (LKR)',
+                    data: [...dataStore.paymentsByDay.values],
+                    tension: 0.3,
+                    backgroundColor: (ctx) => {
+                        // Chart.js default color behavior; allow library to pick default palette
+                        return undefined;
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // Doctors chart - bar
+        const dctx = document.getElementById('doctorsChart').getContext('2d');
+        doctorsChart = new Chart(dctx, {
+            type: 'bar',
+            data: {
+                labels: dataStore.doctors.map(d=>d.name),
+                datasets: [{
+                    label: 'Patients',
+                    data: dataStore.doctors.map(d=>d.patients),
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // Treatment pie
+        const tctx = document.getElementById('treatmentPie').getContext('2d');
+        treatmentPie = new Chart(tctx, {
+            type: 'pie',
+            data: {
+                labels: dataStore.treatments.map(t=>t.name),
+                datasets: [{ data: dataStore.treatments.map(t=>t.patients) }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+    }
+
+    /*******************************
+     * UI rendering helpers
+     *******************************/
+    function renderKPIs() {
+        const activeTreatments = dataStore.treatments.length;
+        const activeDoctors = dataStore.doctors.length;
+        const totalPatients = dataStore.treatments.reduce((s,t)=>s+t.patients,0);
+        const totalPayments = dataStore.paymentsByDay.values.reduce((s,v)=>s+v,0);
+
+        document.getElementById('kpiActiveTreatments').innerText = activeTreatments;
+        document.getElementById('kpiActiveDoctors').innerText = activeDoctors;
+        document.getElementById('kpiWeeklyPatients').innerText = totalPatients;
+        document.getElementById('kpiWeeklyPayments').innerText = 'LKR ' + totalPayments.toLocaleString();
+
+        // small delta placeholders
+        document.getElementById('kpiTreatmentsDelta').innerText = '+3 vs prev';
+        document.getElementById('kpiDoctorsDelta').innerText = '-1 vs prev';
+    }
+
+    function renderRecentActivities() {
+        const list = document.getElementById('recentActivities');
+        list.innerHTML = '';
+        const recent = dataStore.activities.slice().reverse().slice(0,6);
+        if (recent.length === 0) list.innerHTML = '<li class="list-group-item small-muted">No activities yet</li>';
+        recent.forEach(a => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-start';
+            li.innerHTML = `<div><div class="small fw-bold">${a.action}</div><div class="small-muted">${a.details}</div></div><div class="small-muted">${a.time}</div>`;
+            list.appendChild(li);
+        });
+    }
+
+    function renderTopDoctors() {
+        const wrapper = document.getElementById('topDoctorsList');
+        wrapper.innerHTML = '';
+        const sorted = dataStore.doctors.slice().sort((a,b)=>b.patients - a.patients).slice(0,5);
+        sorted.forEach(d => {
+            const item = document.createElement('div');
+            item.className = 'list-group-item d-flex justify-content-between align-items-center';
+            item.innerHTML = `<div><div class="fw-bold">${d.name}</div><div class="small-muted">${d.speciality}</div></div><div class="fw-bold">${d.patients}</div>`;
+            wrapper.appendChild(item);
+        });
+    }
+
+    function renderDoctorsTable() {
+        const body = document.getElementById('doctorsTableBody');
+        body.innerHTML = '';
+        dataStore.doctors.forEach(d => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+          <td>${d.name}</td>
+          <td>${d.speciality}</td>
+          <td>${d.patients}</td>
+          <td>${d.hours}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-danger" onclick="confirmRemove('doctor','${d.id}','${d.name}')">Remove</button>
+            <button class="btn btn-sm btn-outline-secondary ms-1" onclick="simulateEditDoctor('${d.id}')">Edit</button>
+          </td>`;
+            body.appendChild(tr);
+        });
+    }
+
+    function renderTreatmentsTable() {
+        const body = document.getElementById('treatmentsTableBody');
+        body.innerHTML = '';
+        dataStore.treatments.forEach(t => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+          <td>${t.name}</td>
+          <td>${t.category}</td>
+          <td>${t.patients}</td>
+          <td>LKR ${t.price.toLocaleString()}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-danger" onclick="confirmRemove('treatment','${t.id}','${t.name}')">Remove</button>
+            <button class="btn btn-sm btn-outline-secondary ms-1" onclick="simulateEditTreatment('${t.id}')">Edit</button>
+          </td>`;
+            body.appendChild(tr);
+        });
+    }
+
+    function renderPopularTreatments() {
+        const wrap = document.getElementById('popularTreatments');
+        wrap.innerHTML = '';
+        const sorted = dataStore.treatments.slice().sort((a,b)=>b.patients - a.patients).slice(0,6);
+        sorted.forEach(t => {
+            const el = document.createElement('div');
+            el.className = 'list-group-item d-flex justify-content-between align-items-center';
+            el.innerHTML = `<div><div class="fw-bold">${t.name}</div><div class="small-muted">${t.category}</div></div><div class="fw-bold">${t.patients}</div>`;
+            wrap.appendChild(el);
+        });
+    }
+
+    function renderActivitiesLog() {
+        const body = document.getElementById('activitiesLogBody');
+        body.innerHTML = '';
+        dataStore.activities.slice().reverse().forEach(a=>{
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${a.time}</td><td>${a.admin}</td><td>${a.action}</td><td>${a.details}</td>`;
+            body.appendChild(tr);
+        });
+    }
+
+    function updateCharts() {
+        // payments
+        paymentsChart.data.labels = [...dataStore.paymentsByDay.labels];
+        paymentsChart.data.datasets[0].data = [...dataStore.paymentsByDay.values];
+        paymentsChart.update();
+
+        // doctors
+        doctorsChart.data.labels = dataStore.doctors.map(d=>d.name);
+        doctorsChart.data.datasets[0].data = dataStore.doctors.map(d=>d.patients);
+        doctorsChart.update();
+
+        // treatments
+        treatmentPie.data.labels = dataStore.treatments.map(t=>t.name);
+        treatmentPie.data.datasets[0].data = dataStore.treatments.map(t=>t.patients);
+        treatmentPie.update();
+    }
+
+    /*******************************
+     * Actions: add/remove/edit
+     *******************************/
+    // Add treatment form
+    document.getElementById('formAddTreatment').addEventListener('submit', function(e){
+        e.preventDefault();
+        const name = document.getElementById('treatmentName').value.trim();
+        const cat = document.getElementById('treatmentCategory').value.trim();
+        const price = Number(document.getElementById('treatmentPrice').value) || 0;
+        const id = 't' + Date.now();
+        dataStore.treatments.push({ id, name, category: cat, patients: 0, price });
+        dataStore.activities.push({ time: (new Date()).toISOString().slice(0,16).replace('T',' '), admin: 'superadmin', action: 'Added Treatment', details: name });
+        bootstrap.Modal.getInstance(document.getElementById('modalAddTreatment')).hide();
+        refreshUI();
     });
 
-    // Treatment Distribution Chart
-    const treatmentCtx = document.getElementById('treatmentChart').getContext('2d');
-    new Chart(treatmentCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Panchakarma', 'Herbal', 'Massage', 'Consultation'],
-            datasets: [{
-                data: [35, 25, 20, 20],
-                backgroundColor: ['#6f42c1', '#e83e8c', '#28a745', '#ffc107']
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
+    // Add doctor form
+    document.getElementById('formAddDoctor').addEventListener('submit', function(e){
+        e.preventDefault();
+        const name = document.getElementById('doctorName').value.trim();
+        const speciality = document.getElementById('doctorSpeciality').value.trim();
+        const hours = Number(document.getElementById('doctorHours').value) || 0;
+        const id = 'd' + Date.now();
+        dataStore.doctors.push({ id, name, speciality, hours, patients: 0 });
+        dataStore.activities.push({ time: (new Date()).toISOString().slice(0,16).replace('T',' '), admin: 'superadmin', action: 'Added Doctor', details: name });
+        bootstrap.Modal.getInstance(document.getElementById('modalAddDoctor')).hide();
+        refreshUI();
     });
+
+    // Confirm remove generic
+    let pendingRemove = null;
+    function confirmRemove(type, id, name) {
+        pendingRemove = { type, id, name };
+        document.getElementById('confirmText').innerText = `Remove ${type} "${name}"? This action cannot be undone.`;
+        const m = new bootstrap.Modal(document.getElementById('modalConfirm'));
+        m.show();
+        document.getElementById('confirmOk').onclick = function(){
+            performRemove();
+            m.hide();
+        };
+    }
+    function performRemove(){
+        if (!pendingRemove) return;
+        const {type, id, name} = pendingRemove;
+        if (type === 'doctor') {
+            dataStore.doctors = dataStore.doctors.filter(d=>d.id !== id);
+            dataStore.activities.push({ time: (new Date()).toISOString().slice(0,16).replace('T',' '), admin: 'superadmin', action: 'Removed Doctor', details: name });
+        } else if (type === 'treatment') {
+            dataStore.treatments = dataStore.treatments.filter(t=>t.id !== id);
+            dataStore.activities.push({ time: (new Date()).toISOString().slice(0,16).replace('T',' '), admin: 'superadmin', action: 'Removed Treatment', details: name });
+        }
+        pendingRemove = null;
+        refreshUI();
+    }
+
+    // Simulated edit placeholders
+    function simulateEditDoctor(id) {
+        const d = dataStore.doctors.find(x=>x.id===id);
+        if (!d) return alert('Doctor not found');
+        const newHours = prompt('Edit hours per week for ' + d.name + ':', d.hours);
+        if (newHours !== null) {
+            d.hours = Number(newHours) || d.hours;
+            dataStore.activities.push({ time: (new Date()).toISOString().slice(0,16).replace('T',' '), admin: 'superadmin', action: 'Edited Doctor', details: d.name + ' hours updated' });
+            refreshUI();
+        }
+    }
+    function simulateEditTreatment(id) {
+        const t = dataStore.treatments.find(x=>x.id===id);
+        if (!t) return alert('Treatment not found');
+        const newPrice = prompt('Edit price (LKR) for ' + t.name + ':', t.price);
+        if (newPrice !== null) {
+            t.price = Number(newPrice) || t.price;
+            dataStore.activities.push({ time: (new Date()).toISOString().slice(0,16).replace('T',' '), admin: 'superadmin', action: 'Edited Treatment', details: t.name + ' price updated' });
+            refreshUI();
+        }
+    }
+
+    /*******************************
+     * Utilities & Export
+     *******************************/
+    document.getElementById('btnExportDoctors').addEventListener('click', ()=> {
+        const csv = ['Name,Speciality,Hours,Patients', ...dataStore.doctors.map(d=>`${d.name},${d.speciality},${d.hours},${d.patients}`)].join('\\n');
+        downloadFile(csv, 'doctors.csv', 'text/csv');
+    });
+    document.getElementById('btnExportTreatments').addEventListener('click', ()=> {
+        const csv = ['Treatment,Category,Patients,Price', ...dataStore.treatments.map(t=>`${t.name},${t.category},${t.patients},${t.price}`)].join('\\n');
+        downloadFile(csv, 'treatments.csv', 'text/csv');
+    });
+
+    function downloadFile(content, filename, mime) {
+        const blob = new Blob([content], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+        a.remove(); URL.revokeObjectURL(url);
+    }
+
+    /*******************************
+     * Refresh & init
+     *******************************/
+    function refreshUI() {
+        renderKPIs();
+        renderRecentActivities();
+        renderTopDoctors();
+        renderDoctorsTable();
+        renderTreatmentsTable();
+        renderPopularTreatments();
+        renderActivitiesLog();
+        updateCharts();
+    }
+
+    // Range buttons
+    document.getElementById('rangeWeekly').addEventListener('click', ()=> setRange('weekly'));
+    document.getElementById('rangeMonthly').addEventListener('click', ()=> setRange('monthly'));
+    function setRange(r) {
+        dataStore.range = r;
+        document.getElementById('rangeLabel').innerText = r === 'weekly' ? 'Weekly' : 'Monthly';
+        document.getElementById('rangeWeekly').classList.toggle('btn-primary', r==='weekly'); document.getElementById('rangeWeekly').classList.toggle('btn-outline-primary', r!=='weekly');
+        document.getElementById('rangeMonthly').classList.toggle('btn-primary', r==='monthly'); document.getElementById('rangeMonthly').classList.toggle('btn-outline-primary', r!=='monthly');
+
+        // fake change for demo: if monthly, aggregate different values
+        if (r === 'monthly') {
+            dataStore.paymentsByDay = { labels: ['Week 1','Week 2','Week 3','Week 4'], values: [52000, 72000, 61000, 80000] };
+        } else {
+            dataStore.paymentsByDay = { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], values: [12000,18000,9000,14000,15000,22000,8000] };
+        }
+        refreshUI();
+    }
+
+    document.getElementById('btnRefresh').addEventListener('click', function(){
+        // In real app: re-fetch from server
+        alert('Refreshing data (demo) — in production this would fetch from backend');
+        refreshUI();
+    });
+
+    // initialize everything on load
+    window.addEventListener('DOMContentLoaded', () => {
+        initCharts();
+        refreshUI();
+    });
+
+    // Expose some things for inline onclick calls
+    window.confirmRemove = confirmRemove;
+    window.simulateEditDoctor = simulateEditDoctor;
+    window.simulateEditTreatment = simulateEditTreatment;
 </script>
 </body>
 </html>

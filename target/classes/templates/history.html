@@ -15,8 +15,16 @@
     <script th:src="@{/js/script.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
 
+
+
 </head>
 <body>
+<section>
+    <div>
+
+
+    </div>
+</section>
 <!--testimonials-->
 <section class="testimonials" id="TESTIMONIALS">
     <div class="testimonials-overlay">
@@ -37,7 +45,7 @@
                                 <div class="row">
                                     <div class="tridosa">
                                         <div class="col-md-5 wow fadeInLeft">
-                                            <img src="imges/ayurveda.jpg" class="center-block" alt="testimonials">
+                                            <img th:src="imges/ayurveda.jpg" class="center-block" alt="testimonials">
                                         </div>
                                         <div class="col-md-7 wow heartBeat" >
                                             <h3>What is Ayurvedic Tridosha?</h3>
@@ -55,7 +63,7 @@
                                     <div class="col-md-7">
                                         <div class="karma ">
 
-                                            <img src="imges/panchakarma-treatment.png" class="center-block" alt="testimonials">
+                                            <img th:src="imges/panchakarma-treatment.png" class="center-block" alt="testimonials">
                                         </div>
                                     </div>
                                     <div class="col-md-5">
@@ -91,7 +99,7 @@
                 </div>
             </div>
         </div>
-
+    </div>
 </section>
 
 <!--tridosha section-->
@@ -143,7 +151,7 @@
                         </div>
                         <div id="pitta" class="content row align-items-center">
                             <div class="col-md-4 ">
-                                <img src="imges/pita.jpg" alt="Pitta" class="img-fluid">
+                                <img th:src="imges/pita.jpg" alt="Pitta" class="img-fluid">
                             </div>
                             <div class="col-md-8">
                                 <h2 class="dosha-title">DOSHA: PITTA</h2>
@@ -174,7 +182,7 @@
                         </div>
                         <div id="kapha" class="content row align-items-center">
                             <div class="col-md-4 ">
-                                <img src="imges/kapa.jpg" alt="Kapha" class="img-fluid">
+                                <img th:src="imges/kapa.jpg" alt="Kapha" class="img-fluid">
                             </div>
                             <div class="col-md-8s">
                                 <h2 class="dosha-title">DOSHA: KAPHA</h2>
@@ -226,7 +234,7 @@
 
             <div class="col-md-4">
                 <div class="snehana wow fadeInLeft">
-                    <img src="imges/snehana4.jpg"  alt="snehana">
+                    <img th:src="imges/snehana4.jpg"  alt="snehana">
                     <h5>Snehana (Oleation)</h5>
                     <p>Snehan is an oil massage. Oil is applied to the entire body with a particular type of massage that helps the toxins to move toward the gastrointestinal tract.
 
@@ -237,14 +245,14 @@
             </div>
             <div class="col-md-4">
                 <div class="Svedana wow zoomIn ">
-                    <img src="imges/swedana.jpg" alt="svedana" >
+                    <img th:src="imges/swedana.jpg" alt="svedana" >
                     <h5>Swedana (Sudation)</h5>
                     <p>Svedana is sudation or sweating and is given every day immediately following the snehan. An herbal concoction may be added to the steam to further loosen the toxins from the individual. Svedana liquefies the toxins and increases the movement of toxins into the gastrointestinal tract.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="Deepna wow fadeInRight">
-                    <img src="imges/deepana.jpg" alt="deepana">
+                    <img th:src="imges/deepana.jpg" alt="deepana">
                     <h5>Deepna and Pachana</h5>
                     <p>Deepana & Pachana does kindling of fire and digestion of metabolic toxins respectively. We use Deepana/ pachana ayurvedic medicinal herbs for this as per your Ayurvedic assessment which herbs and dosages will be then designed.</p>
                 </div>
@@ -268,7 +276,7 @@
 
                     <figure class="figure wow zoomIn">
 
-                        <img src="imges/panchakarma2.jpg" class="figure-img img-fluid rounded" alt="type1">
+                        <img th:src="imges/panchakarma2.jpg" class="figure-img img-fluid rounded" alt="type1">
                         <figcaption class="figure-caption text-end"><i>Susrurtha Samhita</i></figcaption>
 
                     </figure>
@@ -277,7 +285,7 @@
                 <div class="col-md-6">
 
                     <figure class="figure wow zoomIn">
-                        <img src="imges/Panchakarma-.webp" class="figure-img img-fluid rounded" alt="type2">
+                        <img th:src="imges/Panchakarma-.webp" class="figure-img img-fluid rounded" alt="type2">
                         <figcaption class="figure-caption text-end"><i>Charaka Samhita</i></figcaption>
                     </figure>
 
@@ -313,7 +321,7 @@
                                 <div class="col-md-12">
                                     <div class="vamana karma">
                                         <div class="col-md-5  wow fadeInLeft">
-                                            <img src="imges/vamana karma.jpg">
+                                            <img th:src="imges/vamana karma.jpg" alt="vamana">
                                         </div>
                                         <div class="col-md-7">
                                             <div class="textPanchakarma wow heartBeat">
@@ -342,16 +350,16 @@
                                                 <p>When excess bile, pitta, is secreted and accumulated in the gallbladder, liver, and small intestine, it tends to result in rashes, skin inflammation, acne, chronic attacks of fever, biliary vomiting, nausea, and jaundice. Ayurvedic literature suggests in these conditions the administration of therapeutic purgation or a therapeutic laxative.<br>
 
                                                     <br>  Purgatives help relieve the excess pitta causing the bile disturbance in the body. In fact, purgatives can completely cure the problem of excess pitta. When purgatives are used, the patient should not eat foods that will aggravate the predominant humor or cause the three humors to become unbalanced.</p>
-                                                <a href="https://adyantayurveda.com/virechana-treatment/">Read more</a>
+                                                <a th:href="https//adyantayurveda.com/virechana-treatment/">Read more</a>
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
                                             <div class="col-md-5">
-                                                <img src="imges/virechan1.webp">
+                                                <img th:src="imges/virechan1.webp" alt="virechana">
                                             </div>
                                             <div class="col-md-5">
-                                                <img src="imges/virechana 2.jpeg">
+                                                <img th:src="imges/virechana 2.jpeg" alt="virechana2">
                                             </div>
                                         </div>
                                     </div>
@@ -366,7 +374,7 @@
                                 <div class="col-md-12">
                                     <div class="vasthikarma">
                                         <div class="col-md-5 ">
-                                            <img src="imges/vasthi.jpg">
+                                            <img th:src="imges/vasthi.jpg" alt="vasthi">
                                         </div>
                                         <div class="col-md-7">
                                             <div class="textPanchakarma ">
@@ -375,12 +383,10 @@
 
                                                     <br> Vata is mainly located in the large intestine, but bone tissue (asthi dhatu) is also a site for vata. Hence the medication administered rectally affects asthi dhatu. The mucus membrane of the colon is related to the outer covering of the bones (periosteum), which nourishes the bones. Therefore, any medication given rectally goes into the deeper tissues, like bones, and corrects vata disorders.</p>
 
-                                                <a href="#">Read more</a>
+                                                <a th:href="read more" >Read more</a>
                                             </div>
 
                                         </div>
-
-
                                     </div>
                                 </div>
                             </div>
@@ -412,8 +418,8 @@
                                         </div>
 
                                         <div class="col-md-5 ">
-                                            <img src="imges/nasya.jpeg">
-                                            <img src="imges/nasya karma.webp">
+                                            <img th:src="imges/nasya.jpeg" alt="nasya">
+                                            <img th:src="imges/nasya karma.webp" alt="nasya2">
                                         </div>
                                     </div>
                                 </div>
@@ -427,8 +433,8 @@
                             <div class="col-md-12">
                                 <div class="rakthamokshanakarma">
                                     <div class="col-md-5 wow slideInLeft">
-                                        <img src="imges/rakthamokshana2.png" class="rakthamokshana">
-                                        <img src="imges/raktamokshna_show.png.webp" class="rakthamokshana2">
+                                        <img th:src="imges/rakthamokshana2.png" class="rakthamokshana" alt="rakthamokshana">
+                                        <img th:src="imges/raktamokshna_show.png.webp" class="rakthamokshana2" alt="rakthamokshana2">
                                     </div>
                                     <div class="col-md-7">
                                         <div class="textPanchakarma ">
@@ -461,7 +467,7 @@
             </div>
         </div>
     </div>
-    </div>
+
 </section>
 <section class="posttreatment" id="PASCHATKARMA">
     <div class="container">
@@ -482,14 +488,14 @@
 
                             <figure class="figure wow fadeInUp">
 
-                                <img src="imges/download.jpg" class="figure-img img-fluid rounded" alt="type1">
+                                <img th:src="imges/download.jpg" class="figure-img img-fluid rounded" alt="type1">
                             </figure>
 
                         </div>
                         <div class="col-md-6">
 
                             <figure class="figure wow fadeInUp">
-                                <img src="imges/healthy-eating-600x425.jpg" class="figure-img img-fluid rounded" alt="type2">
+                                <img th:src="imges/healthy-eating-600x425.jpg" class="figure-img img-fluid rounded" alt="type2">
 
                             </figure>
 
@@ -571,8 +577,9 @@
         </div>
     </div>
 </section>
-<a href="home.html">
+<a th:href="home.html">
     <button>Go Back</button>
 </a>
+
 </body>
 </html>

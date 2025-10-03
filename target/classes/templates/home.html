@@ -63,11 +63,22 @@
 </header>
 
 <section id="ABOUT">
+<div class="fadeInLeft">
+    <div class="row">
+        <div class="col-lg-10 col-md-offset-1">
 
-    <div>
-        <h>vuebfvuebeuebejvjefrehye   hvdkbndvbv         ncswjunjjvevjeveu</h>
-        <P>nnbunbr vdebgern  vnvjfrnerbejr </P>
+            <div class="about-section">
+                <h5>WELCOME TO AYURLINK</h5>
+                <P>A HEALING HEAVEN INSPIRED BY TRADITIONAL SRI LANKAN LIVING
+                    Nestled amidst the lush greenery and the majestic mountains of Dambulla ayurlink's journey towards conscious living began by drawing inspiration from traditional Sri Lankan living.
+
+                    With a shared vision of simplicity and healing, this Sri Lanka Ayurveda and Wellness Retreat invites you to a healing space that is purposefully built which allows you to heal, reconnect and uplift.</P>
+            </div>
+
+        </div>
+
     </div>
+</div>
 
 </section>
 <section>
@@ -99,9 +110,10 @@
                     <div class="section-title-03">
                         <p>Ayurveda texts list out purificatory measures which not just restore, but also boost our bodily functions.Kshudra karma(Minor theraputic methods),Panchakarma (Major theraputic methods), Rasayana karma(Rejuvenation of body),Vajeekarana (increase sexuality) are natural theraputic pathways in ayurveda concept.</p>
 
-                        <a href="ayurvedaInfo.html">
+                        <a th:href="@{/history.html}">
                             <button>Read More</button>
                         </a>
+
                     </div>
                 </div>
 
@@ -110,6 +122,7 @@
         </div>
     </div>
 </section>
+
 
 <section class="contact-section" id="CONTACT">
     <div class="contact-container">
@@ -135,95 +148,83 @@
 <section class="available-on">
     <div class="container">
         <div class="row">
+            <!-- Left side: Location & Contact -->
             <div class="col-md-8">
-                <div class="available-title wow fadeInLeft">
-                    <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-6">
                         <h2>Our Location</h2>
-                        <a> <p>153/5, <br>Miriswaththa road,<br> Gampaha, <br>Sri Lanka</p></a>
+                        <p>153/5, <br>Miriswaththa road,<br> Gampaha,<br>Sri Lanka</p>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <h2>Quick Contact</h2>
                         <p>01112454657<br> 0732565576<br> ayurwedainfo@gmail.com</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Right side: App Links -->
             <div class="col-md-4">
-                <div class="row">
-                    <!--first link-->
-                    <a href="">
-                        <div class="col-md-4">
-                            <div class="available-on-item wow fadeInup">
+                <div class="row text-center">
+                    <div class="col-md-4 col-4">
+                        <a href="#">
+                            <div class="available-on-item">
                                 <i class="fa fa-apple"></i>
-                                <div class="available-on-inner">
-                                    <h2>IOS</h2>
-                                </div>
+                                <h2>iOS</h2>
                             </div>
-                        </div>
-                    </a>
-                    <!--second link-->
-                    <a href="">
-                        <div class="col-md-4">
-                            <div class="available-on-item wow fadeInup">
+                        </a>
+                    </div>
+                    <div class="col-md-4 col-4">
+                        <a href="#">
+                            <div class="available-on-item">
                                 <i class="fa fa-android"></i>
-                                <div class="available-on-inner">
-                                    <h2>Android</h2>
-                                </div>
+                                <h2>Android</h2>
                             </div>
-                        </div>
-                    </a>
-
-                    <!--third a link-->
-                    <a href="">
-                        <div class="col-md-4">
-                            <div class="available-on-item wow fadeInup">
+                        </a>
+                    </div>
+                    <div class="col-md-4 col-4">
+                        <a href="#">
+                            <div class="available-on-item">
                                 <i class="fa fa-windows"></i>
-                                <div class="available-on-inner">
-                                    <h2>Window</h2>
-                                </div>
-
+                                <h2>Windows</h2>
                             </div>
-                        </div>
-                    </a>
-
+                        </a>
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
+
+    <!-- Social Icons -->
     <div class="container">
         <div class="row">
             <div class="col-md-12">
                 <div class="social-icons">
                     <ul>
-                        <li><a href=""><i class="fa fa-facebook"></i></a></li>
-                        <li><a href=""><i class="fa fa-twitter"></i></a></li>
-                        <li><a href=""><i class="fa fa-youtube-play"></i></a></li>
-                        <li><a href=""><i class="fa fa-instagram"></i></i></a></li>
+                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fa fa-youtube-play"></i></a></li>
+                        <li><a href="#"><i class="fa fa-instagram"></i></a></li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-    <!--footer-->
+
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-md-6">
-                    <div id="copyright">
-                        <p>copyright &copy;2024 <a href="#">Ayurweda</a></p>
-                    </div>
+                    <p>&copy; 2024 <a href="#">Ayurweda</a></p>
                 </div>
-                <div class="col-md-6">
-                    <div class="scroll-up">
-                        <a href="#HOME" ><i class="fa fa-angle-up"></i></a>
-                    </div>
+                <div class="col-md-6 text-end">
+                    <a href="#HOME" class="scroll-up"><i class="fa fa-angle-up"></i></a>
                 </div>
             </div>
         </div>
     </footer>
-
-
 </section>
+
 
 </body>
 </html>
