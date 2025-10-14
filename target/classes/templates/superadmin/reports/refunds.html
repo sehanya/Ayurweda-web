@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Refund Report - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/superadmin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/superadmin/payments/daily}">Daily Summary</a>
+            <a th:href="@{/superadmin/payments/monthly}">Monthly Summary</a>
+            <a th:href="@{/superadmin/reports}">Reports</a>
+            <a th:href="@{/admin/dashboard}">Admin Features</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>↩️ Refund Report</h1>
+            <p>Detailed refund analysis and trends</p>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Summary Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🔢</div>
+                    <div class="stat-info">
+                        <h3 th:text="${data.totalRefunds}">0</h3>
+                        <p>Total Refunds</p>
+                    </div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3 th:text="'LKR ' + ${#numbers.formatDecimal(data.totalRefundAmount, 1, 2)}">0.00</h3>
+                        <p>Total Refund Amount</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Refund Reasons -->
+            <div class="card">
+                <h2>Refund Reasons Breakdown</h2>
+                <div th:if="${#maps.isEmpty(data.refundReasons)}">
+                    <p>No refund data available.</p>
+                </div>
+                <table th:unless="${#maps.isEmpty(data.refundReasons)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Reason</th>
+                        <th>Count</th>
+                        <th>Percentage</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="entry : ${data.refundReasons}">
+                        <td th:text="${entry.key}">Reason</td>
+                        <td th:text="${entry.value}">0</td>
+                        <td th:text="${#numbers.formatDecimal((entry.value * 100.0 / data.totalRefunds), 1, 2)} + '%'">0%</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Refunded Payments Details -->
+            <div class="card">
+                <h2>Refunded Payments</h2>
+                <div th:if="${#lists.isEmpty(data.refundedPayments)}">
+                    <p>No refunded payments.</p>
+                </div>
+                <table th:unless="${#lists.isEmpty(data.refundedPayments)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Refund Amount</th>
+                        <th>Refund Date</th>
+                        <th>Reason</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="payment : ${data.refundedPayments}">
+                        <td th:text="${payment.transactionId}">TXN001</td>
+                        <td th:text="${payment.appointment.patient.fullName}">Patient</td>
+                        <td th:text="${payment.appointment.doctor.fullName}">Doctor</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(payment.refundAmount, 1, 2)}">0.00</td>
+                        <td th:text="${#temporals.format(payment.refundDate, 'dd MMM yyyy HH:mm')}">Date</td>
+                        <td th:text="${payment.refundReason}">Reason</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Back Button -->
+            <div style="margin-top: 2rem;">
+                <a th:href="@{/superadmin/reports}" class="btn btn-secondary">← Back to Reports</a>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

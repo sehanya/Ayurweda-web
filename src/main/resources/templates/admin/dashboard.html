@@ -1,408 +1,164 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Ayurvedic Hospital - Admin Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Bootstrap 5 -->
+    <link th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css}" rel="stylesheet">
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css}" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <!-- Admin Section -->
+            <div class="section-label">ADMIN PORTAL</div>
+            <a th:href="@{/admin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/admin/treatments}">Treatments</a>
+            <a th:href="@{/admin/doctors}">Doctors</a>
+            <a th:href="@{/admin/appointments}">Appointments</a>
+            <a th:href="@{/admin/payments}">Payments</a>
+            <a th:href="@{/admin/payments/reports}">Reports</a>
+            <a th:href="@{/admin/admins}">Admin Accounts</a>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="#">Ayurveda Admin — Super</a>
-        <div class="d-flex align-items-center gap-2">
-            <div class="small-muted me-3">Signed in as <strong>admin</strong></div>
-            <button class="btn btn-outline-secondary btn-sm">Logout</button>
-        </div>
-    </div>
-</nav>
-
-<div class="container-fluid mt-4">
-    <!-- Tabs Navigation -->
-    <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
-        <li class="nav-item"><button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home">Home</button></li>
-        <li class="nav-item"><button class="nav-link" id="doctors-tab" data-bs-toggle="tab" data-bs-target="#doctors">Doctors</button></li>
-        <li class="nav-item"><button class="nav-link" id="treatments-tab" data-bs-toggle="tab" data-bs-target="#treatments">Treatments</button></li>
-    </ul>
-
-    <div class="tab-content mt-3" id="dashboardTabsContent">
-
-        <!-- Home Section -->
-        <div class="tab-pane fade show active" id="home">
-            <div class="row g-3">
-                <!-- Active Doctors -->
-                <div class="col-md-3">
-                    <div class="card shadow-sm text-center">
-                        <div class="card-body">
-                            <h6>Active Doctors</h6>
-                            <h2 class="text-success">12</h2>
-                            <a href="#doctors" class="btn btn-sm btn-outline-success mt-2">View Details</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Active Treatments -->
-                <div class="col-md-3">
-                    <div class="card shadow-sm text-center">
-                        <div class="card-body">
-                            <h6>Active Treatments</h6>
-                            <h2 class="text-primary">8</h2>
-                            <a href="#treatments" class="btn btn-sm btn-outline-primary mt-2">View Details</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Today Appointments -->
-                <div class="col-md-3">
-                    <div class="card shadow-sm text-center">
-                        <div class="card-body">
-                            <h6>Today’s Appointments</h6>
-                            <h2 class="text-warning">15</h2>
-                            <a href="#appointments" class="btn btn-sm btn-outline-warning mt-2">View Details</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Patients This Week -->
-                <div class="col-md-3">
-                    <div class="card shadow-sm text-center">
-                        <div class="card-body">
-                            <h6>Patients This Week</h6>
-                            <h2 class="text-info">94</h2>
-                            <a href="#patients" class="btn btn-sm btn-outline-info mt-2">View Details</a>
-                        </div>
-                    </div>
-                </div>
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
             </div>
 
-            <!-- Recent Admin Activities -->
-            <div class="card mt-4 shadow-sm">
-                <div class="card-header bg-success text-white">Recent Admin Activities</div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item">Added new doctor: <strong>Dr. Silva</strong></li>
-                        <li class="list-group-item">Updated treatment: <strong>Panchakarma</strong></li>
-                        <li class="list-group-item">Removed doctor: <strong>Dr. Kumar</strong></li>
-                        <li class="list-group-item">Scheduled 5 new appointments today</li>
-                        <li class="list-group-item">Deactivated treatment: <strong>Herbal Detox</strong></li>
-                    </ul>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>Admin Dashboard</h1>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🌿</div>
+                    <div class="stat-info">
+                        <h3 th:text="${treatmentCount}">0</h3>
+                        <p>Total Treatments</p>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-
-        <!-- Doctors Section -->
-        <div class="tab-pane fade" id="doctors">
-            <h4 class="mb-3">Manage Doctors</h4>
-            <div class="row g-3">
-                <!-- Add Doctor Form -->
-                <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-primary text-white">Add Doctor</div>
-                        <div class="card-body">
-                            <form action="doctors/add">
-                                <div class="mb-2">
-                                    <label class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" required>
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label">Specialization</label>
-                                    <input type="text" class="form-control" required>
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" class="form-control" required>
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label">Phone Number</label>
-                                    <input type="tel" class="form-control" required>
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label">Upload Photo</label>
-                                    <input type="file" class="form-control" accept="image/*">
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label">Generated Username</label>
-                                    <input type="text" class="form-control" value="dr.silva01" readonly>
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label">Generated Password</label>
-                                    <input type="text" class="form-control" value="abc12345" readonly>
-                                </div>
-                                <button class="btn btn-success w-100">Add Doctor</button>
-                            </form>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👨‍⚕️</div>
+                    <div class="stat-info">
+                        <h3 th:text="${doctorCount}">0</h3>
+                        <p>Total Doctors</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info">
+                        <h3>-</h3>
+                        <p>Today's Appointments</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <h3>-</h3>
+                        <p>Total Patients</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Doctor Management</h3>
+                    <p style="color: #666; margin: 1rem 0;">
+                        Manage doctor accounts and their availability
+                    </p>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a th:href="@{/admin/doctors}" class="btn btn-primary">View All</a>
+                        <a th:href="@{/admin/doctors/new}" class="btn btn-secondary">Add New</a>
                     </div>
                 </div>
 
-                <!-- Weekly Participation Chart -->
-                <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-warning text-white">Weekly Participation</div>
-                        <div class="card-body">
-                            <canvas id="doctorChart" style="max-height:250px;"></canvas>
-                        </div>
-                    </div>
-                </div>
             </div>
 
-            <!-- Doctors List -->
-            <div class="card mt-3 shadow-sm">
-                <div class="card-header bg-secondary text-white">Doctors List</div>
-                <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Unique ID</th>
-                            <th>Doctor Name</th>
-                            <th>Specialization</th>
-                            <th>Patient Count</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>#DOC001</td>
-                            <td>Dr. Silva</td>
-                            <td>Panchakarma</td>
-                            <td>45</td>
-                            <td><span class="badge bg-success">Active</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editDoctorModal">Edit</button>
-                                <button class="btn btn-sm btn-danger">Deactivate</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#DOC002</td>
-                            <td>Dr. Kumar</td>
-                            <td>Herbal Medicine</td>
-                            <td>38</td>
-                            <td><span class="badge bg-danger">Inactive</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editDoctorModal">Edit</button>
-                                <button class="btn btn-sm btn-danger">Deactivate</button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+            <!-- Quick Actions -->
+            <div class="card">
+                <h2>Quick Actions</h2>
+                <div class="quick-actions-grid">
+                    <a th:href="@{/admin/treatments/new}" class="action-card">
+                        <div class="action-icon">➕</div>
+                        <h3>Add Treatment</h3>
+                        <p>Create new treatment</p>
+                    </a>
+                    <a th:href="@{/admin/doctors/new}" class="action-card">
+                        <div class="action-icon">👨‍⚕️</div>
+                        <h3>Add Doctor</h3>
+                        <p>Register new doctor</p>
+                    </a>
+                    <a th:href="@{/admin/appointments}" class="action-card">
+                        <div class="action-icon">📋</div>
+                        <h3>View Appointments</h3>
+                        <p>Manage all appointments</p>
+                    </a>
+                    <a th:href="@{/admin/payments}" class="action-card">
+                        <div class="action-icon">💳</div>
+                        <h3>Manage Payments</h3>
+                        <p>View & verify payments</p>
+                    </a>
+                    <a th:href="@{/admin/payments/reports}" class="action-card">
+                        <div class="action-icon">📊</div>
+                        <h3>View Reports</h3>
+                        <p>Generate payment reports</p>
+                    </a>
+                    <a th:href="@{/admin/admins/new}" class="action-card">
+                        <div class="action-icon">🔐</div>
+                        <h3>Add Admin</h3>
+                        <p>Create admin account</p>
+                    </a>
+                </div>
+            </div>
+            <!-- System Navigation -->
+            <div class="card" style="margin-top: 2rem; background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+                <h2>🌐 Navigate Public Pages</h2>
+                <p style="color: #666; margin-bottom: 1.5rem;">
+                    As an admin, you have access to all public pages to review content
+                </p>
+                <div class="quick-actions-grid">
+                    <a th:href="@{/}" class="action-card" style="background: white;">
+                        <div class="action-icon">🏠</div>
+                        <h3>Home Page</h3>
+                        <p>View landing page</p>
+                    </a>
+                    <a th:href="@{/treatments}" class="action-card" style="background: white;">
+                        <div class="action-icon">🌿</div>
+                        <h3>Treatments</h3>
+                        <p>Browse treatment catalog</p>
+                    </a>
+                    <a th:href="@{/about}" class="action-card" style="background: white;">
+                        <div class="action-icon">ℹ️</div>
+                        <h3>About Us</h3>
+                        <p>View about page</p>
+                    </a>
+                    <a th:href="@{/contact}" class="action-card" style="background: white;">
+                        <div class="action-icon">📞</div>
+                        <h3>Contact</h3>
+                        <p>View contact page</p>
+                    </a>
                 </div>
             </div>
         </div>
-
-        <!-- Edit Doctor Modal -->
-        <div class="modal fade" id="editDoctorModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title">Edit Doctor</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="/doctors/update/">
-                            <div class="mb-2">
-                                <label class="form-label">Full Name</label>
-                                <input type="text" class="form-control" value="Dr. Silva">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label">Specialization</label>
-                                <input type="text" class="form-control" value="Panchakarma">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" value="dr.silva@ayurveda.lk">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" value="+94771234567">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label">Upload New Photo</label>
-                                <input type="file" class="form-control" accept="image/*">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label">Username</label>
-                                <input type="text" class="form-control" value="dr.silva01" readonly>
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label">Password</label>
-                                <input type="text" class="form-control" value="abc12345" readonly>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-success">Update Doctor</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- Treatments Section -->
-        <div class="tab-pane fade" id="treatments">
-            <h4 class="mb-3">Manage Treatments</h4>
-            <div class="row g-3">
-                <!-- Add Treatment Form -->
-                <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-success text-white">Add Treatment</div>
-                        <div class="card-body">
-                            <form action="/treatments/add" method="post">
-                                <div class="mb-2">
-                                    <label class="form-label">Treatment Name</label>
-                                    <input type="text" class="form-control" name="name" required>
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label">Price (LKR)</label>
-                                    <input type="number" class="form-control" name="price" required step="0.01">
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label">Duration (Minutes)</label>
-                                    <input type="number" class="form-control" name="durationMinutes" required>
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label">Description</label>
-                                    <textarea class="form-control" name="description" rows="3"></textarea>
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label">Upload Photo</label>
-                                    <input type="file" class="form-control" name="photo" accept="image/*">
-                                </div>
-                                <button type="submit" class="btn btn-success w-100">Add Treatment</button>
-                            </form>
-
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Treatment Distribution Chart -->
-                <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-info text-white">Treatment Distribution</div>
-                        <div class="card-body">
-                            <canvas id="treatmentChart" style="max-height:250px;"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Treatments List -->
-            <div class="card mt-3 shadow-sm">
-                <div class="card-header bg-secondary text-white">Treatments List</div>
-                <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Unique ID</th>
-                            <th>Treatment Name</th>
-                            <th>Patient Count</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>#TRT001</td>
-                            <td>Panchakarma</td>
-                            <td>52</td>
-                            <td><span class="badge bg-success">Active</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editTreatmentModal">Edit</button>
-                                <button class="btn btn-sm btn-danger">Deactivate</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#TRT002</td>
-                            <td>Herbal Detox</td>
-                            <td>32</td>
-                            <td><span class="badge bg-danger">Inactive</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editTreatmentModal">Edit</button>
-                                <button class="btn btn-sm btn-danger">Deactivate</button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Edit Treatment Modal -->
-        <div class="modal fade" id="editTreatmentModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title">Edit Treatment</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action=>
-                            <div class="mb-2">
-                                <label class="form-label">Treatment Name</label>
-                                <input type="text" class="form-control" value="Panchakarma">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label">Price (LKR)</label>
-                                <input type="number" class="form-control" value="2500">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label">Duration (Minutes)</label>
-                                <input type="number" class="form-control" value="60">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label">Description</label>
-                                <textarea class="form-control" rows="3">Traditional detox therapy.</textarea>
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label">Upload New Photo</label>
-                                <input type="file" class="form-control" accept="image/*">
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-success">Update Treatment</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- Scripts -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            // Doctors Weekly Participation Chart
-            new Chart(document.getElementById('doctorChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Dr. Silva', 'Dr. Kumar', 'Dr. Perera', 'Dr. Nimal'],
-                    datasets: [{
-                        label: 'Patients per Week',
-                        data: [12, 18, 10, 14],
-                        backgroundColor: 'rgba(54, 162, 235, 0.7)'
-                    }]
-                }
-            });
-
-            // Treatment Distribution Chart
-            new Chart(document.getElementById('treatmentChart'), {
-                type: 'pie',
-                data: {
-                    labels: ['Panchakarma', 'Herbal Detox', 'Yoga Therapy', 'Oil Massage'],
-                    datasets: [{
-                        data: [52, 32, 18, 25],
-                        backgroundColor: ['#28a745','#17a2b8','#ffc107','#dc3545']
-                    }]
-                }
-            });
-        </script>
-
+    </main>
+</div>
 </body>
 </html>

@@ -1,191 +1,178 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Home page</title>
     <meta charset="UTF-8">
+    <title>Home - Ayur-Link</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/animate.css}">
-    <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">
-    <link rel="stylesheet" th:href="@{/css/responsive.css}">
 
-    <script th:src="@{/js/jquery.js}"></script>
-    <script th:src="@{/js/script.js}"></script>
-    <script th:src="@{/js/bootstrap.min.js}"></script>
-    <script th:src="@{/js/custom.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/animate.css}" >
+    <link rel="stylesheet" type="text/css" th:href="@{css/font-awesome.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/responsive.css}">
+
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css}">
+
+    <script th:src="@{js/jquery.js}"></script>
+    <script th:src="@{js/script.js}"></script>
+
+    <script th:src="@{js/bootstrap.min.js}"></script>
 
 </head>
 <body>
-<header class="header" id="HOME">
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a th:href="@{/}" class="nav-brand">🌿 AyurLink</a>
 
-    <!--navigation-->
-    <nav class="navbar navbar-default navbar-fixed-top">
+        <ul class="nav-links">
+            <li><a th:href="@{/}">Home</a></li>
+            <li><a th:href="@{/treatments}">Treatments</a></li>
+            <li><a th:href="@{/about}">About</a></li>
+            <li><a th:href="@{/contact}">Contact</a></li>
 
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"  aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
+            <!-- Show dashboard link if logged in -->
+            <li sec:authorize="hasRole('PATIENT')">
+                <a th:href="@{/patient/dashboard}">Dashboard</a>
+            </li>
+            <li sec:authorize="hasRole('DOCTOR')">
+                <a th:href="@{/doctor/dashboard}">Dashboard</a>
+            </li>
+            <li sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin/dashboard}">Dashboard</a>
+            </li>
+            <li sec:authorize="hasRole('SUPER_ADMIN')">
+                <a th:href="@{/superadmin/dashboard}">Dashboard</a>
+            </li>
 
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="loso-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#HOME" class="nav-item" style="color: black;">HOME</a></li>
-                    <li><a href="#ABOUT" class="nav-item" style="color: black;">ABOUT US</a></li>
-                    <li><a href="#TREATMENTS" class="nav-item"style="color: black;">TREATMENTS</a></li>
-                    <li><a href="#BOOK APPOINTMENT" class="nav-item"style="color: black;">BOOK APPOINTMENT</a></li>
-                    <li><a href="#CONTACT" class="nav-item"style="color: black;">CONTACT</a></li>
-                    <li><a href="#LOGIN" class="nav-item"style="color: black;">LOGIN</a></li>
-
-                </ul>
-
-            </div>
-        </div>
-    </nav>
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="header-text">
-                <h1> NATURAL  THERAPEUTIC  ESSENCE </h1>
-
-            </div>
-
-        </div>
+            <!-- Show login/register or logout -->
+            <li sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}" class="btn-primary">Login</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn-logout">Logout</button>
+                </form>
+            </li>
+        </ul>
     </div>
-</header>
+</nav>
 
-<section id="ABOUT">
-<div class="fadeInLeft">
-    <div class="row">
-        <div class="col-lg-10 col-md-offset-1">
-
-            <div class="about-section">
-                <h5>WELCOME TO AYURLINK</h5>
-                <P>A HEALING HEAVEN INSPIRED BY TRADITIONAL SRI LANKAN LIVING
-                    Nestled amidst the lush greenery and the majestic mountains of Dambulla ayurlink's journey towards conscious living began by drawing inspiration from traditional Sri Lankan living.
-
-                    With a shared vision of simplicity and healing, this Sri Lanka Ayurveda and Wellness Retreat invites you to a healing space that is purposefully built which allows you to heal, reconnect and uplift.</P>
-            </div>
-
-        </div>
-
-    </div>
-</div>
-
-</section>
-<section>
-
-</section>
-<section id="AYURVEDA INFO" >
-    <div class="container wow fadeInLeft" >
-        <div class="row">
-            <div class="col-md-10 col-md-offset-1">
-                <div class="section-title-02">
-                    <h2>HISTORY OF AYURVEDA</h2>
-                    <p>Ayurveda is a science of life.It offers a body of wisdom designed to help people stay vital while realizing their full human potential.Sri Lanka's indigenous medicine has similar origins, linked to the 30,000 year old native habitants of the land known as the Balangoda man (manavaya). With its ancient history, traditional ayurveda medicine as it is practiced today in the country, is based on an indigenous heritage preserved over 3000 years.
-                        In Ayurveda concept is mainly divided into two types.</p>
-                    <div class="point-main-02">
-                        <ol>
-                            <li>Prevention from dieases
-                                <i>(Swastha sanrakshana)</i>
-                                <ol>Providing guidelines on ideal daily and seasonal routines, diet, behavior and the proper use of our senses,
-                                    Ayurveda reminds us that health is the balanced and dynamic integration between our environment, body, mind, and spirit</ol>
-                            </li>
-
-                            <li>Cure from diseases
-                                <i >(Athura prashamana)</i>
-                                <ol>Providing guidelines to cure diseases by using medicines theraputic methods and surgeries</ol>
-
-                            </li>
-                        </ol>
-                    </div>
-                    <div class="section-title-03">
-                        <p>Ayurveda texts list out purificatory measures which not just restore, but also boost our bodily functions.Kshudra karma(Minor theraputic methods),Panchakarma (Major theraputic methods), Rasayana karma(Rejuvenation of body),Vajeekarana (increase sexuality) are natural theraputic pathways in ayurveda concept.</p>
-
-                        <a th:href="@{/history.html}">
-                            <button>Read More</button>
-                        </a>
-
-                    </div>
-                </div>
-
-            </div>
-
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1>Welcome to Ayur-Link</h1>
+        <p>Your Gateway to Traditional Ayurvedic Healing</p>
+        <div class="hero-buttons">
+            <a th:href="@{/register}" class="btn btn-primary">Book Appointment</a>
+            <a th:href="@{/treatments}" class="btn btn-secondary">View Treatments</a>
         </div>
     </div>
 </section>
 
-
-<section class="contact-section" id="CONTACT">
-    <div class="contact-container">
-        <div class="contact-form wow fadeInRight">
-            <h2>Contact Us</h2>
-            <p>We'd love to hear from you! Fill out the form below to get in touch.</p>
-            <form action="#" method="post">
-                <label for="name">Your Name</label>
-                <input type="text" id="name" name="name" placeholder="Enter your name" required>
-
-                <label for="email">Your Email</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required>
-
-                <label for="message">Your Message</label>
-                <textarea id="message" name="message" rows="5" placeholder="Enter your message" required></textarea>
-
-                <button type="submit">Send Message</button>
-            </form>
+<!-- Featured Treatments -->
+<section class="treatments-section">
+    <div class="container">
+        <h2>Our Treatments</h2>
+        <div class="treatment-grid">
+            <div th:each="treatment : ${treatments}" class="treatment-card">
+                <h3 th:text="${treatment.name}">Treatment Name</h3>
+                <p th:text="${treatment.description}">Description</p>
+                <p class="price">LKR <span th:text="${treatment.cost}">0.00</span></p>
+                <p class="duration" th:text="${treatment.duration} + ' minutes'">Duration</p>
+            </div>
         </div>
     </div>
 </section>
 
+<!-- About Section -->
+<section class="about-section">
+    <div class="container">
+        <h2>Why Choose Ayur-Link?</h2>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">👨‍⚕️</div>
+                <h3>Expert Doctors</h3>
+                <p>Experienced Ayurvedic practitioners</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🌿</div>
+                <h3>Natural Treatments</h3>
+                <p>Traditional herbal remedies</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📅</div>
+                <h3>Easy Booking</h3>
+                <p>Simple online appointment system</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💳</div>
+                <h3>Flexible Payment</h3>
+                <p>Card and cash payment options</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
 <section class="available-on">
     <div class="container">
         <div class="row">
-            <!-- Left side: Location & Contact -->
+            <!-- Contact Info -->
             <div class="col-md-8">
-                <div class="row">
-                    <div class="col-md-6">
+                <div class="available-title wow fadeInLeft">
+                    <div class="col-md-4">
                         <h2>Our Location</h2>
-                        <p>153/5, <br>Miriswaththa road,<br> Gampaha,<br>Sri Lanka</p>
+                        <p>
+                            153/5,<br>
+                            Miriswaththa road,<br>
+                            Gampaha,<br>
+                            Sri Lanka
+                        </p>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <h2>Quick Contact</h2>
-                        <p>01112454657<br> 0732565576<br> ayurwedainfo@gmail.com</p>
+                        <p>
+                            01112454657<br>
+                            0732565576<br>
+                            <a href="mailto:ayurwedainfo@gmail.com">ayurwedainfo@gmail.com</a>
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Right side: App Links -->
+            <!-- App Links -->
             <div class="col-md-4">
-                <div class="row text-center">
-                    <div class="col-md-4 col-4">
-                        <a href="#">
-                            <div class="available-on-item">
-                                <i class="fa fa-apple"></i>
-                                <h2>iOS</h2>
+                <div class="row">
+                    <div class="col-md-4">
+                        <a th:href="@{/ios-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-apple"></i>
+                                <div class="available-on-inner">
+                                    <h2>IOS</h2>
+                                </div>
                             </div>
                         </a>
                     </div>
-                    <div class="col-md-4 col-4">
-                        <a href="#">
-                            <div class="available-on-item">
-                                <i class="fa fa-android"></i>
-                                <h2>Android</h2>
+
+                    <div class="col-md-4">
+                        <a th:href="@{/android-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-android"></i>
+                                <div class="available-on-inner">
+                                    <h2>Android</h2>
+                                </div>
                             </div>
                         </a>
                     </div>
-                    <div class="col-md-4 col-4">
-                        <a href="#">
-                            <div class="available-on-item">
-                                <i class="fa fa-windows"></i>
-                                <h2>Windows</h2>
+
+                    <div class="col-md-4">
+                        <a th:href="@{/windows-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-windows"></i>
+                                <div class="available-on-inner">
+                                    <h2>Windows</h2>
+                                </div>
                             </div>
                         </a>
                     </div>
@@ -199,12 +186,14 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="social-icons">
+
                     <ul>
-                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                        <li><a href="#"><i class="fa fa-youtube-play"></i></a></li>
-                        <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                        <li><a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                        <li><a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a></li>
                     </ul>
+
                 </div>
             </div>
         </div>
@@ -213,17 +202,44 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="row align-items-center">
+            <div class="row">
                 <div class="col-md-6">
-                    <p>&copy; 2024 <a href="#">Ayurweda</a></p>
+                    <div id="copyright">
+                        <p>copyright &copy;2025 <a th:href="@{/}">Ayurweda</a></p>
+                    </div>
                 </div>
-                <div class="col-md-6 text-end">
-                    <a href="#HOME" class="scroll-up"><i class="fa fa-angle-up"></i></a>
+                <div class="col-md-6">
+                    <div class="scroll-up">
+                        <a th:href="@{/}"><i class="fa fa-angle-up"></i></a>
+                    </div>
                 </div>
             </div>
         </div>
     </footer>
 </section>
+
+
+
+
+
+
+<script th:src="@{/js/script.js}"></script>
+<script>
+    window.addEventListener("scroll", function() {
+        const navbar = document.querySelector(".navbar");
+        navbar.classList.toggle("scrolled", window.scrollY > 50);
+    });
+</script>
+<script>
+    window.addEventListener("scroll", function () {
+        const navbar = document.getElementById("mainNavbar");
+        if (window.scrollY > 100) {
+            navbar.classList.add("scrolled");
+        } else {
+            navbar.classList.remove("scrolled");
+        }
+    });
+</script>
 
 
 </body>

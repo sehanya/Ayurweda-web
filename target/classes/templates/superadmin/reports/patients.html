@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Analytics - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/superadmin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/superadmin/payments/daily}">Daily Summary</a>
+            <a th:href="@{/superadmin/payments/monthly}">Monthly Summary</a>
+            <a th:href="@{/superadmin/reports}">Reports</a>
+            <a th:href="@{/admin/dashboard}">Admin Features</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>👥 Patient Analytics Report</h1>
+            <p>Patient registration trends and visit frequency</p>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Summary Card -->
+            <div class="stats-grid">
+                <div class="stat-card highlight">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <h3 th:text="${data.totalPatients}">0</h3>
+                        <p>Total Unique Patients</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 th:text="${data.patientFrequency.size()}">0</h3>
+                        <p>Patients with Visits</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patient Visit Frequency -->
+            <div class="card">
+                <h2>Top Patients by Visit Frequency</h2>
+                <div th:if="${#maps.isEmpty(data.patientFrequency)}">
+                    <p>No patient visit data available yet.</p>
+                </div>
+                <table th:unless="${#maps.isEmpty(data.patientFrequency)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Patient Name</th>
+                        <th>Total Visits</th>
+                        <th>Total Spending</th>
+                        <th>Average per Visit</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="entry : ${data.patientFrequency}">
+                        <td th:text="${entry.key}">Patient Name</td>
+                        <td th:text="${entry.value}">0</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(data.patientSpending.get(entry.key), 1, 2)}">0.00</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(data.patientSpending.get(entry.key) / entry.value, 1, 2)}">0.00</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Patient Spending Analysis -->
+            <div class="card">
+                <h2>Top Spending Patients</h2>
+                <div th:if="${#maps.isEmpty(data.patientSpending)}">
+                    <p>No spending data available yet.</p>
+                </div>
+                <table th:unless="${#maps.isEmpty(data.patientSpending)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Patient Name</th>
+                        <th>Total Spending</th>
+                        <th>Visits</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="entry, iterStat : ${data.patientSpending}">
+                        <td th:text="${iterStat.count}">1</td>
+                        <td th:text="${entry.key}">Patient Name</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(entry.value, 1, 2)}">0.00</td>
+                        <td th:text="${data.patientFrequency.get(entry.key)}">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Back Button -->
+            <div style="margin-top: 2rem;">
+                <a th:href="@{/superadmin/reports}" class="btn btn-secondary">← Back to Reports</a>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
