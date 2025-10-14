@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Methods Report - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/superadmin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/superadmin/payments/daily}">Daily Summary</a>
+            <a th:href="@{/superadmin/payments/monthly}">Monthly Summary</a>
+            <a th:href="@{/superadmin/reports}">Reports</a>
+            <a th:href="@{/admin/dashboard}">Admin Features</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>💳 Payment Methods Analysis</h1>
+            <p>Distribution and revenue by payment method</p>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Summary Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">💵</div>
+                    <div class="stat-info">
+                        <h3 th:text="${data.methodCounts['CASH'] != null ? data.methodCounts['CASH'] : 0}">0</h3>
+                        <p>Cash Payments</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📄</div>
+                    <div class="stat-info">
+                        <h3 th:text="${data.methodCounts['RECEIPT_UPLOAD'] != null ? data.methodCounts['RECEIPT_UPLOAD'] : 0}">0</h3>
+                        <p>Receipt Uploads</p>
+                    </div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 th:text="${data.totalPayments}">0</h3>
+                        <p>Total Payments</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Breakdown -->
+            <div class="card">
+                <h2>Revenue by Payment Method</h2>
+                <div th:if="${data.methodCounts == null or data.methodCounts.isEmpty()}">
+                    <p>No payment method data available yet.</p>
+                </div>
+                <table th:unless="${data.methodCounts == null or data.methodCounts.isEmpty()}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Payment Method</th>
+                        <th>Count</th>
+                        <th>Total Revenue</th>
+                        <th>Percentage</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${data.methodCounts['CASH'] != null}">
+                        <td>CASH</td>
+                        <td th:text="${data.methodCounts['CASH']}">0</td>
+                        <td th:text="'LKR ' + ${data.methodRevenue['CASH'] != null ? #numbers.formatDecimal(data.methodRevenue['CASH'], 1, 2) : '0.00'}">0.00</td>
+                        <td th:text="${#numbers.formatDecimal((data.methodCounts['CASH'] * 100.0 / data.totalPayments), 1, 2)} + '%'">0%</td>
+                    </tr>
+                    <tr th:if="${data.methodCounts['RECEIPT_UPLOAD'] != null}">
+                        <td>RECEIPT_UPLOAD</td>
+                        <td th:text="${data.methodCounts['RECEIPT_UPLOAD']}">0</td>
+                        <td th:text="'LKR ' + ${data.methodRevenue['RECEIPT_UPLOAD'] != null ? #numbers.formatDecimal(data.methodRevenue['RECEIPT_UPLOAD'], 1, 2) : '0.00'}">0.00</td>
+                        <td th:text="${#numbers.formatDecimal((data.methodCounts['RECEIPT_UPLOAD'] * 100.0 / data.totalPayments), 1, 2)} + '%'">0%</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Back Button -->
+            <div style="margin-top: 2rem;">
+                <a th:href="@{/superadmin/reports}" class="btn btn-secondary">← Back to Reports</a>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

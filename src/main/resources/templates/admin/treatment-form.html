@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${treatment.id != null ? 'Edit Treatment' : 'Add Treatment'}">Treatment Form</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <!-- Admin Section -->
+            <div class="section-label">ADMIN PORTAL</div>
+            <a th:href="@{/admin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/admin/treatments}">Treatments</a>
+            <a th:href="@{/admin/doctors}">Doctors</a>
+            <a th:href="@{/admin/appointments}">Appointments</a>
+            <a th:href="@{/admin/payments}">Payments</a>
+            <a th:href="@{/admin/payments/reports}">Reports</a>
+            <a th:href="@{/admin/admins}">Admin Accounts</a>
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1 th:text="${treatment.id != null ? 'Edit Treatment' : 'Add New Treatment'}">Treatment Form</h1>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="card">
+                <form th:action="@{/admin/treatments/save}" th:object="${treatment}" method="post">
+                    <input type="hidden" th:field="*{id}">
+
+                    <div class="form-group">
+                        <label for="name">Treatment Name *</label>
+                        <input type="text" id="name" th:field="*{name}" required
+                               placeholder="e.g., Panchakarma Therapy">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description *</label>
+                        <textarea id="description" th:field="*{description}" rows="4" required
+                                  placeholder="Describe the treatment..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cost">Cost (LKR) *</label>
+                            <input type="number" id="cost" th:field="*{cost}" step="0.01" required
+                                   placeholder="e.g., 5000.00">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="duration">Duration (minutes) *</label>
+                            <input type="number" id="duration" th:field="*{duration}" required
+                                   placeholder="e.g., 60">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="suitableFor">Suitable For</label>
+                        <input type="text" id="suitableFor" th:field="*{suitableFor}"
+                               placeholder="e.g., Back Pain, Stress, Arthritis">
+                    </div>
+                    <div class="form-group">
+                        <label for="image">Image Filename</label>
+                        <input type="text" id="image" th:field="*{image}"
+                               placeholder="e.g., panchakarma.jpg">
+                        <small class="text-muted">Place image files in src/main/resources/static/images/treatments</small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Treatment</button>
+                        <a th:href="@{/admin/treatments}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

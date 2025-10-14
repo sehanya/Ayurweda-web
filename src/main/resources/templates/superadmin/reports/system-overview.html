@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>System Overview - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/superadmin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/superadmin/payments/daily}">Daily Summary</a>
+            <a th:href="@{/superadmin/payments/monthly}">Monthly Summary</a>
+            <a th:href="@{/superadmin/reports}">Reports</a>
+            <a th:href="@{/admin/dashboard}">Admin Features</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>🔍 System Overview</h1>
+            <p>Complete system statistics and health metrics</p>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Revenue Statistics -->
+            <div class="card">
+                <h2>💰 Financial Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card highlight">
+                        <div class="stat-icon">💵</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(data.totalRevenue, 1, 2)}">0.00</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔄</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(data.totalRefunds, 1, 2)}">0.00</h3>
+                            <p>Total Refunds</p>
+                        </div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(data.netRevenue, 1, 2)}">0.00</h3>
+                            <p>Net Revenue</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Statistics -->
+            <div class="card">
+                <h2>📊 Payment Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📝</div>
+                        <div class="stat-info">
+                            <h3 th:text="${data.totalPayments}">0</h3>
+                            <p>Total Payments</p>
+                        </div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <h3 th:text="${data.successfulPayments}">0</h3>
+                            <p>Successful</p>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-info">
+                            <h3 th:text="${data.pendingPayments}">0</h3>
+                            <p>Pending Verification</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointment Statistics -->
+            <div class="card">
+                <h2>📅 Appointment Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-info">
+                            <h3 th:text="${data.totalAppointments}">0</h3>
+                            <p>Total Appointments</p>
+                        </div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <h3 th:text="${data.confirmedAppointments}">0</h3>
+                            <p>Confirmed</p>
+                        </div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-icon">❌</div>
+                        <div class="stat-info">
+                            <h3 th:text="${data.cancelledAppointments}">0</h3>
+                            <p>Cancelled</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Statistics -->
+            <div class="card">
+                <h2>👥 User Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👨‍⚕️</div>
+                        <div class="stat-info">
+                            <h3 th:text="${data.totalDoctors}">0</h3>
+                            <p>Total Doctors</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🧑‍🤝‍🧑</div>
+                        <div class="stat-info">
+                            <h3 th:text="${data.totalPatients}">0</h3>
+                            <p>Total Patients</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Health -->
+            <div class="card">
+                <h2>🏥 System Health</h2>
+                <div style="padding: 1rem;">
+                    <div style="margin-bottom: 1rem;">
+                        <p><strong>Success Rate:</strong>
+                            <span th:text="${data.totalPayments > 0 ? #numbers.formatDecimal((data.successfulPayments * 100.0 / data.totalPayments), 1, 2) : '0.00'} + '%'">0%</span>
+                        </p>
+                        <div style="background: #e0e0e0; border-radius: 10px; height: 20px; overflow: hidden; margin-top: 0.5rem;">
+                            <div th:style="'width: ' + ${data.totalPayments > 0 ? (data.successfulPayments * 100.0 / data.totalPayments) : 0} + '%; background: linear-gradient(90deg, #2d6a4f, #52b788); height: 100%;'"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <p><strong>Appointment Confirmation Rate:</strong>
+                            <span th:text="${data.totalAppointments > 0 ? #numbers.formatDecimal((data.confirmedAppointments * 100.0 / data.totalAppointments), 1, 2) : '0.00'} + '%'">0%</span>
+                        </p>
+                        <div style="background: #e0e0e0; border-radius: 10px; height: 20px; overflow: hidden; margin-top: 0.5rem;">
+                            <div th:style="'width: ' + ${data.totalAppointments > 0 ? (data.confirmedAppointments * 100.0 / data.totalAppointments) : 0} + '%; background: linear-gradient(90deg, #40916c, #74c69d); height: 100%;'"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p><strong>Patient to Doctor Ratio:</strong>
+                            <span th:text="${data.totalDoctors > 0 ? #numbers.formatDecimal((data.totalPatients * 1.0 / data.totalDoctors), 1, 2) : '0'} + ':1'">0:1</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div style="margin-top: 2rem;">
+                <a th:href="@{/superadmin/reports}" class="btn btn-secondary">← Back to Reports</a>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
