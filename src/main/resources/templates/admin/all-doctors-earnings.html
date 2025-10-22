@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All Doctors Earnings - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <div class="section-label">ADMIN PORTAL</div>
+            <a th:href="@{/admin/dashboard}">Dashboard</a>
+            <a th:href="@{/admin/treatments}">Treatments</a>
+            <a th:href="@{/admin/doctors}">Doctors</a>
+            <a th:href="@{/admin/appointments}">Appointments</a>
+            <a th:href="@{/admin/payments}">Payments</a>
+            <a th:href="@{/admin/payments/reports}">Reports</a>
+            <a th:href="@{/admin/charges}">💰 Admin Charges</a>
+            <a th:href="@{/admin/earnings/all-doctors}" class="active">👨‍⚕️ Doctor Earnings</a>
+            <a th:href="@{/admin/financial-summary}">📊 Financial Summary</a>
+            <a th:href="@{/admin/admins}">Admin Accounts</a>
+
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>👨‍⚕️ All Doctors Earnings</h1>
+            <p>Overview of earnings for all doctors</p>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Error Display -->
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <!-- Doctors Earnings Table -->
+            <div class="card">
+                <h3>Doctors Earnings Summary</h3>
+
+                <div th:if="${#lists.isEmpty(doctors)}">
+                    <p style="text-align: center; padding: 2rem; color: #666;">No doctors found.</p>
+                </div>
+
+                <table th:unless="${#lists.isEmpty(doctors)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Specialization</th>
+                        <th>Consultation Fee</th>
+                        <th>Total Earnings</th>
+                        <th>Pending Settlement</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="doctor : ${doctors}">
+                        <td>
+                            <strong th:text="${doctor.fullName}">Dr. Name</strong><br>
+                            <small th:text="${doctor.username}" style="color: #666;">username</small>
+                        </td>
+                        <td th:text="${doctor.specialization}">Specialization</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(doctor.consultationFee, 1, 2)}">LKR 0.00</td>
+                        <td style="color: #2d6a4f; font-weight: bold;">
+                            LKR <span th:text="${#numbers.formatDecimal(doctorTotalEarnings[doctor.id], 1, 2)}">0.00</span>
+                        </td>
+                        <td style="color: #f4a261; font-weight: bold;">
+                            LKR <span th:text="${#numbers.formatDecimal(doctorPendingEarnings[doctor.id], 1, 2)}">0.00</span>
+                        </td>
+                        <td>
+                            <span class="badge" th:classappend="${doctor.isActive ? 'active' : 'inactive'}"
+                                  th:text="${doctor.isActive ? 'Active' : 'Inactive'}">Active</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/earnings/doctor/{id}(id=${doctor.id})}"
+                               class="btn btn-sm btn-primary">View Details</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Summary Info -->
+            <div class="card" style="background: #e8f5e9; margin-top: 2rem;">
+                <h3>💡 Understanding Earnings</h3>
+                <p><strong>Total Earnings:</strong> All earnings (pending + settled) for the doctor</p>
+                <p><strong>Pending Settlement:</strong> Amount not yet paid to the doctor</p>
+                <p><strong>Note:</strong> Doctor earnings = Consultation Fee + Treatment Fee (Admin charges excluded)</p>
+            </div>
+
+            <!-- Navigation -->
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <a th:href="@{/admin/charges}" class="btn btn-secondary">View Admin Charges</a>
+                <a th:href="@{/admin/financial-summary}" class="btn btn-secondary">Financial Summary</a>
+                <a th:href="@{/admin/dashboard}" class="btn">Back to Dashboard</a>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

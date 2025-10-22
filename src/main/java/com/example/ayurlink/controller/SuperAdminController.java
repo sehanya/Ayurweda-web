@@ -1,6 +1,6 @@
 package com.example.ayurlink.controller;
 
-import com.example.ayurlink.service.*;
+import com.example.ayurlink.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -60,9 +60,12 @@ public class SuperAdminController {
                 today.getYear(),
                 today.getMonthValue()
         );
+        Map<String, Object> systemOverview = paymentService.getSystemOverview();
 
         model.addAttribute("todayRevenue", dailySummary.get("totalRevenue"));
         model.addAttribute("monthRevenue", monthlySummary.get("totalRevenue"));
+        model.addAttribute("totalDoctors", systemOverview.get("totalDoctors"));
+        model.addAttribute("totalPatients", systemOverview.get("totalPatients"));
 
         return "superadmin/reports";
     }
