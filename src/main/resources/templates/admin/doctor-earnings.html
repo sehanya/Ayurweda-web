@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Earnings Details - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <div class="section-label">ADMIN PORTAL</div>
+            <a th:href="@{/admin/dashboard}">Dashboard</a>
+            <a th:href="@{/admin/treatments}">Treatments</a>
+            <a th:href="@{/admin/doctors}">Doctors</a>
+            <a th:href="@{/admin/appointments}">Appointments</a>
+            <a th:href="@{/admin/payments}">Payments</a>
+            <a th:href="@{/admin/payments/reports}">Reports</a>
+            <a th:href="@{/admin/charges}">💰 Admin Charges</a>
+            <a th:href="@{/admin/earnings/all-doctors}" class="active">👨‍⚕️ Doctor Earnings</a>
+            <a th:href="@{/admin/financial-summary}">📊 Financial Summary</a>
+            <a th:href="@{/admin/admins}">Admin Accounts</a>
+
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>👨‍⚕️ Doctor Earnings Details</h1>
+            <p th:text="'Dr. ' + ${doctor.fullName}">Doctor Name</p>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Error Display -->
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <!-- Doctor Info Card -->
+            <div class="card" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9);">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;">
+                    <div>
+                        <p style="color: #666; margin: 0; font-size: 0.875rem;">Specialization</p>
+                        <p style="margin: 0.25rem 0 0 0; font-weight: bold;" th:text="${doctor.specialization}">Specialization</p>
+                    </div>
+                    <div>
+                        <p style="color: #666; margin: 0; font-size: 0.875rem;">Consultation Fee</p>
+                        <p style="margin: 0.25rem 0 0 0; font-weight: bold;"
+                           th:text="'LKR ' + ${#numbers.formatDecimal(doctor.consultationFee, 1, 2)}">LKR 0.00</p>
+                    </div>
+                    <div>
+                        <p style="color: #666; margin: 0; font-size: 0.875rem;">Username</p>
+                        <p style="margin: 0.25rem 0 0 0; font-weight: bold;" th:text="${doctor.username}">username</p>
+                    </div>
+                    <div>
+                        <p style="color: #666; margin: 0; font-size: 0.875rem;">Status</p>
+                        <span class="badge" th:classappend="${doctor.isActive ? 'active' : 'inactive'}"
+                              th:text="${doctor.isActive ? 'Active' : 'Inactive'}">Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earnings Summary -->
+            <div class="card">
+                <h3>💰 Earnings Summary</h3>
+                <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #2d6a4f, #52b788); color: white;">
+                        <div class="stat-icon">💵</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(earningSummary.totalEarnings, 1, 2)}">LKR 0.00</h3>
+                            <p>Total Net Earnings</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f4a261, #e76f51); color: white;">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(earningSummary.pendingAmount, 1, 2)}">LKR 0.00</h3>
+                            <p>Pending Settlement</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #40916c, #74c69d); color: white;">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(earningSummary.settledAmount, 1, 2)}">LKR 0.00</h3>
+                            <p>Settled Amount</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <h3 th:text="${#lists.size(allEarnings)}">0</h3>
+                            <p>Total Transactions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Period Breakdown -->
+            <div class="card">
+                <h3>📈 Earnings by Period</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(earningSummary.todayEarnings, 1, 2)}">LKR 0.00</h3>
+                            <p>Today's Earnings</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📆</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(earningSummary.weekEarnings, 1, 2)}">LKR 0.00</h3>
+                            <p>This Week</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🗓️</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(earningSummary.monthEarnings, 1, 2)}">LKR 0.00</h3>
+                            <p>This Month</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Earnings Table -->
+            <div class="card">
+                <h3>💳 Detailed Earnings Breakdown</h3>
+
+                <div th:if="${#lists.isEmpty(allEarnings)}">
+                    <p style="text-align: center; padding: 2rem; color: #666;">No earning records found for this doctor.</p>
+                </div>
+
+                <table th:unless="${#lists.isEmpty(allEarnings)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Payment Date</th>
+                        <th>Transaction ID</th>
+                        <th>Patient</th>
+                        <th>Treatment</th>
+                        <th>Gross Amount</th>
+                        <th>Admin Charge</th>
+                        <th>Net Earning</th>
+                        <th>Status</th>
+                        <th>Settlement</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="earning : ${allEarnings}">
+                        <td th:text="${#temporals.format(earning.paymentDate, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
+                        <td th:text="${earning.payment.transactionId}">TXN001</td>
+                        <td th:text="${earning.payment.appointment.patient.fullName}">Patient</td>
+                        <td th:text="${earning.payment.appointment.treatment.name}">Treatment</td>
+                        <td style="color: #666;" th:text="'LKR ' + ${#numbers.formatDecimal(earning.grossAmount, 1, 2)}">LKR 0.00</td>
+                        <td style="color: #e76f51;" th:text="'- LKR ' + ${#numbers.formatDecimal(earning.adminCharge, 1, 2)}">LKR 0.00</td>
+                        <td style="color: #2d6a4f; font-weight: bold;">
+                            <span th:text="'LKR ' + ${#numbers.formatDecimal(earning.netEarning, 1, 2)}">LKR 0.00</span>
+                            <br>
+                            <small style="color: #666; font-weight: normal;">
+                                (Fee: <span th:text="${#numbers.formatDecimal(earning.doctorFee, 1, 2)}">0</span> +
+                                Treatment: <span th:text="${#numbers.formatDecimal(earning.treatmentFee, 1, 2)}">0</span>)
+                            </small>
+                        </td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${earning.status.name() == 'PENDING' ? 'pending' :
+                                                   earning.status.name() == 'SETTLED' ? 'confirmed' : 'cancelled'}"
+                                  th:text="${earning.status}">Status</span>
+                        </td>
+                        <td>
+                            <span th:if="${earning.settlementDate != null}">
+                                <small th:text="${#temporals.format(earning.settlementDate, 'yyyy-MM-dd')}">Date</small>
+                                <br>
+                                <small th:if="${earning.settlementReference != null}"
+                                       th:text="'Ref: ' + ${earning.settlementReference}"
+                                       style="color: #666;">Ref</small>
+                            </span>
+                            <span th:if="${earning.settlementDate == null}" style="color: #999;">
+                                Not settled
+                            </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr style="background: #f8f9fa; font-weight: bold;">
+                        <td colspan="6" style="text-align: right;">Total Net Earnings:</td>
+                        <td style="color: #2d6a4f; font-size: 1.1em;">
+                            LKR <span th:text="${#numbers.formatDecimal(earningSummary.totalEarnings, 1, 2)}">0.00</span>
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Info Box -->
+            <div class="card" style="background: #e8f5e9;">
+                <h3>ℹ️ Earnings Calculation</h3>
+                <p><strong>Gross Amount:</strong> Total payment received from patient</p>
+                <p><strong>Admin Charge:</strong> Fixed LKR 500 clinic charge (deducted)</p>
+                <p><strong>Net Earning:</strong> Consultation Fee + Treatment Fee (what doctor receives)</p>
+                <p><strong>Pending:</strong> Payment verified but not yet settled to doctor</p>
+                <p><strong>Settled:</strong> Amount paid to doctor</p>
+            </div>
+
+            <!-- Navigation -->
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <a th:href="@{/admin/earnings/all-doctors}" class="btn btn-secondary">← Back to All Doctors</a>
+                <a th:href="@{/admin/doctors/edit/{id}(id=${doctor.id})}" class="btn">Edit Doctor</a>
+                <button onclick="window.print()" class="btn">🖨️ Print Report</button>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

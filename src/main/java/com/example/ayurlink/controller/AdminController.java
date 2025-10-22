@@ -11,8 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import org.springframework.core.io.Resource;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,14 +27,35 @@ public class AdminController {
     private final AdminService adminService;
     private final AppointmentService appointmentService;
     private final PaymentService paymentService;
+    private final FileStorageService fileStorageService;
+    private final DoctorEarningService doctorEarningService;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         List<Treatment> treatments = treatmentService.getAllTreatments();
         List<Doctor> doctors = doctorService.getAllDoctors();
 
+        // Get all appointments
+        List<Appointment> allAppointments = appointmentService.getAllAppointments();
+
+        // Count today's appointments
+        LocalDate today = LocalDate.now();
+        long todayAppointmentCount = allAppointments.stream()
+                .filter(apt -> apt.getAppointmentDate().equals(today))
+                .count();
+
+        // Count total unique patients from appointments
+        long totalPatientCount = allAppointments.stream()
+                .map(Appointment::getPatient)
+                .filter(patient -> patient != null)
+                .map(Patient::getId)
+                .distinct()
+                .count();
+
         model.addAttribute("treatmentCount", treatments.size());
         model.addAttribute("doctorCount", doctors.size());
+        model.addAttribute("todayAppointmentCount", todayAppointmentCount);
+        model.addAttribute("totalPatientCount", totalPatientCount);
 
         return "admin/dashboard";
     }
@@ -235,44 +257,44 @@ public class AdminController {
     }
     @GetMapping("/payments/pending-verification")
     public String viewPendingVerification(Model model) {
-        List<Payment> payments = paymentService.getPendingVerificationPayments();
-        model.addAttribute("payments", payments);
-        return "admin/pending-verification";
+        try {
+            List<Payment> payments = paymentService.getPendingVerificationPayments();
+            model.addAttribute("payments", payments);
+            System.out.println("Found " + payments.size() + " pending verification payments");
+            return "admin/pending-verification";
+        } catch (Exception e) {
+            System.err.println("Error loading pending verifications: " + e.getMessage());
+            model.addAttribute("error", "Error loading pending verifications: " + e.getMessage());
+            return "admin/pending-verification";
+        }
     }
     @PostMapping("/payments/verify/{paymentId}")
-    public String verifyReceipt(@PathVariable Long paymentId,
+    public String verifyPayment(@PathVariable Long paymentId,
                                 @RequestParam boolean approved,
                                 @RequestParam(required = false) String reason,
                                 Authentication auth,
                                 RedirectAttributes redirectAttributes) {
         try {
             String verifiedBy = auth.getName();
-            paymentService.verifyReceiptUpload(paymentId, approved, verifiedBy, reason);
+            System.out.println("Admin verification called for payment ID: " + paymentId);
+
+            Payment payment = paymentService.verifyReceiptUpload(paymentId, approved, verifiedBy, reason);
 
             if (approved) {
-                redirectAttributes.addFlashAttribute("success", "Receipt verified successfully");
+                redirectAttributes.addFlashAttribute("success",
+                        "Payment verified successfully!");
             } else {
-                redirectAttributes.addFlashAttribute("success", "Receipt rejected");
+                redirectAttributes.addFlashAttribute("success",
+                        "Payment rejected. Reason: " + reason);
             }
         } catch (Exception e) {
+            System.err.println("Error during verification: " + e.getMessage());
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Verification failed: " + e.getMessage());
         }
-        return "redirect:/admin/pending-verification";
+        return "redirect:/admin/payments/pending-verification";
     }
-    @PostMapping("/payments/complete-cod/{paymentId}")
-    public String completeCODPayment(@PathVariable Long paymentId,
-                                     Authentication auth,
-                                     RedirectAttributes redirectAttributes) {
-        try {
-            String completedBy = auth.getName();
-            Payment payment = paymentService.completeCODPayment(paymentId, completedBy);
-            redirectAttributes.addFlashAttribute("success",
-                    "COD payment completed: LKR " + payment.getTotalAmount());
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-        }
-        return "redirect:/admin/payments";
-    }
+
     @PostMapping("/payments/refund/{paymentId}")
     public String processRefund(@PathVariable Long paymentId,
                                 @RequestParam String refundReason,
@@ -433,5 +455,159 @@ public class AdminController {
                         "attachment; filename=payments-" + startDate + "-to-" + endDate + ".csv")
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(csv);
+    }
+
+
+    @GetMapping("/payments/receipt/view/{paymentId}")
+    public ResponseEntity<Resource> viewUploadedReceipt(@PathVariable Long paymentId,
+                                                        Authentication auth) {
+        try {
+            Payment payment = paymentService.getPaymentById(paymentId)
+                    .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+            if (payment.getReceiptFileName() == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Resource resource = fileStorageService.loadFileAsResource(payment.getReceiptFileName());
+
+            String contentType = "application/octet-stream";
+            String fileName = payment.getReceiptFileName();
+            if (fileName.endsWith(".pdf")) {
+                contentType = "application/pdf";
+            } else if (fileName.matches(".*\\.(jpg|jpeg)$")) {
+                contentType = "image/jpeg";
+            } else if (fileName.endsWith(".png")) {
+                contentType = "image/png";
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                    .body(resource);
+
+        } catch (Exception e) {
+            System.err.println("Error loading receipt: " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+    // ==================== ADMIN CHARGES & EARNINGS MANAGEMENT ====================
+
+    @GetMapping("/charges")
+    public String viewAdminCharges(Model model) {
+        try {
+            List<AdminCharge> charges = doctorEarningService.getAllAdminCharges();
+            Double totalCharges = doctorEarningService.getTotalAdminCharges();
+
+            // Calculate monthly breakdown
+            LocalDate now = LocalDate.now();
+            LocalDate startOfMonth = now.withDayOfMonth(1);
+            Double monthlyCharges = doctorEarningService.getAdminChargesByDateRange(startOfMonth, now);
+
+            model.addAttribute("charges", charges);
+            model.addAttribute("totalCharges", totalCharges != null ? totalCharges : 0.0);
+            model.addAttribute("monthlyCharges", monthlyCharges != null ? monthlyCharges : 0.0);
+
+            return "admin/admin-charges";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error loading charges: " + e.getMessage());
+            return "admin/admin-charges";
+        }
+    }
+
+    @GetMapping("/earnings/doctor/{doctorId}")
+    public String viewDoctorEarnings(@PathVariable Long doctorId, Model model) {
+        try {
+            Doctor doctor = doctorService.getDoctorById(doctorId)
+                    .orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+            Map<String, Object> earningSummary = doctorEarningService.getDoctorEarningSummary(doctorId);
+            List<DoctorEarning> allEarnings = doctorEarningService.getDoctorEarnings(doctorId);
+
+            model.addAttribute("doctor", doctor);
+            model.addAttribute("earningSummary", earningSummary);
+            model.addAttribute("allEarnings", allEarnings);
+
+            return "admin/doctor-earnings";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error loading earnings: " + e.getMessage());
+            return "admin/doctor-earnings";
+        }
+    }
+
+    @GetMapping("/earnings/all-doctors")
+    public String viewAllDoctorEarnings(Model model) {
+        try {
+            List<Doctor> doctors = doctorService.getAllDoctors();
+            Map<Long, Double> doctorTotalEarnings = new HashMap<>();
+            Map<Long, Double> doctorPendingEarnings = new HashMap<>();
+
+            for (Doctor doctor : doctors) {
+                Double total = doctorEarningService.getTotalDoctorEarnings(doctor.getId());
+                Double pending = doctorEarningService.getPendingEarningsAmount(doctor.getId());
+
+                doctorTotalEarnings.put(doctor.getId(), total != null ? total : 0.0);
+                doctorPendingEarnings.put(doctor.getId(), pending != null ? pending : 0.0);
+            }
+
+            model.addAttribute("doctors", doctors);
+            model.addAttribute("doctorTotalEarnings", doctorTotalEarnings);
+            model.addAttribute("doctorPendingEarnings", doctorPendingEarnings);
+
+            return "admin/all-doctors-earnings";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error loading earnings: " + e.getMessage());
+            return "admin/all-doctors-earnings";
+        }
+    }
+
+    @PostMapping("/earnings/settle/{earningId}")
+    public String settleEarning(@PathVariable Long earningId,
+                                @RequestParam String settlementReference,
+                                @RequestParam(required = false) String notes,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            DoctorEarning earning = doctorEarningService.settleEarning(earningId, settlementReference, notes);
+            redirectAttributes.addFlashAttribute("success",
+                    "Earning settled successfully. Amount: LKR " + earning.getNetEarning());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error settling earning: " + e.getMessage());
+        }
+        return "redirect:/admin/earnings/all-doctors";
+    }
+
+    @GetMapping("/financial-summary")
+    public String viewFinancialSummary(Model model) {
+        try {
+            // Get payment statistics
+            Map<String, Object> paymentStats = paymentService.getPaymentStatistics();
+
+            // Get admin charges
+            Double totalAdminCharges = doctorEarningService.getTotalAdminCharges();
+
+            // Calculate total doctor earnings across all doctors
+            List<Doctor> doctors = doctorService.getAllDoctors();
+            Double totalDoctorEarnings = 0.0;
+            Double totalPendingSettlements = 0.0;
+
+            for (Doctor doctor : doctors) {
+                Double doctorTotal = doctorEarningService.getTotalDoctorEarnings(doctor.getId());
+                Double doctorPending = doctorEarningService.getPendingEarningsAmount(doctor.getId());
+
+                totalDoctorEarnings += (doctorTotal != null ? doctorTotal : 0.0);
+                totalPendingSettlements += (doctorPending != null ? doctorPending : 0.0);
+            }
+
+            model.addAttribute("paymentStats", paymentStats);
+            model.addAttribute("totalAdminCharges", totalAdminCharges != null ? totalAdminCharges : 0.0);
+            model.addAttribute("totalDoctorEarnings", totalDoctorEarnings);
+            model.addAttribute("totalPendingSettlements", totalPendingSettlements);
+            model.addAttribute("totalDoctors", doctors.size());
+
+            return "admin/financial-summary";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error loading financial summary: " + e.getMessage());
+            return "admin/financial-summary";
+        }
     }
 }

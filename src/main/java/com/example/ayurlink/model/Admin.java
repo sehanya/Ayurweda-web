@@ -21,7 +21,4 @@ public class Admin extends User {
     @Column(name = "is_super_admin")
     private Boolean isSuperAdmin = false;
 
-
-
-
 }
