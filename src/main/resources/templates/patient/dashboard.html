@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <!-- Patient Section -->
+            <div class="section-label">PATIENT PORTAL</div>
+            <a th:href="@{/patient/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/patient/book-appointment}">Book Appointment</a>
+            <a th:href="@{/patient/appointments}">My Appointments</a>
+            <a th:href="@{/patient/payments}">Payments</a>
+            <a th:href="@{/patient/profile}">Profile</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>Welcome, <span th:text="${patient.fullName}">Patient</span>!</h1>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info">
+                        <h3 th:text="${totalAppointments}">0</h3>
+                        <p>Total Appointments</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏰</div>
+                    <div class="stat-info">
+                        <h3 th:text="${upcomingAppointments}">0</h3>
+                        <p>Upcoming</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3 th:text="${completedAppointments}">0</h3>
+                        <p>Completed</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💳</div>
+                    <div class="stat-info">
+                        <h3 th:text="${pendingPayment}">0</h3>
+                        <p>Pending Payment</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Recent Appointments -->
+            <div class="card">
+                <h2>Recent Appointments</h2>
+                <div th:if="${#lists.isEmpty(appointments)}">
+                    <p style="text-align: center; padding: 2rem; color: #666;">No appointments yet. <a th:href="@{/patient/book-appointment}">Book your first appointment</a></p>
+                </div>
+                <table th:unless="${#lists.isEmpty(appointments)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Ticket #</th>
+                        <th>Doctor</th>
+                        <th>Treatment</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="appointment : ${appointments}" th:if="${appointmentStat.index < 5}">
+                        <td th:text="${appointment.ticketNumber}">APT001</td>
+                        <td th:text="${appointment.doctor.fullName}">Dr. Name</td>
+                        <td th:text="${appointment.treatment.name}">Treatment</td>
+                        <td th:text="${#temporals.format(appointment.appointmentDate, 'yyyy-MM-dd')}">2024-01-01</td>
+                        <td th:text="${#temporals.format(appointment.appointmentTime, 'HH:mm')}">10:00</td>
+                        <td>
+                                    <span class="badge"
+                                          th:classappend="${appointment.status.name() == 'CONFIRMED' ? 'success' :
+                                                          appointment.status.name() == 'SCHEDULED' ? 'pending' :
+                                                          appointment.status.name() == 'COMPLETED' ? 'success' : 'cancelled'}"
+                                          th:text="${appointment.status}">Status</span>
+                        </td>
+                        <td>
+                            <span th:if="${appointment.status.name() == 'CONFIRMED'}"
+                                  class="badge success">✅ Paid</span>
+                            <span th:if="${appointment.status.name() == 'PENDING'}"
+                                  class="badge warning">⏳ Verifying</span>
+                            <span th:if="${appointment.status.name() == 'SCHEDULED'}"
+                                  class="badge pending">💳 Pending</span>
+                            <span th:if="${appointment.status.name() == 'COMPLETED'}"
+                                  class="badge success">✅ Done</span>
+                            <span th:if="${appointment.status.name() == 'CANCELLED'}"
+                                  class="badge cancelled">❌ Cancelled</span>
+                        </td>
+                        <td>
+                            <a th:if="${appointment.status.name() == 'SCHEDULED'}"
+                               th:href="@{/payment/create/{id}(id=${appointment.id})}"
+                               class="btn btn-primary" style="font-size: 0.875rem; padding: 0.5rem 1rem;">
+                                💳 Pay Now
+                            </a>
+                            <a th:href="@{/patient/appointments}" class="btn-icon" title="View Details">👁️</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions-grid">
+                <a th:href="@{/patient/book-appointment}" class="action-card">
+                    <div class="action-icon">➕</div>
+                    <h3>Book New Appointment</h3>
+                    <p>Schedule your next consultation</p>
+                </a>
+                <a th:href="@{/patient/appointments}" class="action-card">
+                    <div class="action-icon">📅</div>
+                    <h3>View All Appointments</h3>
+                    <p>See your appointment history</p>
+                </a>
+                <a th:href="@{/patient/payments}" class="action-card">
+                    <div class="action-icon">💳</div>
+                    <h3>Payment History</h3>
+                    <p>View all your payments</p>
+                </a>
+                <a th:href="@{/patient/profile}" class="action-card">
+                    <div class="action-icon">👤</div>
+                    <h3>Update Profile</h3>
+                    <p>Manage your information</p>
+                </a>
+                <a th:href="@{/treatments}" class="action-card">
+                    <div class="action-icon">🌿</div>
+                    <h3>Browse Treatments</h3>
+                    <p>Explore our Ayurvedic treatments</p>
+                </a>
+                <a th:href="@{/contact}" class="action-card">
+                    <div class="action-icon">📞</div>
+                    <h3>Contact Us</h3>
+                    <p>Get in touch with support</p>
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
