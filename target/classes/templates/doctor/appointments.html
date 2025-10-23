@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor - Appointments</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <div class="section-label">DOCTOR PORTAL</div>
+            <a th:href="@{/doctor/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/doctor/appointments}">Appointments</a>
+            <a th:href="@{/doctor/availability}">Availability</a>
+            <a th:href="@{/doctor/earnings}">💰 Earnings</a>
+            <a th:href="@{/doctor/profile}">Profile</a>
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}"> Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>Appointments</h1>
+            <p th:text="'Dr. ' + ${doctor.fullName}">Doctor</p>
+        </header>
+
+        <!-- Flash messages -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <div class="dashboard-content">
+            <div class="card">
+                <h3>All Appointments</h3>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Ticket #</th>
+                        <th>Patient</th>
+                        <th>Treatment</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Contact</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="a : ${appointments}">
+                        <td th:text="${a.ticketNumber}">APT001</td>
+                        <td th:text="${a.patient.fullName}">Patient</td>
+                        <td th:text="${a.treatment.name}">Treatment</td>
+                        <td th:text="${#temporals.format(a.appointmentDate, 'yyyy-MM-dd')}">2024-01-01</td>
+                        <td th:text="${#temporals.format(a.appointmentTime, 'HH:mm')}">10:00</td>
+                        <td th:text="${a.patient.phone}">077xxxxxxx</td>
+                        <td>
+                            <span class="badge" th:classappend="${a.status.name().toLowerCase()}"
+                                  th:text="${a.status}">SCHEDULED</span>
+                        </td>
+                        <td>
+                            <!-- Complete button for scheduled appointments -->
+                            <form th:if="${a.status.name() == 'SCHEDULED'}"
+                                  th:action="@{'/doctor/appointments/' + ${a.id} + '/complete'}"
+                                  method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-success"
+                                        onclick="return confirm('Mark this appointment as completed?')">
+                                    Complete
+                                </button>
+                            </form>
+
+                            <!-- Cancel button for scheduled appointments -->
+                            <form th:if="${a.status.name() == 'SCHEDULED'}"
+                                  th:action="@{'/doctor/appointments/' + ${a.id} + '/cancel'}"
+                                  method="post" style="display: inline; margin-left: 5px;">
+                                <button type="submit" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                    Cancel
+                                </button>
+                            </form>
+
+                            <!-- View button for completed appointments -->
+                            <span th:if="${a.status.name() == 'COMPLETED'}" class="text-muted">
+                                Completed
+                            </span>
+
+                            <!-- Cancelled badge -->
+                            <span th:if="${a.status.name() == 'CANCELLED'}" class="text-muted">
+                                Cancelled
+                            </span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(appointments)}">
+                        <td colspan="8" style="text-align: center;">No appointments found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a th:href="@{/doctor/dashboard}" class="btn">Back to Dashboard</a>
+        </div>
+    </main>
+</div>
+</body>
+</html>

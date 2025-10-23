@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Payment Summary - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/superadmin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/superadmin/payments/daily}">Daily Summary</a>
+            <a th:href="@{/superadmin/payments/monthly}">Monthly Summary</a>
+            <a th:href="@{/superadmin/reports}">Reports</a>
+            <a th:href="@{/admin/dashboard}">Admin Features</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>Monthly Payment Summary</h1>
+
+            <!-- Month/Year Filter -->
+            <form th:action="@{/superadmin/payments/monthly}" method="get" class="date-filter">
+                <select name="month" th:value="${selectedMonth}">
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+                <input type="number" name="year" th:value="${selectedYear}" min="2020" max="2030" required>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Summary Cards -->
+            <div class="stats-grid">
+                <div class="stat-card highlight">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3 th:text="'LKR ' + ${summary.totalRevenue}">0.00</h3>
+                        <p>Total Revenue</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 th:text="${summary.totalPayments}">0</h3>
+                        <p>Total Payments</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔄</div>
+                    <div class="stat-info">
+                        <h3 th:text="'LKR ' + ${summary.totalRefunds}">0.00</h3>
+                        <p>Total Refunds</p>
+                    </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3 th:text="'LKR ' + ${summary.netRevenue}">0.00</h3>
+                        <p>Net Revenue</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Info -->
+            <div class="card">
+                <h2>Summary Information</h2>
+                <div class="summary-details">
+                    <p><strong>Period:</strong> <span th:text="${summary.month} + '/' + ${summary.year}">Month/Year</span></p>
+                    <p><strong>Total Transactions:</strong> <span th:text="${summary.totalPayments}">0</span></p>
+                    <p><strong>Gross Revenue:</strong> LKR <span th:text="${summary.totalRevenue}">0.00</span></p>
+                    <p><strong>Total Refunds:</strong> LKR <span th:text="${summary.totalRefunds}">0.00</span></p>
+                    <p><strong>Net Revenue:</strong> LKR <span th:text="${summary.netRevenue}">0.00</span></p>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

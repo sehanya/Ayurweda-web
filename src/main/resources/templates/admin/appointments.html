@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All Appointments - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/bootstrap.min.css}">
+
+    <link rel="stylesheet" type="text/css" th:href="@{css/animate.css}" >
+    <link rel="stylesheet" type="text/css" th:href="@{css/font-awesome.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/responsive.css}">
+
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script th:src="@{js/jquery.js}"></script>
+    <script th:src="@{js/script.js}"></script>
+
+    <script th:src="@{js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <!-- Admin Section -->
+            <div class="section-label">ADMIN PORTAL</div>
+            <a th:href="@{/admin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/admin/treatments}">Treatments</a>
+            <a th:href="@{/admin/doctors}">Doctors</a>
+            <a th:href="@{/admin/appointments}">Appointments</a>
+            <a th:href="@{/admin/payments}">Payments</a>
+            <a th:href="@{/admin/payments/reports}">Reports</a>
+            <a th:href="@{/admin/admins}">Admin Accounts</a>
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>All Appointments</h1>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="card">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Ticket #</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Treatment</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="appointment : ${appointments}">
+                        <td th:text="${appointment.ticketNumber}">APT001</td>
+                        <td th:text="${appointment.patient.fullName}">Patient</td>
+                        <td th:text="${appointment.doctor.fullName}">Doctor</td>
+                        <td th:text="${appointment.treatment.name}">Treatment</td>
+                        <td th:text="${#temporals.format(appointment.appointmentDate, 'yyyy-MM-dd')}">Date</td>
+                        <td th:text="${#temporals.format(appointment.appointmentTime, 'HH:mm')}">Time</td>
+                        <td>
+                                    <span class="badge" th:classappend="${appointment.status.name().toLowerCase()}"
+                                          th:text="${appointment.status}">Status</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

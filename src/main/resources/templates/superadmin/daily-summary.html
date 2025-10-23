@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Payment Summary - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/superadmin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/superadmin/payments/daily}">Daily Summary</a>
+            <a th:href="@{/superadmin/payments/monthly}">Monthly Summary</a>
+            <a th:href="@{/superadmin/reports}">Reports</a>
+            <a th:href="@{/admin/dashboard}">Admin Features</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>Daily Payment Summary</h1>
+
+            <!-- Date Filter -->
+            <form th:action="@{/superadmin/payments/daily}" method="get" class="date-filter">
+                <input type="date" name="date" th:value="${selectedDate}" required>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Summary Cards -->
+            <div class="stats-grid">
+                <div class="stat-card highlight">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3 th:text="'LKR ' + ${#numbers.formatDecimal(summary.totalRevenue, 1, 2)}">0.00</h3>
+                        <p>Total Revenue</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 th:text="${summary.totalPayments}">0</h3>
+                        <p>Total Transactions</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info">
+                        <h3 th:text="${#temporals.format(summary.date, 'dd MMM yyyy')}">Date</h3>
+                        <p>Selected Date</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Details Table -->
+            <div class="card">
+                <h2>Payment Details</h2>
+                <div th:if="${#lists.isEmpty(summary.payments)}">
+                    <p>No payments recorded for this date.</p>
+                </div>
+                <table th:unless="${#lists.isEmpty(summary.payments)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Treatment</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="payment : ${summary.payments}">
+                        <td th:text="${payment.transactionId}">TXN001</td>
+                        <td th:text="${payment.appointment.patient.fullName}">Patient</td>
+                        <td th:text="${payment.appointment.doctor.fullName}">Doctor</td>
+                        <td th:text="${payment.appointment.treatment.name}">Treatment</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(payment.totalAmount, 1, 2)}">5000</td>
+                        <td th:text="${payment.paymentMethod}">CARD</td>
+                        <td th:text="${#temporals.format(payment.paymentDate, 'HH:mm')}">10:00</td>
+                        <td>
+                                    <span class="badge" th:classappend="${payment.status.name().toLowerCase()}"
+                                          th:text="${payment.status}">Status</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - Ayur-Link</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" th:href="@{css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/animate.css}" >
+    <link rel="stylesheet" type="text/css" th:href="@{css/font-awesome.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/responsive.css}">
+
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css}">
+
+    <script th:src="@{js/jquery.js}"></script>
+    <script th:src="@{js/script.js}"></script>
+
+    <script th:src="@{js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>🌿 Ayur-Link Login</h2>
+
+        <div th:if="${param.error}" class="alert alert-error">
+            Invalid username or password
+        </div>
+        <div th:if="${param.logout}" class="alert alert-success">
+            You have been logged out successfully
+        </div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <form th:action="@{/perform-login}" method="post" class="auth-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required
+                       placeholder="Enter your username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required
+                       placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>New patient? <a th:href="@{/register}">Register here</a></p>
+            <p><a th:href="@{/}">Back to Home</a></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

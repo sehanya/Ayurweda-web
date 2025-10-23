@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .access-denied-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #dc3545, #f8d7da);
+            padding: 2rem;
+        }
+        .access-denied-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        .error-icon {
+            font-size: 5rem;
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+        .error-title {
+            font-size: 2rem;
+            color: #dc3545;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        .error-message {
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .role-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+        .role-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #2d6a4f;
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+<div class="access-denied-container">
+    <div class="access-denied-card">
+        <div class="error-icon">🚫</div>
+        <h1 class="error-title">Access Denied</h1>
+
+        <div class="error-message">
+            <p><strong>You don't have permission to access this page.</strong></p>
+            <p>This area is restricted to specific user roles only.</p>
+        </div>
+
+        <div class="role-info" th:if="${userRole != 'Guest'}">
+            <p>Your current role:</p>
+            <span class="role-badge" th:text="${userRole}">Role</span>
+        </div>
+
+        <div class="error-message">
+            <p>If you believe this is an error, please contact the system administrator.</p>
+        </div>
+
+        <div class="action-buttons">
+            <a th:href="${dashboardUrl}" class="btn btn-primary" th:if="${userRole != 'Guest'}">
+                ← Back to Dashboard
+            </a>
+            <a th:href="@{/}" class="btn btn-secondary">
+                🏠 Go to Home
+            </a>
+            <a th:href="@{/login}" class="btn btn-secondary" th:if="${userRole == 'Guest'}">
+                🔑 Login
+            </a>
+        </div>
+
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #ddd;">
+            <p style="color: #999; font-size: 0.9rem;">
+                Error Code: 403 Forbidden
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

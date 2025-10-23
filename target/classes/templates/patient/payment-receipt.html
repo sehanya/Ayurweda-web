@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Receipt - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .receipt-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        .receipt-card {
+            background: white;
+            border: 2px solid #2d6a4f;
+            border-radius: 10px;
+            padding: 3rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px solid #2d6a4f;
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+        .receipt-header h1 {
+            color: #2d6a4f;
+            margin-bottom: 0.5rem;
+        }
+        .success-icon {
+            font-size: 4rem;
+            color: #2d6a4f;
+            margin-bottom: 1rem;
+        }
+        .receipt-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .receipt-section h3 {
+            color: #2d6a4f;
+            margin-bottom: 1rem;
+        }
+        .info-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+        .info-value {
+            color: #333;
+        }
+        .breakdown-table {
+            width: 100%;
+            margin: 1rem 0;
+            border-collapse: collapse;
+        }
+        .breakdown-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #ddd;
+        }
+        .breakdown-table .total {
+            background-color: #d8f3dc;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .status-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-pending-verification {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+        .alert-info {
+            background-color: #cfe2ff;
+            border: 1px solid #9ec5fe;
+            color: #084298;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        @media print {
+            .sidebar, .action-buttons, .btn-logout, .alert-info {
+                display: none;
+            }
+            .dashboard-main {
+                margin-left: 0;
+            }
+            .receipt-card {
+                border: 1px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <!-- Patient Section -->
+            <div class="section-label">PATIENT PORTAL</div>
+            <a th:href="@{/patient/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/patient/book-appointment}">Book Appointment</a>
+            <a th:href="@{/patient/appointments}">My Appointments</a>
+            <a th:href="@{/patient/payments}">Payments</a>
+            <a th:href="@{/patient/profile}">Profile</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <div class="receipt-container">
+            <div class="receipt-card">
+                <!-- Header -->
+                <div class="receipt-header">
+                    <div class="success-icon" th:if="${payment.status.name() == 'SUCCESS'}">✅</div>
+                    <div class="success-icon" th:if="${payment.status.name() == 'PENDING_VERIFICATION'}" style="color: #ffc107;">⏳</div>
+                    <div class="success-icon" th:if="${payment.status.name() == 'PENDING'}" style="color: #ff9800;">💰</div>
+
+                    <h1 th:if="${payment.status.name() == 'SUCCESS'}">Payment Successful!</h1>
+                    <h1 th:if="${payment.status.name() == 'PENDING_VERIFICATION'}">Receipt Uploaded!</h1>
+                    <h1 th:if="${payment.status.name() == 'PENDING'}">Payment Scheduled!</h1>
+
+                    <p style="color: #666; font-size: 1.1rem;" th:if="${payment.status.name() == 'SUCCESS'}">
+                        Your payment has been processed successfully
+                    </p>
+                    <p style="color: #666; font-size: 1.1rem;" th:if="${payment.status.name() == 'PENDING_VERIFICATION'}">
+                        Your receipt is being verified by our team
+                    </p>
+                    <p style="color: #666; font-size: 1.1rem;" th:if="${payment.status.name() == 'PENDING'}">
+                        Payment will be collected at appointment time
+                    </p>
+                </div>
+
+                <!-- Alert for pending verification -->
+                <div class="alert-info" th:if="${payment.status.name() == 'PENDING_VERIFICATION'}">
+                    <strong>⏳ Verification Pending</strong>
+                    <p>Your payment receipt is being reviewed by our admin team. You will receive a confirmation within 24 hours.
+                        Your appointment will be confirmed once the payment is verified.</p>
+                </div>
+
+                <!-- Alert for COD -->
+                <div class="alert-info" th:if="${payment.paymentMethod.name() == 'COD'}">
+                    <strong>💰 Cash on Delivery</strong>
+                    <p>Please bring the exact amount when you visit for your appointment.
+                        Payment must be completed before treatment begins.</p>
+                </div>
+
+                <!-- Transaction Information -->
+                <div class="receipt-section">
+                    <h3>📋 Transaction Details</h3>
+                    <div class="info-row">
+                        <span class="info-label">Receipt Number:</span>
+                        <span class="info-value" th:text="${payment.receiptNumber}">RCP123456789</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Transaction ID:</span>
+                        <span class="info-value" th:text="${payment.transactionId}">TXN123456789</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Payment Date:</span>
+                        <span class="info-value" th:text="${#temporals.format(payment.paymentDate, 'yyyy-MM-dd HH:mm:ss')}">Date</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Payment Method:</span>
+                        <span class="info-value">
+                                <span th:if="${payment.paymentMethod.name() == 'CASH'}">💵 Cash Payment</span>
+                                <span th:if="${payment.paymentMethod.name() == 'RECEIPT_UPLOAD'}">📄 Bank Transfer (Receipt Uploaded)</span>
+                                <span th:if="${payment.paymentMethod.name() == 'COD'}">💰 Cash on Delivery</span>
+                            </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Status:</span>
+                        <span class="status-badge"
+                              th:classappend="${payment.status.name() == 'SUCCESS' ? 'status-success' :
+                                                   payment.status.name() == 'PENDING_VERIFICATION' ? 'status-pending-verification' :
+                                                   'status-pending'}"
+                              th:text="${payment.status.name() == 'PENDING_VERIFICATION' ? 'Pending Verification' : payment.status}">Status</span>
+                    </div>
+
+                    <!-- Show uploaded receipt info -->
+                    <div class="info-row" th:if="${payment.receiptFileName != null}">
+                        <span class="info-label">Uploaded Receipt:</span>
+                        <span class="info-value">
+                                <a th:href="@{/payment/receipt/download/{id}(id=${payment.id})}"
+                                   style="color: #2d6a4f; text-decoration: underline;">
+                                    📎 Download Receipt
+                                </a>
+                            </span>
+                    </div>
+                </div>
+
+                <!-- Appointment Information -->
+                <div class="receipt-section">
+                    <h3>📅 Appointment Details</h3>
+                    <div class="info-row">
+                        <span class="info-label">Ticket Number:</span>
+                        <span class="info-value" th:text="${payment.appointment.ticketNumber}">APT001</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Patient Name:</span>
+                        <span class="info-value" th:text="${receipt.patientName}">Patient Name</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Patient NIC:</span>
+                        <span class="info-value" th:text="${receipt.patientNIC}">NIC</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Doctor:</span>
+                        <span class="info-value" th:text="${receipt.doctorName}">Dr. Name</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Treatment:</span>
+                        <span class="info-value" th:text="${receipt.treatmentName}">Treatment Name</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Appointment Date:</span>
+                        <span class="info-value" th:text="${#temporals.format(receipt.appointmentDate, 'yyyy-MM-dd')}">Date</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Appointment Time:</span>
+                        <span class="info-value" th:text="${#temporals.format(receipt.appointmentTime, 'HH:mm')}">Time</span>
+                    </div>
+                </div>
+
+                <!-- Payment Breakdown -->
+                <div class="receipt-section">
+                    <h3>💰 Payment Breakdown</h3>
+                    <table class="breakdown-table">
+                        <tr>
+                            <td>Doctor Consultation Fee</td>
+                            <td style="text-align: right;" th:text="'LKR ' + ${#numbers.formatDecimal(payment.doctorFee, 1, 2)}">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Treatment Cost</td>
+                            <td style="text-align: right;" th:text="'LKR ' + ${#numbers.formatDecimal(payment.treatmentFee, 1, 2)}">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Clinic Charges</td>
+                            <td style="text-align: right;" th:text="'LKR ' + ${#numbers.formatDecimal(payment.clinicCharges, 1, 2)}">0.00</td>
+                        </tr>
+                        <tr class="total">
+                            <td><strong>Total Amount Paid</strong></td>
+                            <td style="text-align: right;"><strong th:text="'LKR ' + ${#numbers.formatDecimal(payment.totalAmount, 1, 2)}">0.00</strong></td>
+                        </tr>
+                    </table>
+                </div>
+
+
+                <!-- Notes (if any) -->
+                <div class="receipt-section" th:if="${payment.paymentNotes != null && !payment.paymentNotes.isEmpty()}">
+                    <h3>📝 Payment Notes</h3>
+                    <p th:text="${payment.paymentNotes}" style="color: #666;">Payment notes</p>
+                </div>
+
+                <!-- Footer Message -->
+                <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #ddd;">
+                    <p style="color: #666; margin-bottom: 0.5rem;">Thank you for choosing Ayur-Link!</p>
+                    <p style="color: #999; font-size: 0.9rem;">
+                        Ayur-Link Ayurvedic Clinic | Contact: +94 77 123 4567 | Email: info@ayurlink.com
+                    </p>
+                    <p style="color: #999; font-size: 0.85rem; margin-top: 0.5rem;">
+                        This is a computer-generated receipt and does not require a signature.
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button onclick="window.print()" class="btn btn-primary">🖨️ Print Receipt</button>
+                    <a th:href="@{/patient/payments}" class="btn btn-secondary">View All Payments</a>
+                    <a th:href="@{/patient/dashboard}" class="btn btn-secondary">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Treatment Analysis Report - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/superadmin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/superadmin/payments/daily}">Daily Summary</a>
+            <a th:href="@{/superadmin/payments/monthly}">Monthly Summary</a>
+            <a th:href="@{/superadmin/reports}">Reports</a>
+            <a th:href="@{/admin/dashboard}">Admin Features</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>🌿 Treatment Analysis Report</h1>
+            <p>Most popular treatments and revenue breakdown</p>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Summary Card -->
+            <div class="stats-grid">
+                <div class="stat-card highlight">
+                    <div class="stat-icon">🌿</div>
+                    <div class="stat-info">
+                        <h3 th:text="${data.totalTreatments}">0</h3>
+                        <p>Treatment Types</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 th:text="${data.treatmentStats.size()}">0</h3>
+                        <p>Treatments with Bookings</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treatment Analysis Table -->
+            <div class="card">
+                <h2>Treatment Performance Details</h2>
+                <div th:if="${#maps.isEmpty(data.treatmentStats)}">
+                    <p>No treatment data available yet.</p>
+                </div>
+                <table th:unless="${#maps.isEmpty(data.treatmentStats)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Treatment Name</th>
+                        <th>Total Bookings</th>
+                        <th>Total Revenue</th>
+                        <th>Average Revenue</th>
+                        <th>Popularity</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="entry : ${data.treatmentStats}">
+                        <td th:text="${entry.key}">Treatment Name</td>
+                        <td th:text="${entry.value.count}">0</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(entry.value.totalRevenue, 1, 2)}">0.00</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(entry.value.averageRevenue, 1, 2)}">0.00</td>
+                        <td>
+                            <div style="background: #e0e0e0; border-radius: 10px; height: 20px; overflow: hidden;">
+                                <div th:style="|width: ${(entry.value.count * 100.0 / 10)}%; background: linear-gradient(90deg, #2d6a4f, #52b788); height: 100%;|"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Back Button -->
+            <div style="margin-top: 2rem;">
+                <a th:href="@{/superadmin/reports}" class="btn btn-secondary">← Back to Reports</a>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

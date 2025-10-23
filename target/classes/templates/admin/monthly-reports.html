@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Monthly Reports - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .report-header {
+            background: linear-gradient(135deg, #2d6a4f, #52b788);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .month-selector {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+        .month-selector select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #333;
+        }
+        .report-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-box.highlight {
+            background: linear-gradient(135deg, #2d6a4f, #52b788);
+            color: white;
+        }
+        .stat-box.success {
+            background: linear-gradient(135deg, #40916c, #74c69d);
+            color: white;
+        }
+        .stat-box.warning {
+            background: linear-gradient(135deg, #ff9800, #ffc107);
+            color: white;
+        }
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.875rem;
+        }
+        .stat-box.highlight .stat-label,
+        .stat-box.success .stat-label,
+        .stat-box.warning .stat-label {
+            color: rgba(255,255,255,0.9);
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <!-- Admin Section -->
+            <div class="section-label">ADMIN PORTAL</div>
+            <a th:href="@{/admin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/admin/treatments}">Treatments</a>
+            <a th:href="@{/admin/doctors}">Doctors</a>
+            <a th:href="@{/admin/appointments}">Appointments</a>
+            <a th:href="@{/admin/payments}">Payments</a>
+            <a th:href="@{/admin/payments/reports}">Reports</a>
+            <a th:href="@{/admin/admins}">Admin Accounts</a>
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <div class="report-header">
+            <div>
+                <h1 style="margin: 0;">📈 Monthly Reports</h1>
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Comprehensive monthly performance analysis</p>
+            </div>
+            <form th:action="@{/admin/payments/reports/monthly}" method="get" class="month-selector">
+                <select name="month">
+                    <option th:each="i : ${#numbers.sequence(1, 12)}"
+                            th:value="${i}"
+                            th:text="${#temporals.monthName(#temporals.create(2024, i, 1))}"
+                            th:selected="${i == selectedMonth}">Month</option>
+                </select>
+                <select name="year">
+                    <option th:each="y : ${#numbers.sequence(2020, 2025)}"
+                            th:value="${y}"
+                            th:text="${y}"
+                            th:selected="${y == selectedYear}">Year</option>
+                </select>
+                <button type="submit" class="btn btn-primary">View Report</button>
+            </form>
+        </div>
+
+        <div class="dashboard-content">
+
+            <!-- Summary for Month -->
+            <h3 style="margin-bottom: 1.5rem;">
+                Summary for <span th:text="${#temporals.monthName(#temporals.create(selectedYear, selectedMonth, 1))} + ' ' + ${selectedYear}">Month Year</span>
+            </h3>
+
+            <!-- Key Statistics -->
+            <div class="report-stats">
+                <div class="stat-box highlight">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-value" th:text="'LKR ' + ${#numbers.formatDecimal(summary.totalRevenue, 1, 'COMMA', 2, 'POINT')}">0.00</div>
+                    <div class="stat-label">Gross Revenue</div>
+                </div>
+                <div class="stat-box warning">
+                    <div class="stat-icon">↩️</div>
+                    <div class="stat-value" th:text="'LKR ' + ${#numbers.formatDecimal(summary.totalRefunds, 1, 'COMMA', 2, 'POINT')}">0.00</div>
+                    <div class="stat-label">Total Refunds</div>
+                </div>
+                <div class="stat-box success">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" th:text="'LKR ' + ${#numbers.formatDecimal(summary.netRevenue, 1, 'COMMA', 2, 'POINT')}">0.00</div>
+                    <div class="stat-label">Net Revenue</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value" th:text="${summary.totalPayments}">0</div>
+                    <div class="stat-label">Total Payments</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-value" th:text="'LKR ' + ${#numbers.formatDecimal(summary.averagePayment != null ? summary.averagePayment : 0, 1, 2)}">0.00</div>
+                    <div class="stat-label">Average Payment</div>
+                </div>
+            </div>
+
+            <!-- Payment Method Analysis -->
+            <div class="summary-card">
+                <h3>💳 Payment Method Distribution</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-top: 1.5rem;">
+                    <div style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 8px;">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">💵</div>
+                        <div style="font-size: 1.75rem; font-weight: bold; color: #2d6a4f;">
+                            <span th:text="${summary.cashPayments}">0</span>
+                        </div>
+                        <div style="color: #666; margin-top: 0.5rem;">Cash Payments</div>
+                    </div>
+                    <div style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 8px;">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">📄</div>
+                        <div style="font-size: 1.75rem; font-weight: bold; color: #2d6a4f;">
+                            <span th:text="${summary.receiptPayments}">0</span>
+                        </div>
+                        <div style="color: #666; margin-top: 0.5rem;">Receipt Uploads</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Trends -->
+            <div class="card">
+                <h3>📊 Performance Metrics</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+                        <div style="font-size: 0.875rem; color: #666; margin-bottom: 0.5rem;">Success Rate</div>
+                        <div style="font-size: 2rem; font-weight: bold; color: #2d6a4f;">
+                            <span th:text="${summary.totalPayments > 0 ? #numbers.formatDecimal((summary.totalPayments - summary.refunded) * 100.0 / summary.totalPayments, 1, 2) : 0}">0</span>%
+                        </div>
+                    </div>
+                    <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+                        <div style="font-size: 0.875rem; color: #666; margin-bottom: 0.5rem;">Refund Rate</div>
+                        <div style="font-size: 2rem; font-weight: bold; color: #d62828;">
+                            <span th:text="${summary.totalRevenue > 0 ? #numbers.formatDecimal(summary.totalRefunds * 100.0 / summary.totalRevenue, 1, 2) : 0}">0</span>%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Options -->
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button onclick="window.print()" class="btn btn-primary">🖨️ Print Report</button>
+                <a th:href="@{/admin/payments/reports/export-monthly(year=${selectedYear},month=${selectedMonth})}"
+                   class="btn btn-secondary">📥 Export to CSV</a>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

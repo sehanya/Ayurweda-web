@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - Ayur-Link</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/animate.css}" >
+    <link rel="stylesheet" type="text/css" th:href="@{css/font-awesome.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/responsive.css}">
+
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css}">
+
+    <script th:src="@{js/jquery.js}"></script>
+    <script th:src="@{js/script.js}"></script>
+
+    <script th:src="@{js/bootstrap.min.js}"></script>
+    <style>
+
+
+        /* Contact Grid */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        /* Contact Cards */
+        .contact-cards {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .contact-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            align-items: start;
+            gap: 1.5rem;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2d6a4f, #52b788);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .contact-info h3 {
+            color: #2d6a4f;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .contact-info p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .contact-info a {
+            color: #2d6a4f;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+
+        /* Contact Form */
+        .contact-form {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2d6a4f;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #2d6a4f, #40916c);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(45, 106, 79, 0.3);
+        }
+
+        /* Map Section */
+        .map-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-top: 3rem;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+            color: #2d6a4f;
+        }
+
+        .map-placeholder .icon {
+            font-size: 4rem;
+        }
+
+        /* Hours Section */
+        .hours-section {
+            background: linear-gradient(135deg, #2d6a4f, #40916c);
+            color: white;
+            padding: 3rem;
+            border-radius: 15px;
+            margin-top: 3rem;
+        }
+
+        .hours-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .hours-card {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hours-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 0.5rem;
+        }
+
+        .hours-card p {
+            margin: 0.5rem 0;
+            opacity: 0.95;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            margin-top: 4rem;
+        }
+
+        .faq-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #2d6a4f;
+            font-size: 1.1rem;
+        }
+
+        .faq-answer {
+            margin-top: 1rem;
+            color: #666;
+            line-height: 1.8;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        .faq-toggle {
+            font-size: 1.5rem;
+            color: #2d6a4f;
+            transition: transform 0.3s;
+        }
+
+        .faq-item.active .faq-toggle {
+            transform: rotate(45deg);
+        }
+
+
+        /* Alert Messages */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-form {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a th:href="@{/}" class="nav-brand">🌿 AyurLink</a>
+
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a th:href="@{/}">Home</a></li>
+                <li><a th:href="@{/treatments}">Treatments</a></li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li><a th:href="@{/contact}">Contact</a></li>
+
+
+                <li sec:authorize="hasRole('PATIENT')">
+                    <a th:href="@{/patient/dashboard}">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('DOCTOR')">
+                    <a th:href="@{/doctor/dashboard}">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/admin/dashboard}">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('SUPER_ADMIN')">
+                    <a th:href="@{/superadmin/dashboard}">Dashboard</a>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="nav-right">
+            <ul class="nav-buttons">
+                <li sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}" class="btn-primary">Login</a>
+                </li>
+                <li sec:authorize="!isAuthenticated()"><a th:href="@{/register}" class="btn-register">Register</a></li>
+                <li sec:authorize="isAuthenticated()">
+
+                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                        <button type="submit" class="btn-logout">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+<section class="hero contact-hero">
+    <div class="hero-content">
+        <h1>Get In Touch</h1>
+        <p>We're here to answer your questions and guide you on your wellness journey</p>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container" style="padding: 80px 40px;">
+
+    <!-- Success/Error Messages -->
+    <div th:if="${success}" class="alert alert-success">
+        <span>✓</span>
+        <span th:text="${success}">Message sent successfully!</span>
+    </div>
+    <div th:if="${error}" class="alert alert-error">
+        <span>✗</span>
+        <span th:text="${error}">Error sending message.</span>
+    </div>
+
+    <!-- Contact Information & Form Grid -->
+    <div class="contact-grid">
+        <!-- Contact Cards Column -->
+        <div class="contact-cards-wrapper">
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="contact-info">
+                    <h3>Visit Us</h3>
+                    <p>153/5, Miriswaththa Road<br>Gampaha<br>Sri Lanka</p>
+                </div>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <div class="contact-info">
+                    <h3>Call Us</h3>
+                    <p>
+                        <strong>Main:</strong> <a href="tel:+94112454657">+94 11 245 4657</a><br>
+                        <strong>Mobile:</strong> <a href="tel:+94732565576">+94 73 256 5576</a><br>
+                        <strong>Emergency:</strong> <a href="tel:+94777654321">+94 77 765 4321</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="contact-info">
+                    <h3>Email Us</h3>
+                    <p>
+                        <strong>General:</strong> <a href="mailto:ayurwedainfo@gmail.com">ayurwedainfo@gmail.com</a><br>
+                        <strong>Appointments:</strong> <a href="mailto:appointments@ayurlink.com">appointments@ayurlink.com</a><br>
+                        <strong>Support:</strong> <a href="mailto:support@ayurlink.com">support@ayurlink.com</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="contact-info">
+                    <h3>Working Hours</h3>
+                    <p>
+                        <strong>Mon - Fri:</strong> 8:00 AM - 8:00 PM<br>
+                        <strong>Saturday:</strong> 9:00 AM - 6:00 PM<br>
+                        <strong>Sunday:</strong> 10:00 AM - 4:00 PM
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form Column -->
+        <div class="card contact-form-card">
+            <h2>Send Us a Message</h2>
+
+            <form th:action="@{/contact/send}" method="post" class="contact-form-modern">
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="+94 XX XXX XXXX">
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Subject *</label>
+                    <select id="subject" name="subject" required>
+                        <option value="">Select a subject</option>
+                        <option value="appointment">Appointment Inquiry</option>
+                        <option value="treatment">Treatment Information</option>
+                        <option value="general">General Question</option>
+                        <option value="feedback">Feedback</option>
+                        <option value="complaint">Complaint</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message *</label>
+                    <textarea id="message" name="message" required placeholder="How can we help you?" rows="5"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+
+                <p class="form-note">
+                    We typically respond within 24 hours during business days.
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Map Section -->
+    <div class="card map-section-card">
+        <h2>Find Us on the Map</h2>
+        <div class="map-container">
+            <div class="map-placeholder">
+                <i class="fas fa-map-marked-alt map-icon"></i>
+                <h3>153/5 Miriswaththa Road, Gampaha</h3>
+                <p>Interactive map integration available</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Hours Detailed -->
+    <div class="card hours-section-card">
+        <h2 class="text-center">Operating Hours</h2>
+        <p class="text-center section-subtitle">We're here when you need us most</p>
+
+        <div class="hours-grid">
+            <div class="hours-card">
+                <div class="hours-icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <h4>Consultation Hours</h4>
+                <div class="hours-list">
+                    <div class="hours-item">
+                        <span class="day">Monday - Friday</span>
+                        <span class="time">8:00 AM - 8:00 PM</span>
+                    </div>
+                    <div class="hours-item">
+                        <span class="day">Saturday</span>
+                        <span class="time">9:00 AM - 6:00 PM</span>
+                    </div>
+                    <div class="hours-item">
+                        <span class="day">Sunday</span>
+                        <span class="time">10:00 AM - 4:00 PM</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hours-card">
+                <div class="hours-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <h4>Treatment Hours</h4>
+                <div class="hours-list">
+                    <div class="hours-item">
+                        <span class="day">Monday - Friday</span>
+                        <span class="time">9:00 AM - 7:00 PM</span>
+                    </div>
+                    <div class="hours-item">
+                        <span class="day">Saturday</span>
+                        <span class="time">10:00 AM - 5:00 PM</span>
+                    </div>
+                    <div class="hours-item">
+                        <span class="day">Sunday</span>
+                        <span class="time">By appointment</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hours-card emergency-card">
+                <div class="hours-icon">
+                    <i class="fas fa-ambulance"></i>
+                </div>
+                <h4>Emergency Contact</h4>
+                <div class="emergency-info">
+                    <p class="emergency-label">24/7 Helpline</p>
+                    <p class="emergency-number">+94 77 765 4321</p>
+                    <p class="emergency-note">For urgent medical concerns</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section-wrapper">
+        <h2 class="text-center section-title">Frequently Asked Questions</h2>
+        <p class="text-center section-subtitle">Quick answers to common questions about our services</p>
+
+        <div class="faq-container">
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-question">
+                    <span><i class="fas fa-calendar-check"></i> How do I book an appointment?</span>
+                    <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+                </div>
+                <div class="faq-answer">
+                    You can book an appointment online through our website by logging into your account and selecting your preferred treatment, doctor, and time slot. Alternatively, you can call us at +94 11 245 4657 during business hours.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-question">
+                    <span><i class="fas fa-file-medical"></i> What should I bring to my first consultation?</span>
+                    <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+                </div>
+                <div class="faq-answer">
+                    Please bring any previous medical records, a list of current medications, your NIC or identification, and arrive 15 minutes early to complete any necessary paperwork.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-question">
+                    <span><i class="fas fa-shield-alt"></i> Do you accept insurance?</span>
+                    <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+                </div>
+                <div class="faq-answer">
+                    We work with most major insurance providers. Please contact your insurance company to verify coverage for Ayurvedic treatments, or call our office for assistance with insurance-related questions.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-question">
+                    <span><i class="fas fa-redo-alt"></i> Can I cancel or reschedule my appointment?</span>
+                    <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+                </div>
+                <div class="faq-answer">
+                    Yes, you can cancel or reschedule your appointment through your patient dashboard or by calling us. We require at least 24 hours notice for cancellations to avoid cancellation fees.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-question">
+                    <span><i class="fas fa-language"></i> Are consultations available in other languages?</span>
+                    <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+                </div>
+                <div class="faq-answer">
+                    Yes, our doctors are fluent in Sinhala, Tamil, and English. You can specify your language preference when booking your appointment.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-question">
+                    <span><i class="fas fa-credit-card"></i> What payment methods do you accept?</span>
+                    <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+                </div>
+                <div class="faq-answer">
+                    We accept cash, all major credit cards, bank transfers, and online payment methods. Payment can be made at the time of consultation or online through our secure payment portal.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<section class="available-on">
+    <div class="container">
+        <div class="row">
+            <!-- Contact Info -->
+            <div class="col-md-8">
+                <div class="available-title wow fadeInLeft">
+                    <div class="col-md-4">
+                        <h2>Our Location</h2>
+                        <p>
+                            153/5,<br>
+                            Miriswaththa road,<br>
+                            Gampaha,<br>
+                            Sri Lanka
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <h2>Quick Contact</h2>
+                        <p>
+                            01112454657<br>
+                            0732565576<br>
+                            <a href="mailto:ayurwedainfo@gmail.com">ayurwedainfo@gmail.com</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- App Links -->
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <a th:href="@{/ios-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-apple"></i>
+                                <div class="available-on-inner">
+                                    <h2>IOS</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4">
+                        <a th:href="@{/android-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-android"></i>
+                                <div class="available-on-inner">
+                                    <h2>Android</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4">
+                        <a th:href="@{/windows-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-windows"></i>
+                                <div class="available-on-inner">
+                                    <h2>Windows</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Social Icons -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="social-icons">
+
+                    <ul>
+                        <li><a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                        <li><a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="copyright">
+                        <p>copyright &copy;2025 <a th:href="@{/}">Ayurweda</a></p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="scroll-up">
+                        <a th:href="@{/}"><i class="fa fa-angle-up"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</section>
+
+
+<script>
+    function toggleFaq(element) {
+        // Close other FAQs
+        document.querySelectorAll('.faq-item').forEach(item => {
+            if (item !== element && item.classList.contains('active')) {
+                item.classList.remove('active');
+            }
+        });
+
+        // Toggle current FAQ
+        element.classList.toggle('active');
+
+        // Update icon
+        const icon = element.querySelector('.faq-toggle i');
+        if (element.classList.contains('active')) {
+            icon.classList.remove('fa-plus');
+            icon.classList.add('fa-minus');
+        } else {
+            icon.classList.remove('fa-minus');
+            icon.classList.add('fa-plus');
+        }
+    }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

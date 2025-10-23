@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+     <meta charset="UTF-8">
+    <title>Home - Ayur-Link</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" th:href="@{css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/animate.css}" >
+    <link rel="stylesheet" type="text/css" th:href="@{css/font-awesome.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/responsive.css}">
+
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css}">
+
+    <script th:src="@{js/jquery.js}"></script>
+    <script th:src="@{js/script.js}"></script>
+
+    <script th:src="@{js/bootstrap.min.js}"></script>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a th:href="@{/}" class="nav-brand">🌿 AyurLink</a>
+
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a th:href="@{/}">Home</a></li>
+                <li><a th:href="@{/treatments}">Treatments</a></li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li><a th:href="@{/contact}">Contact</a></li>
+
+
+                <li sec:authorize="hasRole('PATIENT')">
+                    <a th:href="@{/patient/dashboard}">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('DOCTOR')">
+                    <a th:href="@{/doctor/dashboard}">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/admin/dashboard}">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('SUPER_ADMIN')">
+                    <a th:href="@{/superadmin/dashboard}">Dashboard</a>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="nav-right">
+            <ul class="nav-buttons">
+                <li sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}" class="btn-primary">Login</a>
+                </li>
+                <li sec:authorize="!isAuthenticated()"><a th:href="@{/register}" class="btn-register">Register</a></li>
+                <li sec:authorize="isAuthenticated()">
+
+                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                        <button type="submit" class="btn-logout">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="about-hero">
+    <div class="container">
+    <h1>🌿 About AyurLink</h1>
+        <p>Bridging Ancient Wisdom with Modern Healthcare for Your Holistic Wellness</p>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Mission & Vision -->
+    <section class="section">
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">🎯</div>
+                <h3>Our Mission</h3>
+                <p>To provide accessible, authentic Ayurvedic healthcare that combines traditional wisdom with modern convenience. We strive to make holistic wellness a reality for everyone through personalized treatments and compassionate care.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">👁️</div>
+                <h3>Our Vision</h3>
+                <p>To be the leading digital platform for Ayurvedic healthcare, creating a world where natural healing is the first choice for wellness. We envision a future where technology and tradition work together seamlessly.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Description -->
+    <section class="section">
+        <h2 class="section-title">Welcome to AyurLink</h2>
+        <p class="section-subtitle">
+            AyurLink is a comprehensive Ayurvedic clinic management system designed to bring the ancient healing practices of Ayurveda into the digital age. Founded with a passion for holistic wellness, we connect patients with experienced Ayurvedic practitioners, making traditional treatments more accessible than ever before.
+        </p>
+        <div class="card">
+            <p style="font-size: 1.1rem; line-height: 1.8;">
+                Our platform serves as a bridge between time-tested Ayurvedic wisdom and modern healthcare technology. Whether you're seeking relief from chronic conditions, looking to improve your overall well-being, or exploring preventive care, AyurLink provides a seamless experience from booking to treatment and beyond.
+            </p>
+        </div>
+    </section>
+
+    <!-- Core Values -->
+    <section class="section">
+        <h2 class="section-title">Our Core Values</h2>
+        <div class="values-grid">
+            <div class="value-item">
+                <div class="value-icon">🌱</div>
+                <h4>Authenticity</h4>
+                <p>We honor traditional Ayurvedic principles and practices</p>
+            </div>
+            <div class="value-item">
+                <div class="value-icon">❤️</div>
+                <h4>Compassion</h4>
+                <p>Patient care is at the heart of everything we do</p>
+            </div>
+            <div class="value-item">
+                <div class="value-icon">⚖️</div>
+                <h4>Balance</h4>
+                <p>Promoting harmony between mind, body, and spirit</p>
+            </div>
+            <div class="value-item">
+                <div class="value-icon">🔬</div>
+                <h4>Innovation</h4>
+                <p>Embracing technology to enhance traditional healing</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>500+</h3>
+                <p>Happy Patients</p>
+            </div>
+            <div class="stat-item">
+                <h3>50+</h3>
+                <p>Expert Doctors</p>
+            </div>
+            <div class="stat-item">
+                <h3>20+</h3>
+                <p>Treatments Available</p>
+            </div>
+            <div class="stat-item">
+                <h3>98%</h3>
+                <p>Satisfaction Rate</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- What We Offer -->
+    <section class="section">
+        <h2 class="section-title">What We Offer</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">📅</div>
+                <h3>Easy Booking</h3>
+                <p>Schedule appointments with qualified Ayurvedic practitioners at your convenience through our user-friendly platform.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">👨‍⚕️</div>
+                <h3>Expert Practitioners</h3>
+                <p>Access to certified Ayurvedic doctors with years of experience in traditional healing practices.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🌿</div>
+                <h3>Authentic Treatments</h3>
+                <p>From Panchakarma to Abhyanga, we offer a wide range of traditional Ayurvedic therapies.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">💳</div>
+                <h3>Secure Payments</h3>
+                <p>Multiple payment options with secure transaction processing for your peace of mind.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Team -->
+    <section class="section">
+        <h2 class="section-title">Meet Our Leadership</h2>
+        <p class="section-subtitle">
+            Our dedicated team of healthcare professionals and technology experts work together to bring you the best in Ayurvedic care.
+        </p>
+        <div class="team-grid">
+            <div class="team-member">
+                <div class="member-avatar">👨‍⚕️</div>
+                <h4 class="member-name">Dr. Rajesh Kumar</h4>
+                <p class="member-role">Chief Medical Officer</p>
+                <p>25 years of experience in Ayurvedic medicine with specialization in Panchakarma treatments.</p>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">👩‍💼</div>
+                <h4 class="member-name">Priya Sharma</h4>
+                <p class="member-role">Operations Director</p>
+                <p>Expert in healthcare management ensuring smooth operations and excellent patient experience.</p>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">👨‍💻</div>
+                <h4 class="member-name">Arjun Patel</h4>
+                <p class="member-role">Technology Lead</p>
+                <p>Building innovative solutions that make Ayurvedic healthcare accessible to everyone.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="section" style="text-align: center;">
+        <div class="card" style="background: linear-gradient(135deg, #2d6a4f, #40916c); color: white; padding: 3rem;">
+            <h2 style="color: white; font-size: 2rem; margin-bottom: 1rem;">Ready to Begin Your Wellness Journey?</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.95;">
+                Book an appointment today and experience the transformative power of Ayurveda.
+            </p>
+            <a th:href="@{/treatments}" class="btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                Explore Treatments →
+            </a>
+        </div>
+    </section>
+</div>
+
+<!-- Footer -->
+<section class="available-on">
+    <div class="container">
+        <div class="row">
+            <!-- Contact Info -->
+            <div class="col-md-8">
+                <div class="available-title wow fadeInLeft">
+                    <div class="col-md-4">
+                        <h2>Our Location</h2>
+                        <p>
+                            153/5,<br>
+                            Miriswaththa road,<br>
+                            Gampaha,<br>
+                            Sri Lanka
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <h2>Quick Contact</h2>
+                        <p>
+                            01112454657<br>
+                            0732565576<br>
+                            <a href="mailto:ayurwedainfo@gmail.com">ayurwedainfo@gmail.com</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- App Links -->
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <a th:href="@{/ios-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-apple"></i>
+                                <div class="available-on-inner">
+                                    <h2>IOS</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4">
+                        <a th:href="@{/android-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-android"></i>
+                                <div class="available-on-inner">
+                                    <h2>Android</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4">
+                        <a th:href="@{/windows-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-windows"></i>
+                                <div class="available-on-inner">
+                                    <h2>Windows</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Social Icons -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="social-icons">
+
+                    <ul>
+                        <li><a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                        <li><a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="copyright">
+                        <p>copyright &copy;2025 <a th:href="@{/}">Ayurweda</a></p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="scroll-up">
+                        <a th:href="@{/}"><i class="fa fa-angle-up"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</section>
+
+</body>
+</html>

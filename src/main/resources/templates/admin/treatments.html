@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Treatments - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <!-- Admin Section -->
+            <div class="section-label">ADMIN PORTAL</div>
+            <a th:href="@{/admin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/admin/treatments}">Treatments</a>
+            <a th:href="@{/admin/doctors}">Doctors</a>
+            <a th:href="@{/admin/appointments}">Appointments</a>
+            <a th:href="@{/admin/payments}">Payments</a>
+            <a th:href="@{/admin/payments/reports}">Reports</a>
+            <a th:href="@{/admin/admins}">Admin Accounts</a>
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>Treatment Management</h1>
+            <a th:href="@{/admin/treatments/new}" class="btn btn-primary">+ Add Treatment</a>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="card">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Cost (LKR)</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="treatment : ${treatments}">
+                        <td th:text="${treatment.id}">1</td>
+                        <td th:text="${treatment.name}">Treatment Name</td>
+                        <td th:text="${#strings.abbreviate(treatment.description, 50)}">Description</td>
+                        <td th:text="${treatment.cost}">5000</td>
+                        <td th:text="${treatment.duration} + ' min'">60 min</td>
+                        <td>
+                                    <span class="badge" th:classappend="${treatment.isActive ? 'active' : 'inactive'}"
+                                          th:text="${treatment.isActive ? 'Active' : 'Inactive'}">Active</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/treatments/edit/{id}(id=${treatment.id})}"
+                               class="btn-icon" title="Edit">✏️</a>
+                            <form th:action="@{/admin/treatments/delete/{id}(id=${treatment.id})}"
+                                  method="post" style="display: inline;">
+                                <button type="submit" class="btn-icon" title="Delete"
+                                        onclick="return confirm('Are you sure?')">🗑️</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

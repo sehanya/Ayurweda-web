@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment History - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <!-- Patient Section -->
+            <div class="section-label">PATIENT PORTAL</div>
+            <a th:href="@{/patient/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/patient/book-appointment}">Book Appointment</a>
+            <a th:href="@{/patient/appointments}">My Appointments</a>
+            <a th:href="@{/patient/payments}">Payments</a>
+            <a th:href="@{/patient/profile}">Profile</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>💳 Payment History</h1>
+        </header>
+
+        <div class="dashboard-content">
+
+            <!-- Summary Stats -->
+            <div class="stats-grid" style="margin-bottom: 2rem;">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 th:text="${payments.size()}">0</h3>
+                        <p>Total Payments</p>
+                    </div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #2d6a4f, #52b788); color: white;">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3 th:text="'LKR ' + ${#numbers.formatDecimal(#aggregates.sum(payments.?[status.name() == 'SUCCESS'].![totalAmount]), 1, 2)}">0.00</h3>
+                        <p>Total Spent</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-info">
+                        <h3 th:text="${#lists.size(payments.?[status.name() == 'PENDING_VERIFICATION'])}">0</h3>
+                        <p>Pending Verification</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Payment Records</h2>
+
+                <div th:if="${#lists.isEmpty(payments)}" class="empty-state">
+                    <p style="font-size: 1.1rem; margin: 0;">No payment history found</p>
+                    <p style="margin-top: 0.5rem; color: #999;">Your payment records will appear here once you book an appointment</p>
+                    <a th:href="@{/patient/book-appointment}" class="btn-retry" style="margin-top: 1rem; background-color: #2d6a4f; color: white;">
+                        📅 Book Appointment
+                    </a>
+                </div>
+                <div th:if="${#lists.isEmpty(payments)}">
+                    <p style="text-align: center; padding: 2rem; color: #666;">
+                        No payment history found.
+                    </p>
+                </div>
+
+                <table th:unless="${#lists.isEmpty(payments)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Receipt #</th>
+                        <th>Transaction ID</th>
+                        <th>Appointment</th>
+                        <th>Date</th>
+                        <th>Method</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="payment : ${payments}">
+                        <td th:text="${payment.receiptNumber}">RCP001</td>
+                        <td th:text="${payment.transactionId}">TXN001</td>
+                        <td>
+                            <div th:text="${payment.appointment.ticketNumber}">APT001</div>
+                            <small style="color: #666;" th:text="${payment.appointment.treatment.name}">Treatment</small>
+                        </td>
+                        <td th:text="${#temporals.format(payment.paymentDate, 'yyyy-MM-dd HH:mm')}">Date</td>
+                        <td>
+                                    <span class="payment-method-badge"
+                                          th:classappend="${payment.paymentMethod.name() == 'CASH' ? 'method-cash' :
+                                                          payment.paymentMethod.name() == 'RECEIPT_UPLOAD' ? 'method-receipt' :
+                                                          'method-cod'}">
+                                        <span th:if="${payment.paymentMethod.name() == 'CASH'}">💵 Cash</span>
+                                        <span th:if="${payment.paymentMethod.name() == 'RECEIPT_UPLOAD'}">📄 Receipt</span>
+
+                                    </span>
+                        </td>
+                        <td style="font-weight: 600;" th:text="'LKR ' + ${#numbers.formatDecimal(payment.totalAmount, 1, 2)}">0.00</td>
+                        <td>
+                            <span class="payment-status-badge badge" th:classappend="${payment.status.name().toLowerCase().replace('_', '-')}">
+                                <span th:if="${payment.status.name() == 'PENDING_VERIFICATION'}">⏳ Pending</span>
+                                <span th:if="${payment.status.name() == 'SUCCESS'}">✅ Verified</span>
+                                <span th:if="${payment.status.name() == 'PENDING'}">⏰ Pending</span>
+                                <span th:if="${payment.status.name() == 'REJECTED'}">❌ Rejected</span>
+                                <span th:if="${payment.status.name() == 'REFUNDED'}">↩️ Refunded</span>
+                                <span th:if="${payment.status.name() == 'FAILED'}">❌ Failed</span>
+                            </span>
+                        </td>
+                        <td>
+                            <a th:href="@{/payment/receipt/{id}(id=${payment.id})}"
+                               class="btn-icon" title="View Receipt">🧾</a>
+
+                            <a th:if="${payment.receiptFileName != null}"
+                               th:href="@{/payment/receipt/download/{id}(id=${payment.id})}"
+                               class="btn-icon" title="Download Receipt">📎</a>
+
+                            <a th:if="${payment.status.name() == 'REJECTED'}"
+                               th:href="@{/payment/create/{appointmentId}(appointmentId=${payment.appointment.id})}"
+                               class="btn-icon" style="background-color: #ffc107; color: #333;" title="Retry Payment">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Payment Status Legend -->
+            <div class="card" style="margin-top: 2rem;">
+                <h3>Payment Status Guide</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                    <div style="padding: 1rem; background-color: #f8f9fa; border-radius: 8px;">
+                        <span class="badge success">SUCCESS</span>
+                        <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.875rem;">Payment completed and verified</p>
+                    </div>
+                    <div style="padding: 1rem; background-color: #f8f9fa; border-radius: 8px;">
+                        <span class="badge pending-verification">PENDING VERIFICATION</span>
+                        <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.875rem;">Receipt uploaded, awaiting admin approval</p>
+                    </div>
+                    <div style="padding: 1rem; background-color: #f8f9fa; border-radius: 8px;">
+                        <span class="badge pending" style="font-size: 0.9rem;">⏰ PENDING</span>
+                        <p>Cash payment pending at appointment</p>
+                    </div>
+                    <div style="padding: 1rem; background-color: #f8f9fa; border-radius: 8px;">
+                        <span class="badge rejected" style="font-size: 0.9rem;">❌ REJECTED</span>
+                        <p>Receipt rejected - please upload a new one</p>
+                    </div>
+                    <div style="padding: 1rem; background-color: #f8f9fa; border-radius: 8px;">
+                        <span class="badge refunded">REFUNDED</span>
+                        <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.875rem;">Payment refunded due to cancellation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

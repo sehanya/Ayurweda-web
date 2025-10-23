@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Payment - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .payment-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        .breakdown-table {
+            width: 100%;
+            margin: 2rem 0;
+            border-collapse: collapse;
+        }
+        .breakdown-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+        .breakdown-table .label {
+            font-weight: 500;
+            color: #666;
+        }
+        .breakdown-table .value {
+            text-align: right;
+            font-weight: 600;
+            color: #2d6a4f;
+        }
+        .breakdown-table .total {
+            font-size: 1.25rem;
+            background-color: #d8f3dc;
+        }
+        .payment-method-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .payment-option {
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .payment-option:hover {
+            border-color: #2d6a4f;
+            background-color: #f0f8f4;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .payment-option input[type="radio"] {
+            display: none;
+        }
+        .payment-option.selected {
+            border-color: #2d6a4f;
+            background-color: #d8f3dc;
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.2);
+        }
+        .payment-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .payment-option h4 {
+            color: #2d6a4f;
+            margin: 0.5rem 0;
+        }
+        .payment-option p {
+            font-size: 0.875rem;
+            color: #666;
+            margin: 0;
+        }
+        .receipt-upload-section {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background-color: #fff3cd;
+            border: 2px dashed #ffc107;
+            border-radius: 8px;
+        }
+        .receipt-upload-section.active {
+            display: block;
+        }
+        .file-upload-wrapper {
+            position: relative;
+            margin: 1rem 0;
+        }
+        .file-upload-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px dashed #2d6a4f;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: white;
+        }
+        .file-upload-input:hover {
+            background-color: #f0f8f4;
+        }
+        .payment-instructions {
+            background-color: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #2196f3;
+        }
+        .instructions-title {
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 0.5rem;
+        }
+        .bank-details-box {
+            background: linear-gradient(135deg, #2d6a4f, #40916c);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
+        }
+        .bank-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .bank-detail-row:last-child {
+            border-bottom: none;
+        }
+        .bank-detail-label {
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        .bank-detail-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .copy-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.5);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+            transition: all 0.3s;
+        }
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <!-- Patient Section -->
+            <div class="section-label">PATIENT PORTAL</div>
+            <a th:href="@{/patient/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/patient/book-appointment}">Book Appointment</a>
+            <a th:href="@{/patient/appointments}">My Appointments</a>
+            <a th:href="@{/patient/payments}">Payments</a>
+            <a th:href="@{/patient/profile}">Profile</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <div class="payment-container">
+            <div class="card">
+                <h2>🧾 Payment Details</h2>
+
+                <!-- Appointment Info -->
+                <div style="background-color: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">Appointment Information</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <p><strong>Ticket Number:</strong></p>
+                            <p th:text="${appointment.ticketNumber}">APT001</p>
+                        </div>
+                        <div>
+                            <p><strong>Date & Time:</strong></p>
+                            <p th:text="${#temporals.format(appointment.appointmentDate, 'yyyy-MM-dd')} + ' at ' + ${#temporals.format(appointment.appointmentTime, 'HH:mm')}">Date & Time</p>
+                        </div>
+                        <div>
+                            <p><strong>Doctor:</strong></p>
+                            <p th:text="${appointment.doctor.fullName}">Doctor Name</p>
+                        </div>
+                        <div>
+                            <p><strong>Treatment:</strong></p>
+                            <p th:text="${appointment.treatment.name}">Treatment Name</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Breakdown -->
+                <h3>💰 Payment Breakdown</h3>
+                <table class="breakdown-table">
+                    <tr>
+                        <td class="label">Doctor Consultation Fee</td>
+                        <td class="value" th:text="'LKR ' + ${#numbers.formatDecimal(breakdown.doctorFee, 1, 2)}">0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Treatment Cost</td>
+                        <td class="value" th:text="'LKR ' + ${#numbers.formatDecimal(breakdown.treatmentFee, 1, 2)}">0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Clinic Charges</td>
+                        <td class="value" th:text="'LKR ' + ${#numbers.formatDecimal(breakdown.clinicCharges, 1, 2)}">0.00</td>
+                    </tr>
+                    <tr class="total">
+                        <td class="label"><strong>Total Amount</strong></td>
+                        <td class="value"><strong th:text="'LKR ' + ${#numbers.formatDecimal(breakdown.totalAmount, 1, 2)}">0.00</strong></td>
+                    </tr>
+                </table>
+
+                <!-- Payment Form -->
+                <form th:action="@{/payment/process}" method="post" id="paymentForm" enctype="multipart/form-data">
+                    <input type="hidden" name="appointmentId" th:value="${appointment.id}">
+
+                    <h3>💳 Select Payment Method</h3>
+                    <div class="payment-method-selection">
+                        <!-- Cash Payment -->
+                        <div class="payment-option" onclick="selectPaymentMethod(this, 'CASH')">
+                            <input type="radio" name="paymentMethod" value="CASH" id="cash" required>
+                            <label for="cash">
+                                <div class="payment-icon">💵</div>
+                                <h4>Cash Payment</h4>
+                                <p>Pay with cash at the clinic</p>
+                            </label>
+                        </div>
+
+                        <!-- Receipt Upload -->
+                        <div class="payment-option" onclick="selectPaymentMethod(this, 'RECEIPT_UPLOAD')">
+                            <input type="radio" name="paymentMethod" value="RECEIPT_UPLOAD" id="receipt" required>
+                            <div style="pointer-events: none;">
+                                <div class="payment-icon">📄</div>
+                                <h4>Bank Transfer</h4>
+                                <p>Upload payment receipt</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Receipt Upload Section -->
+                    <div class="receipt-upload-section" id="receiptUploadSection">
+                        <div class="payment-instructions">
+                            <div class="instructions-title">📋 Bank Transfer Instructions:</div>
+                            <p style="color: #666; margin: 0.5rem 0;">
+                                Please transfer the total amount to our bank account and upload the receipt for verification.
+                            </p>
+                        </div>
+                        <!-- Bank Account Details -->
+                        <div class="bank-details-box">
+                            <h4 style="margin: 0 0 1rem 0; font-size: 1.2rem;">🏦 Bank Account Details</h4>
+
+                            <div class="bank-detail-row">
+                                <span class="bank-detail-label">Bank Name:</span>
+                                <span class="bank-detail-value">
+                                    <span th:text="${bankDetails.bankName}">Commercial Bank</span>
+                                    <button type="button" class="copy-btn" onclick="copyToClipboard(this, '[[${bankDetails.bankName}]]')">📋 Copy</button>
+                                </span>
+                            </div>
+
+                            <div class="bank-detail-row">
+                                <span class="bank-detail-label">Account Name:</span>
+                                <span class="bank-detail-value">
+                                    <span th:text="${bankDetails.accountName}">Ayur-Link Clinic</span>
+                                    <button type="button" class="copy-btn" onclick="copyToClipboard(this, '[[${bankDetails.accountName}]]')">📋 Copy</button>
+                                </span>
+                            </div>
+
+                            <div class="bank-detail-row">
+                                <span class="bank-detail-label">Account Number:</span>
+                                <span class="bank-detail-value" style="font-size: 1.3rem;">
+                                    <span th:text="${bankDetails.accountNumber}">8560123456789</span>
+                                    <button type="button" class="copy-btn" onclick="copyToClipboard(this, '[[${bankDetails.accountNumber}]]')">📋 Copy</button>
+                                </span>
+                            </div>
+
+                            <div class="bank-detail-row">
+                                <span class="bank-detail-label">Branch:</span>
+                                <span class="bank-detail-value">
+                                    <span th:text="${bankDetails.branch}">Colombo 07</span>
+                                </span>
+                            </div>
+
+                            <div class="bank-detail-row">
+                                <span class="bank-detail-label">Amount to Transfer:</span>
+                                <span class="bank-detail-value" style="font-size: 1.4rem; color: #ffeb3b;">
+                                    <span th:text="'LKR ' + ${#numbers.formatDecimal(breakdown.totalAmount, 1, 2)}">0.00</span>
+                                </span>
+                            </div>
+
+                            <div class="bank-detail-row">
+                                <span class="bank-detail-label">Reference:</span>
+                                <span class="bank-detail-value">
+                                    <span th:text="${appointment.ticketNumber}">APT001</span>
+                                    <button type="button" class="copy-btn" onclick="copyToClipboard(this, '[[${appointment.ticketNumber}]]')">📋 Copy</button>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-success" style="margin-top: 1rem; background-color: #d1f2eb; border-left: 4px solid #198754; padding: 1rem;">
+                            <p style="margin: 0; color: #0f5132;">
+                                <strong>📌 Important:</strong> Please include your ticket number (<strong th:text="${appointment.ticketNumber}">APT001</strong>) as the reference when making the transfer.
+                            </p>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 1.5rem;">
+                            <label for="receiptFile"><strong>Upload Payment Receipt *</strong></label>
+                            <p style="color: #666; font-size: 0.875rem; margin-bottom: 0.5rem;">
+                                Accepted formats: JPG, PNG, PDF (Max 5MB)
+                            </p>
+                            <input type="file"
+                                   id="receiptFile"
+                                   name="receiptFile"
+                                   accept="image/jpeg,image/jpg,image/png,application/pdf"
+                                   class="file-upload-input">
+                            <div id="filePreview" style="margin-top: 1rem; display: none;">
+                                <p style="color: #2d6a4f; font-weight: 500;">✓ File selected: <span id="fileName"></span></p>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-success" style="margin-top: 1rem;">
+                            <p><strong>Note:</strong> Your payment will be verified by our admin team within 24 hours. You'll receive a confirmation once approved.</p>
+                        </div>
+                    </div>
+
+
+
+
+                    <!-- Cash Instructions -->
+                    <div class="payment-instructions" id="cashInstructions" style="display: none;">
+                        <div class="instructions-title">💵 Cash Payment Instructions:</div>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; color: #666;">
+                            <li>Visit the clinic and make cash payment at reception</li>
+                            <li>Amount to pay: <strong th:text="'LKR ' + ${#numbers.formatDecimal(breakdown.totalAmount, 1, 2)}">0.00</strong></li>
+                            <li>Show your ticket number: <strong th:text="${appointment.ticketNumber}">APT001</strong></li>
+                            <li>Receipt will be issued immediately</li>
+                        </ul>
+                    </div>
+
+                    <!-- Payment Notes -->
+                    <div class="form-group" style="margin-top: 2rem;">
+                        <label for="notes">Additional Notes (Optional)</label>
+                        <textarea id="notes" name="notes" rows="3" class="form-control"
+                                  placeholder="Add any additional information about this payment..."></textarea>
+                    </div>
+
+                    <!-- Terms & Conditions -->
+                    <div class="form-group" style="margin: 2rem 0;">
+                        <label style="display: flex; align-items: start; gap: 0.5rem;">
+                            <input type="checkbox" required style="margin-top: 0.25rem;">
+                            <span>I confirm that the payment details are correct and agree to the
+                                    <a href="#" style="color: #2d6a4f;">terms and conditions</a>.
+                                    I understand that refunds will be processed if the appointment is cancelled before 24 hours.</span>
+                        </label>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="submitBtn" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                            ✓ Confirm Payment - LKR <span th:text="${#numbers.formatDecimal(breakdown.totalAmount, 1, 2)}">0.00</span>
+                        </button>
+                        <a th:href="@{/patient/appointments}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+
+<script>
+    let selectedMethod = null;
+
+    function selectPaymentMethod(element, method) {
+        console.log('Payment method selected:', method);
+
+        // Remove selected class from all options
+        document.querySelectorAll('.payment-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+
+        // Add selected class to clicked option
+        element.classList.add('selected');
+
+        // Check the radio button
+        const radioButton = element.querySelector('input[type="radio"]');
+        if (radioButton) {
+            radioButton.checked = true;
+        }
+
+        selectedMethod = method;
+        console.log('Selected method set to:', selectedMethod);
+
+        // Show/hide receipt upload section
+        const receiptSection = document.getElementById('receiptUploadSection');
+        const cashInstructions = document.getElementById('cashInstructions');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Hide all instructions first
+        receiptSection.classList.remove('active');
+        cashInstructions.style.display = 'none';
+
+        // Show relevant section
+        if (method === 'RECEIPT_UPLOAD') {
+            receiptSection.classList.add('active');
+            document.getElementById('receiptFile').required = true;
+            submitBtn.innerHTML = '📤 Upload Receipt & Submit';
+            console.log('Showing receipt upload section');
+        } else if (method === 'CASH') {
+            document.getElementById('receiptFile').required = false;
+            cashInstructions.style.display = 'block';
+            submitBtn.innerHTML = '✓ Confirm Cash Payment';
+            console.log('Showing cash instructions');
+        }
+    }
+
+    // File upload preview
+    document.getElementById('receiptFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('filePreview');
+        const fileName = document.getElementById('fileName');
+
+        if (file) {
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                this.value = '';
+                preview.style.display = 'none';
+                return;
+            }
+
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Only JPG, PNG, and PDF files are allowed');
+                this.value = '';
+                preview.style.display = 'none';
+                return;
+            }
+
+            fileName.textContent = file.name;
+            preview.style.display = 'block';
+            console.log('File selected:', file.name, 'Size:', file.size, 'Type:', file.type);
+        } else {
+            preview.style.display = 'none';
+        }
+    });
+
+    // Copy to clipboard function
+    function copyToClipboard(button, text) {
+        navigator.clipboard.writeText(text).then(function() {
+            const originalText = button.innerHTML;
+            button.innerHTML = '✓ Copied!';
+            button.style.background = 'rgba(76, 175, 80, 0.3)';
+
+            setTimeout(function() {
+                button.innerHTML = originalText;
+                button.style.background = 'rgba(255,255,255,0.2)';
+            }, 2000);
+        }).catch(function(err) {
+            console.error('Failed to copy:', err);
+            alert('Failed to copy: ' + err);
+        });
+    }
+
+    // Form submission validation
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        console.log('Form submitted, selected method:', selectedMethod);
+
+        if (!selectedMethod) {
+            e.preventDefault();
+            alert('Please select a payment method');
+            return false;
+        }
+
+        if (selectedMethod === 'RECEIPT_UPLOAD') {
+            const fileInput = document.getElementById('receiptFile');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                e.preventDefault();
+                alert('Please upload payment receipt');
+                return false;
+            }
+
+            console.log('Receipt file ready for upload:', fileInput.files[0].name);
+        }
+
+        // Confirm submission
+        const amount = document.querySelector('.total .value strong').textContent;
+        const methodText = {
+            'CASH': 'cash payment',
+            'RECEIPT_UPLOAD': 'receipt upload (Your receipt will be verified within 24 hours)'
+        };
+
+        const confirmMessage = `Confirm ${methodText[selectedMethod]} of ${amount}?`;
+        console.log('Showing confirmation:', confirmMessage);
+
+        if (!confirm(confirmMessage)) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Show loading state
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = selectedMethod === 'RECEIPT_UPLOAD'
+            ? '⏳ Uploading Receipt...'
+            : '⏳ Processing...';
+
+        console.log('Form validation passed, submitting...');
+        return true;
+    });
+
+    // Debug: Log when page loads
+    console.log('Payment form initialized');
+</script>
+</body>
+</html>
