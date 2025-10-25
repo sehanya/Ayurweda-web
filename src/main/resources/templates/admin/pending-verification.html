@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Verification - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .verification-card {
+            background: white;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .verification-header {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .receipt-preview {
+            max-width: 100%;
+            max-height: 400px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .verification-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/admin/dashboard}">Dashboard</a>
+            <a th:href="@{/admin/treatments}">Treatments</a>
+            <a th:href="@{/admin/doctors}">Doctors</a>
+            <a th:href="@{/admin/appointments}">Appointments</a>
+            <a th:href="@{/payment/admin/pending-verification}" class="active">Pending Verification</a>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>📋 Pending Receipt Verification</h1>
+            <a th:href="@{/admin/payments}" class="btn btn-secondary">← Back to All Payments</a>
+        </header>
+
+        <div class="dashboard-content">
+
+            <div th:if="${#lists.isEmpty(payments)}" class="card">
+                <p style="text-align: center; color: #666;">
+                    ✓ No pending verifications! All receipts have been processed.
+                </p>
+            </div>
+
+            <div th:each="payment : ${payments}" class="verification-card">
+                <div class="verification-header">
+                    <h3 style="margin: 0;">⏳ Receipt Awaiting Verification</h3>
+                    <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">
+                        Uploaded <span th:text="${#temporals.format(payment.receiptUploadDate, 'yyyy-MM-dd HH:mm')}">date</span>
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <!-- Payment Details -->
+                    <div>
+                        <h4>Payment Information</h4>
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="padding: 0.5rem 0; font-weight: 600;">Transaction ID:</td>
+                                <td th:text="${payment.transactionId}">TXN001</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem 0; font-weight: 600;">Receipt Number:</td>
+                                <td th:text="${payment.receiptNumber}">RCP001</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem 0; font-weight: 600;">Patient:</td>
+                                <td th:text="${payment.appointment.patient.fullName}">Patient</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem 0; font-weight: 600;">NIC:</td>
+                                <td th:text="${payment.appointment.patient.nic}">NIC</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem 0; font-weight: 600;">Appointment:</td>
+                                <td th:text="${payment.appointment.ticketNumber}">APT001</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem 0; font-weight: 600;">Amount:</td>
+                                <td style="font-size: 1.25rem; font-weight: bold; color: #2d6a4f;"
+                                    th:text="'LKR ' + ${#numbers.formatDecimal(payment.totalAmount, 1, 2)}">0.00</td>
+                            </tr>
+                        </table>
+
+                        <h4 style="margin-top: 2rem;">Uploaded Receipt</h4>
+                        <a th:href="@{/payment/receipt/download/{id}(id=${payment.id})}"
+                           class="btn btn-primary" target="_blank" style="margin-top: 0.5rem;">
+                            📎 Download Receipt File
+                        </a>
+                    </div>
+
+                    <!-- Verification Form -->
+                    <div>
+                        <h4>Verification Decision</h4>
+                        <form th:action="@{/admin/payments/verify/{id}(id=${payment.id})}" method="post">
+                            <div class="form-group">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                                    <input type="radio" name="approved" value="true" required>
+                                    <strong style="color: #2d6a4f;">✓ Approve Payment</strong>
+                                </label>
+                                <p style="color: #666; font-size: 0.875rem; margin-left: 1.75rem;">
+                                    The receipt is valid and payment will be confirmed.
+                                </p>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                                    <input type="radio" name="approved" value="false" required>
+                                    <strong style="color: #d62828;">✗ Reject Payment</strong>
+                                </label>
+                                <p style="color: #666; font-size: 0.875rem; margin-left: 1.75rem;">
+                                    The receipt is invalid or unreadable.
+                                </p>
+                            </div>
+
+                            <div class="form-group" id="reasonField_[[${payment.id}]]" style="display: none;">
+                                <label for="reason_[[${payment.id}]]">Rejection Reason *</label>
+                                <textarea id="reason_[[${payment.id}]]" name="reason" rows="3" class="form-control"
+                                          placeholder="Please explain why the receipt is being rejected..."></textarea>
+                            </div>
+
+                            <div class="verification-actions">
+                                <button type="submit" class="btn btn-primary">Submit Verification</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    // Show/hide reason field for each payment
+    document.querySelectorAll('input[name="approved"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const paymentId = this.closest('form').action.split('/').pop();
+            const reasonField = document.getElementById('reasonField_' + paymentId);
+            const reasonTextarea = document.getElementById('reason_' + paymentId);
+
+            if (this.value === 'false') {
+                reasonField.style.display = 'block';
+                reasonTextarea.required = true;
+            } else {
+                reasonField.style.display = 'none';
+                reasonTextarea.required = false;
+            }
+        });
+    });
+</script>
+</body>
+</html>

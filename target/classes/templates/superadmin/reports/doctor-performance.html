@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Performance Report - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/superadmin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/superadmin/payments/daily}">Daily Summary</a>
+            <a th:href="@{/superadmin/payments/monthly}">Monthly Summary</a>
+            <a th:href="@{/superadmin/reports}">Reports</a>
+            <a th:href="@{/admin/dashboard}">Admin Features</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>👨‍⚕️ Doctor Performance Report</h1>
+            <p>Individual doctor statistics and revenue analysis</p>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Summary Card -->
+            <div class="stats-grid">
+                <div class="stat-card highlight">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <h3 th:text="${data.totalDoctors}">0</h3>
+                        <p>Total Active Doctors</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 th:text="${data.doctorStats.size()}">0</h3>
+                        <p>Doctors with Appointments</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctor Performance Table -->
+            <div class="card">
+                <h2>Doctor Performance Details</h2>
+                <div th:if="${#maps.isEmpty(data.doctorStats)}">
+                    <p>No doctor performance data available yet.</p>
+                </div>
+                <table th:unless="${#maps.isEmpty(data.doctorStats)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Doctor Name</th>
+                        <th>Total Appointments</th>
+                        <th>Total Revenue</th>
+                        <th>Doctor Fees Earned</th>
+                        <th>Average per Appointment</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="entry : ${data.doctorStats}">
+                        <td th:text="${entry.key}">Dr. Smith</td>
+                        <td th:text="${entry.value.totalAppointments}">0</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(entry.value.totalRevenue, 1, 2)}">0.00</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(entry.value.doctorFees, 1, 2)}">0.00</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(entry.value.totalRevenue / entry.value.totalAppointments, 1, 2)}">0.00</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Back Button -->
+            <div style="margin-top: 2rem;">
+                <a th:href="@{/superadmin/reports}" class="btn btn-secondary">← Back to Reports</a>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

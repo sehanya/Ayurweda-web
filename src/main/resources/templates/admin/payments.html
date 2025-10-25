@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Management - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .payment-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #2d6a4f;
+            background: white;
+            color: #2d6a4f;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #2d6a4f;
+            color: white;
+        }
+        .payment-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-box {
+            background: linear-gradient(135deg, #2d6a4f, #52b788);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-box.warning {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+        }
+        .stat-box h3 {
+            font-size: 2rem;
+            margin: 0;
+        }
+        .stat-box p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+        }
+        .payment-method-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .method-cash {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        .method-receipt {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+        .method-cod {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <!-- Admin Section -->
+            <div class="section-label">ADMIN PORTAL</div>
+            <a th:href="@{/admin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/admin/treatments}">Treatments</a>
+            <a th:href="@{/admin/doctors}">Doctors</a>
+            <a th:href="@{/admin/appointments}">Appointments</a>
+            <a th:href="@{/admin/payments}">Payments</a>
+            <a th:href="@{/admin/payments/reports}">Reports</a>
+            <a th:href="@{/admin/admins}">Admin Accounts</a>
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>💳 Payment Management</h1>
+            <a th:href="@{/admin/payments/pending-verification}" class="btn btn-primary">
+                📋 Pending Verification (<span th:text="${pendingVerification.size()}">0</span>)
+            </a>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Flash Messages -->
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+            <!-- Payment Statistics -->
+            <div class="payment-stats">
+                <div class="stat-box">
+                    <h3 th:text="${stats.totalPayments}">0</h3>
+                    <p>Total Payments</p>
+                </div>
+                <div class="stat-box">
+                    <h3 th:text="${stats.successfulPayments}">0</h3>
+                    <p>Completed</p>
+                </div>
+                <div class="stat-box warning">
+                    <h3 th:text="${stats.pendingVerification}">0</h3>
+                    <p>Pending Verification</p>
+                </div>
+                <div class="stat-box">
+                    <h3 th:text="'LKR ' + ${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 2, 'POINT')}">0.00</h3>
+                    <p>Total Revenue</p>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card">
+                <h3>Payment Method Distribution</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+                    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                        <div style="font-size: 2rem;">💵</div>
+                        <h4 th:text="${stats.cashPayments}">0</h4>
+                        <p>Cash</p>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                        <div style="font-size: 2rem;">📄</div>
+                        <h4 th:text="${stats.receiptPayments}">0</h4>
+                        <p>Receipt Upload</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="payment-filters">
+                <button class="filter-btn active" onclick="filterPayments('ALL')">All Payments</button>
+                <button class="filter-btn" onclick="filterPayments('SUCCESS')">Completed</button>
+                <button class="filter-btn" onclick="filterPayments('PENDING_VERIFICATION')">Pending Verification</button>
+                <button class="filter-btn" onclick="filterPayments('PENDING')">COD Pending</button>
+                <button class="filter-btn" onclick="filterPayments('REFUNDED')">Refunded</button>
+                <button class="filter-btn" onclick="filterPayments('REJECTED')">Rejected</button>
+            </div>
+
+            <!-- Payments Table -->
+            <div class="card">
+                <h3>All Payments</h3>
+                <div th:if="${payments == null or #lists.isEmpty(payments)}">
+                    <p style="text-align: center; padding: 2rem; color: #666;">No payment records found.</p>
+                </div>
+                <table th:unless="${#lists.isEmpty(payments)}" class="data-table" id="paymentsTable">
+                    <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Receipt #</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="payment : ${payments}" th:attr="data-status=${payment.status}">
+                        <td th:text="${payment.transactionId}">TXN001</td>
+                        <td th:text="${payment.receiptNumber}">RCP001</td>
+                        <td th:text="${payment.appointment.patient.fullName}">Patient</td>
+                        <td th:text="${payment.appointment.doctor.fullName}">Doctor</td>
+                        <td>LKR <span th:text="${#numbers.formatDecimal(payment.totalAmount, 1, 2)}">0.00</span></td>
+                        <td>
+                            <span class="payment-method-badge"
+                                  th:classappend="${payment.paymentMethod.name() == 'CASH' ? 'method-cash' :
+                                                  payment.paymentMethod.name() == 'RECEIPT_UPLOAD' ? 'method-receipt' :
+                                                  'method-cod'}">
+                                <span th:if="${payment.paymentMethod.name() == 'CASH'}">💵 Cash</span>
+                                <span th:if="${payment.paymentMethod.name() == 'RECEIPT_UPLOAD'}">📄 Receipt</span>
+
+                            </span>
+                        </td>
+                        <td th:text="${#temporals.format(payment.paymentDate, 'yyyy-MM-dd HH:mm')}">Date</td>
+                        <td>
+                            <span class="badge" th:classappend="${payment.status.name().toLowerCase()}"
+                                  th:text="${payment.status}">STATUS</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+
+
+                                <!-- Download uploaded receipt -->
+                                <a th:if="${payment.receiptFileName != null}"
+                                   th:href="@{/payment/receipt/download/{id}(id=${payment.id})}"
+                                   class="btn-icon" title="Download Uploaded Receipt" target="_blank">📎</a>
+
+                                <!-- Verify Button -->
+                                <form th:if="${payment.status.name() == 'PENDING_VERIFICATION'}"
+                                      th:action="@{/admin/payments/verify/{id}(id=${payment.id})}"
+                                      method="post" style="display: inline;">
+                                    <input type="hidden" name="approved" value="true">
+                                    <button type="submit" class="btn btn-sm btn-success"
+                                            onclick="return confirm('Approve this payment?')">Approve</button>
+                                </form>
+
+                                <!-- Reject Button -->
+                                <form th:if="${payment.status.name() == 'PENDING_VERIFICATION'}"
+                                      th:action="@{/admin/payments/verify/{id}(id=${payment.id})}"
+                                      method="post" style="display: inline; margin-left: 5px;">
+                                    <input type="hidden" name="approved" value="false">
+                                    <input type="text" name="reason" placeholder="Reason" required style="width: 100px;">
+                                    <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                </form>
+
+                                <!-- Refund Button -->
+                                <form th:if="${payment.status.name() == 'SUCCESS'}"
+                                      th:action="@{/admin/payments/refund/{id}(id=${payment.id})}"
+                                      method="post" style="display: inline;">
+                                    <input type="text" name="refundReason" placeholder="Reason" required style="width: 100px;">
+                                    <button type="submit" class="btn btn-sm btn-warning"
+                                            onclick="return confirm('Process refund?')">Refund</button>
+                                </form>
+
+                                <!-- Delete -->
+                                <form th:if="${payment.status.name() == 'PENDING' || payment.status.name() == 'FAILED' || payment.status.name() == 'REJECTED'}"
+                                      th:action="@{/admin/payments/delete/{id}(id=${payment.id})}"
+                                      method="post" style="display: inline;">
+                                    <button type="submit" class="btn-icon" title="Delete"
+                                            onclick="return confirm('Delete this payment?')">🗑️</button>
+                                </form>
+                            </div>
+                            <!-- View Receipt Link -->
+                            <a th:href="@{/payment/receipt/{id}(id=${payment.id})}"
+                               class="btn btn-sm btn-info" target="_blank">View</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Verification Modal -->
+<div id="verificationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 2rem; border-radius: 10px; max-width: 500px; width: 90%;">
+        <h2>Verify Receipt</h2>
+        <p>Transaction ID: <strong id="verifyTxnId"></strong></p>
+
+        <form id="verificationForm" method="post">
+            <div class="form-group">
+                <label>Verification Decision *</label>
+                <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="radio" name="approved" value="true" required>
+                        ✓ Approve Payment
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="radio" name="approved" value="false" required>
+                        ✗ Reject Payment
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group" id="reasonField" style="display: none;">
+                <label for="reason">Rejection Reason *</label>
+                <textarea id="reason" name="reason" rows="3" class="form-control"
+                          placeholder="Explain why the receipt is being rejected..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Submit Verification</button>
+                <button type="button" onclick="closeVerificationModal()" class="btn btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Refund Modal -->
+<div id="refundModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 2rem; border-radius: 10px; max-width: 500px; width: 90%;">
+        <h2>Process Refund</h2>
+        <p>Transaction ID: <strong id="refundTxnId"></strong></p>
+        <p>Amount: <strong id="refundAmount"></strong></p>
+
+        <form id="refundForm" method="post">
+            <div class="form-group">
+                <label for="refundReason">Refund Reason *</label>
+                <textarea id="refundReason" name="refundReason" rows="3" required
+                          class="form-control" placeholder="Enter reason for refund..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Confirm Refund</button>
+                <button type="button" onclick="closeRefundModal()" class="btn btn-secondary">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function filterPayments(status) {
+        const rows = document.querySelectorAll('#paymentsTable tbody tr');
+        const buttons = document.querySelectorAll('.filter-btn');
+
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        rows.forEach(row => {
+            if (status === 'ALL' || row.dataset.status === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function showVerifyModal(paymentId, txnId) {
+        document.getElementById('verifyTxnId').textContent = txnId;
+        document.getElementById('verificationForm').action = '/admin/payments/verify/' + paymentId;
+        document.getElementById('verificationModal').style.display = 'flex';
+
+        document.querySelectorAll('input[name="approved"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const reasonField = document.getElementById('reasonField');
+                const reasonTextarea = document.getElementById('reason');
+                if (this.value === 'false') {
+                    reasonField.style.display = 'block';
+                    reasonTextarea.required = true;
+                } else {
+                    reasonField.style.display = 'none';
+                    reasonTextarea.required = false;
+                }
+            });
+        });
+    }
+
+    function closeVerificationModal() {
+        document.getElementById('verificationModal').style.display = 'none';
+        document.getElementById('verificationForm').reset();
+    }
+
+    function showRefundModal(paymentId, txnId, amount) {
+        document.getElementById('refundTxnId').textContent = txnId;
+        document.getElementById('refundAmount').textContent = 'LKR ' + amount.toFixed(2);
+        document.getElementById('refundForm').action = '/admin/payments/refund/' + paymentId;
+        document.getElementById('refundModal').style.display = 'flex';
+    }
+
+    function closeRefundModal() {
+        document.getElementById('refundModal').style.display = 'none';
+        document.getElementById('refundForm').reset();
+    }
+
+    document.getElementById('verificationModal').addEventListener('click', function(e) {
+        if (e.target === this) closeVerificationModal();
+    });
+    document.getElementById('refundModal').addEventListener('click', function(e) {
+        if (e.target === this) closeRefundModal();
+    });
+</script>
+</body>
+</html>

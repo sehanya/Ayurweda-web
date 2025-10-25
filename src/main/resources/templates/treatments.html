@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - Ayur-Link</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/animate.css}" >
+    <link rel="stylesheet" type="text/css" th:href="@{css/font-awesome.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/responsive.css}">
+
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css}">
+
+    <script th:src="@{js/jquery.js}"></script>
+    <script th:src="@{js/script.js}"></script>
+
+    <script th:src="@{js/bootstrap.min.js}"></script>
+
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a th:href="@{/}" class="nav-brand">🌿 AyurLink</a>
+
+        <ul class="nav-links">
+            <li><a th:href="@{/}">Home</a></li>
+            <li><a th:href="@{/treatments}">Treatments</a></li>
+            <li><a th:href="@{/about}">About</a></li>
+            <li><a th:href="@{/contact}">Contact</a></li>
+
+            <!-- Show dashboard link if logged in -->
+            <li sec:authorize="hasRole('PATIENT')">
+                <a th:href="@{/patient/dashboard}">Dashboard</a>
+            </li>
+            <li sec:authorize="hasRole('DOCTOR')">
+                <a th:href="@{/doctor/dashboard}">Dashboard</a>
+            </li>
+            <li sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin/dashboard}">Dashboard</a>
+            </li>
+            <li sec:authorize="hasRole('SUPER_ADMIN')">
+                <a th:href="@{/superadmin/dashboard}">Dashboard</a>
+            </li>
+
+            <!-- Show login/register or logout -->
+            <li sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}" class="btn-primary">Login</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn-logout">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1>Our Treatments</h1>
+        <p>Explore our range of traditional Ayurvedic treatments</p>
+    </div>
+</section>
+
+<!-- Treatments List -->
+<section class="treatments-section">
+    <div class="container">
+        <div class="treatment-grid">
+            <div th:each="treatment : ${treatments}" class="treatment-card-detailed" th:if="${treatment.isActive}">
+
+                <div class="treatment-image-container">
+                <span th:text="${treatment.name}">Treatment Image</span>
+            </div>
+
+                <h3 th:text="${treatment.name}">Treatment Name</h3>
+                <p class="treatment-description" th:text="${treatment.description}">Description</p>
+
+                <div class="treatment-info">
+                    <div class="info-item">
+                        <span class="label">Duration:</span>
+                        <span th:text="${treatment.duration} + ' minutes'">60 minutes</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Cost:</span>
+                        <span class="price">LKR <span th:text="${treatment.cost}">0.00</span></span>
+                    </div>
+                    <div class="info-item" th:if="${treatment.suitableFor}">
+                        <span class="label">Suitable for:</span>
+                        <span th:text="${treatment.suitableFor}">Conditions</span>
+                    </div>
+                </div>
+
+                <a th:href="@{/register}" class="btn btn-primary">Book Now</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div id="copyright">
+                    <p>copyright &copy;2025 <a th:href="@{/}">Ayurweda</a></p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="scroll-up">
+                    <a th:href="@{/}"><i class="fa fa-angle-up"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</section>
+
+</body>
+</html>

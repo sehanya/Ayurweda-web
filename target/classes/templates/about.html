@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - AyurLink</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: #2d6a4f;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #2d6a4f;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(45, 106, 79, 0.95), rgba(64, 145, 108, 0.95)),
+            url('https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1200') center/cover;
+            color: white;
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeInDown 0.8s;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.95;
+            animation: fadeInUp 0.8s;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: #2d6a4f;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Mission & Vision Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            color: #2d6a4f;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* Values Section */
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .value-item {
+            background: linear-gradient(135deg, #2d6a4f, #40916c);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .value-item:hover {
+            transform: scale(1.05);
+        }
+
+        .value-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .value-item h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Stats Section */
+        .stats {
+            background: linear-gradient(135deg, #2d6a4f, #40916c);
+            color: white;
+            padding: 4rem 2rem;
+            margin: 4rem 0;
+            border-radius: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Team Section */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .team-member {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+        }
+
+        .member-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d6a4f, #52b788);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 1rem;
+            color: white;
+        }
+
+        .member-name {
+            font-size: 1.5rem;
+            color: #2d6a4f;
+            margin-bottom: 0.5rem;
+        }
+
+        .member-role {
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 3rem 2rem 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: #52b788;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a:hover {
+            color: #52b788;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #333;
+            color: #888;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a th:href="@{/}" class="nav-brand">🌿 AyurLink</a>
+        <ul class="nav-links">
+            <li><a th:href="@{/}">Home</a></li>
+            <li><a th:href="@{/treatments}">Treatments</a></li>
+            <li><a th:href="@{/about}">About</a></li>
+            <li><a th:href="@{/contact}">Contact</a></li>
+
+            <!-- Show dashboard link if logged in -->
+            <li sec:authorize="hasRole('PATIENT')">
+                <a th:href="@{/patient/dashboard}">Dashboard</a>
+            </li>
+            <li sec:authorize="hasRole('DOCTOR')">
+                <a th:href="@{/doctor/dashboard}">Dashboard</a>
+            </li>
+            <li sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin/dashboard}">Dashboard</a>
+            </li>
+            <li sec:authorize="hasRole('SUPER_ADMIN')">
+                <a th:href="@{/superadmin/dashboard}">Dashboard</a>
+            </li>
+
+            <!-- Show login/register or logout -->
+            <li sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}" class="btn-primary">Login</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn-logout">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+    <h1>🌿 About AyurLink</h1>
+    <p>Bridging Ancient Wisdom with Modern Healthcare for Your Holistic Wellness</p>
+</section>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Mission & Vision -->
+    <section class="section">
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">🎯</div>
+                <h3>Our Mission</h3>
+                <p>To provide accessible, authentic Ayurvedic healthcare that combines traditional wisdom with modern convenience. We strive to make holistic wellness a reality for everyone through personalized treatments and compassionate care.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">👁️</div>
+                <h3>Our Vision</h3>
+                <p>To be the leading digital platform for Ayurvedic healthcare, creating a world where natural healing is the first choice for wellness. We envision a future where technology and tradition work together seamlessly.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Description -->
+    <section class="section">
+        <h2 class="section-title">Welcome to AyurLink</h2>
+        <p class="section-subtitle">
+            AyurLink is a comprehensive Ayurvedic clinic management system designed to bring the ancient healing practices of Ayurveda into the digital age. Founded with a passion for holistic wellness, we connect patients with experienced Ayurvedic practitioners, making traditional treatments more accessible than ever before.
+        </p>
+        <div class="card">
+            <p style="font-size: 1.1rem; line-height: 1.8;">
+                Our platform serves as a bridge between time-tested Ayurvedic wisdom and modern healthcare technology. Whether you're seeking relief from chronic conditions, looking to improve your overall well-being, or exploring preventive care, AyurLink provides a seamless experience from booking to treatment and beyond.
+            </p>
+        </div>
+    </section>
+
+    <!-- Core Values -->
+    <section class="section">
+        <h2 class="section-title">Our Core Values</h2>
+        <div class="values-grid">
+            <div class="value-item">
+                <div class="value-icon">🌱</div>
+                <h4>Authenticity</h4>
+                <p>We honor traditional Ayurvedic principles and practices</p>
+            </div>
+            <div class="value-item">
+                <div class="value-icon">❤️</div>
+                <h4>Compassion</h4>
+                <p>Patient care is at the heart of everything we do</p>
+            </div>
+            <div class="value-item">
+                <div class="value-icon">⚖️</div>
+                <h4>Balance</h4>
+                <p>Promoting harmony between mind, body, and spirit</p>
+            </div>
+            <div class="value-item">
+                <div class="value-icon">🔬</div>
+                <h4>Innovation</h4>
+                <p>Embracing technology to enhance traditional healing</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>500+</h3>
+                <p>Happy Patients</p>
+            </div>
+            <div class="stat-item">
+                <h3>50+</h3>
+                <p>Expert Doctors</p>
+            </div>
+            <div class="stat-item">
+                <h3>20+</h3>
+                <p>Treatments Available</p>
+            </div>
+            <div class="stat-item">
+                <h3>98%</h3>
+                <p>Satisfaction Rate</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- What We Offer -->
+    <section class="section">
+        <h2 class="section-title">What We Offer</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">📅</div>
+                <h3>Easy Booking</h3>
+                <p>Schedule appointments with qualified Ayurvedic practitioners at your convenience through our user-friendly platform.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">👨‍⚕️</div>
+                <h3>Expert Practitioners</h3>
+                <p>Access to certified Ayurvedic doctors with years of experience in traditional healing practices.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🌿</div>
+                <h3>Authentic Treatments</h3>
+                <p>From Panchakarma to Abhyanga, we offer a wide range of traditional Ayurvedic therapies.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">💳</div>
+                <h3>Secure Payments</h3>
+                <p>Multiple payment options with secure transaction processing for your peace of mind.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Team -->
+    <section class="section">
+        <h2 class="section-title">Meet Our Leadership</h2>
+        <p class="section-subtitle">
+            Our dedicated team of healthcare professionals and technology experts work together to bring you the best in Ayurvedic care.
+        </p>
+        <div class="team-grid">
+            <div class="team-member">
+                <div class="member-avatar">👨‍⚕️</div>
+                <h4 class="member-name">Dr. Rajesh Kumar</h4>
+                <p class="member-role">Chief Medical Officer</p>
+                <p>25 years of experience in Ayurvedic medicine with specialization in Panchakarma treatments.</p>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">👩‍💼</div>
+                <h4 class="member-name">Priya Sharma</h4>
+                <p class="member-role">Operations Director</p>
+                <p>Expert in healthcare management ensuring smooth operations and excellent patient experience.</p>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar">👨‍💻</div>
+                <h4 class="member-name">Arjun Patel</h4>
+                <p class="member-role">Technology Lead</p>
+                <p>Building innovative solutions that make Ayurvedic healthcare accessible to everyone.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="section" style="text-align: center;">
+        <div class="card" style="background: linear-gradient(135deg, #2d6a4f, #40916c); color: white; padding: 3rem;">
+            <h2 style="color: white; font-size: 2rem; margin-bottom: 1rem;">Ready to Begin Your Wellness Journey?</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.95;">
+                Book an appointment today and experience the transformative power of Ayurveda.
+            </p>
+            <a th:href="@{/treatments}" class="btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                Explore Treatments →
+            </a>
+        </div>
+    </section>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>🌿 AyurLink</h3>
+            <p>Your trusted partner in Ayurvedic healthcare, combining ancient wisdom with modern technology.</p>
+        </div>
+        <div class="footer-section">
+            <h3>Quick Links</h3>
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/treatments}">Treatments</a>
+            <a th:href="@{/about}">About Us</a>
+            <a th:href="@{/contact}">Contact</a>
+        </div>
+        <div class="footer-section">
+            <h3>Contact Info</h3>
+            <p>📧 info@ayurlink.com</p>
+            <p>📞 +94 11 234 5678</p>
+            <p>📍 123 Wellness Street, Colombo</p>
+        </div>
+        <div class="footer-section">
+            <h3>Opening Hours</h3>
+            <p>Monday - Friday: 8AM - 8PM</p>
+            <p>Saturday: 9AM - 6PM</p>
+            <p>Sunday: 10AM - 4PM</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 AyurLink. All rights reserved. | Designed with ❤️ for your wellness</p>
+    </div>
+</footer>
+</body>
+</html>

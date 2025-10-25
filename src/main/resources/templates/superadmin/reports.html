@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .report-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .report-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .report-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2d6a4f;
+            margin-bottom: 0.5rem;
+        }
+        .report-description {
+            color: #666;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/superadmin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/superadmin/payments/daily}">Daily Summary</a>
+            <a th:href="@{/superadmin/payments/monthly}">Monthly Summary</a>
+            <a th:href="@{/superadmin/reports}">Reports</a>
+            <a th:href="@{/admin/dashboard}">Admin Features</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>📊 Reports & Analytics</h1>
+        </header>
+
+        <div class="dashboard-content">
+
+            <!-- Report Types -->
+            <h3>Available Reports</h3>
+            <div class="report-grid">
+
+                <!-- Daily Revenue Report -->
+                <div class="report-card" onclick="window.location.href='/superadmin/payments/daily'">
+                    <div class="report-icon">📅</div>
+                    <div class="report-title">Daily Revenue Report</div>
+                    <div class="report-description">
+                        View daily payment transactions, revenue breakdown, and payment methods
+                    </div>
+                </div>
+
+                <!-- Monthly Summary -->
+                <div class="report-card" onclick="window.location.href='/superadmin/payments/monthly'">
+                    <div class="report-icon">📈</div>
+                    <div class="report-title">Monthly Summary</div>
+                    <div class="report-description">
+                        Comprehensive monthly revenue analysis, trends, and refund statistics
+                    </div>
+                </div>
+
+                <!-- Payment Method Analysis -->
+                <div class="report-card" onclick="window.location.href='/superadmin/reports/payment-methods'">
+                    <div class="report-icon">💳</div>
+                    <div class="report-title">Payment Methods</div>
+                    <div class="report-description">
+                        Analysis of cash, receipt upload, and COD payment distributions
+                    </div>
+                </div>
+
+                <!-- Doctor Performance -->
+                <div class="report-card" onclick="window.location.href='/superadmin/reports/doctor-performance'">
+                    <div class="report-icon">👨‍⚕️</div>
+                    <div class="report-title">Doctor Performance</div>
+                    <div class="report-description">
+                        Individual doctor earnings, appointment statistics, and ratings
+                    </div>
+                </div>
+
+                <!-- Treatment Analysis -->
+                <div class="report-card" onclick="window.location.href='/superadmin/reports/treatment-analysis'">
+                    <div class="report-icon">🌿</div>
+                    <div class="report-title">Treatment Analysis</div>
+                    <div class="report-description">
+                        Most popular treatments, revenue by treatment type
+                    </div>
+                </div>
+
+                <!-- Refund Report -->
+                <div class="report-card" onclick="window.location.href='/superadmin/reports/refunds'">
+                    <div class="report-icon">↩️</div>
+                    <div class="report-title">Refund Report</div>
+                    <div class="report-description">
+                        Detailed refund analysis, reasons, and trends
+                    </div>
+                </div>
+
+                <!-- Patient Analytics -->
+                <div class="report-card" onclick="window.location.href='/superadmin/reports/patients'">
+                    <div class="report-icon">👥</div>
+                    <div class="report-title">Patient Analytics</div>
+                    <div class="report-description">
+                        Patient registration trends, retention, and visit frequency
+                    </div>
+                </div>
+
+                <!-- System Overview -->
+                <div class="report-card" onclick="window.location.href='/superadmin/reports/system-overview'">
+                    <div class="report-icon">🔍</div>
+                    <div class="report-title">System Overview</div>
+                    <div class="report-description">
+                        Complete system statistics, performance metrics, and health check
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card" style="margin-top: 2rem;">
+                <h3>Quick Statistics</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                    <div style="padding: 1rem; background: linear-gradient(135deg, #2d6a4f, #52b788); color: white; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;" th:text="'LKR ' + ${#numbers.formatDecimal(todayRevenue != null ? todayRevenue : 0, 1, 2)}">LKR 0.00</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Today's Revenue</div>
+                    </div>
+                    <div style="padding: 1rem; background: linear-gradient(135deg, #40916c, #74c69d); color: white; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;" th:text="'LKR ' + ${#numbers.formatDecimal(monthRevenue != null ? monthRevenue : 0, 1, 2)}">LKR 0.00</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">This Month</div>
+                    </div>
+                    <div style="padding: 1rem; background: linear-gradient(135deg, #52b788, #95d5b2); color: white; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;" th:text="${totalDoctors != null ? totalDoctors : 0}">0</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Total Doctors</div>
+                    </div>
+                    <div style="padding: 1rem; background: linear-gradient(135deg, #74c69d, #b7e4c7); color: white; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;"  th:text="${totalPatients != null ? totalPatients : 0}">0</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Total Patients</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="card" style="margin-top: 2rem;">
+                <h3>📥 Data Export</h3>
+                <p style="color: #666; margin-bottom: 1rem;">Export comprehensive reports for accounting and analysis</p>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <a href="#" class="btn btn-primary">Export All Payments (CSV)</a>
+                    <a href="#" class="btn btn-secondary">Export Monthly Report (Excel)</a>
+                    <a href="#" class="btn btn-secondary">Export Yearly Summary (PDF)</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

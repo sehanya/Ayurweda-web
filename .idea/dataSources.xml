@@ -14,7 +14,7 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="ayurlinkdb@localhost" uuid="b6e0b814-06ac-4ee1-a48b-fa170ec4ce33">
+    <data-source source="LOCAL" name="ayurlinkdb@localhost" uuid="ff15c4f2-aa32-416c-8882-0bbfa115c7fc">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>

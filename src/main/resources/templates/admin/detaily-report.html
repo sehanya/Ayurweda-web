@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detailed Payment Report - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .chart-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .breakdown-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #2d6a4f;
+        }
+        @media print {
+            .sidebar, .btn, .no-print { display: none; }
+            .dashboard-main { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <!-- Admin Section -->
+            <div class="section-label">ADMIN PORTAL</div>
+            <a th:href="@{/admin/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/admin/treatments}">Treatments</a>
+            <a th:href="@{/admin/doctors}">Doctors</a>
+            <a th:href="@{/admin/appointments}">Appointments</a>
+            <a th:href="@{/admin/payments}">Payments</a>
+            <a th:href="@{/admin/payments/reports}">Reports</a>
+            <a th:href="@{/admin/admins}">Admin Accounts</a>
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>📋 Detailed Payment Report</h1>
+            <div class="no-print">
+                <button onclick="window.print()" class="btn btn-primary">🖨️ Print Report</button>
+                <a th:href="@{/admin/payments/reports}" class="btn btn-secondary">← Back</a>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+
+            <!-- Date Range Selector -->
+            <div class="card no-print">
+                <h3>Select Date Range</h3>
+                <form th:action="@{/admin/detaily-report.html}" method="get">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" id="startDate" name="startDate"
+                                   th:value="${startDate}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">End Date</label>
+                            <input type="date" id="endDate" name="endDate"
+                                   th:value="${endDate}" class="form-control">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Report</button>
+                </form>
+            </div>
+
+            <!-- Report Header -->
+            <div class="card">
+                <h2>Report Period</h2>
+                <p style="font-size: 1.2rem; color: #666;">
+                    <strong th:text="${#temporals.format(report.startDate, 'MMMM dd, yyyy')}">Start</strong> to
+                    <strong th:text="${#temporals.format(report.endDate, 'MMMM dd, yyyy')}">End</strong>
+                </p>
+                <p>Generated on: <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm')}">Now</span></p>
+            </div>
+
+            <!-- Revenue Summary -->
+            <div class="card">
+                <h2>💰 Revenue Summary</h2>
+                <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #2d6a4f, #52b788); color: white;">
+                        <div class="stat-icon">💵</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(report.totalRevenue, 1, 2)}">0.00</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👨‍⚕️</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(report.doctorFees, 1, 2)}">0.00</h3>
+                            <p>Doctor Fees</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🌿</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(report.treatmentFees, 1, 2)}">0.00</h3>
+                            <p>Treatment Fees</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏥</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(report.clinicCharges, 1, 2)}">0.00</h3>
+                            <p>Clinic Charges</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction Statistics -->
+            <div class="card">
+                <h2>📊 Transaction Statistics</h2>
+                <div class="breakdown-grid">
+                    <div class="breakdown-card">
+                        <h3 style="margin: 0; color: #2d6a4f;" th:text="${report.totalPayments}">0</h3>
+                        <p style="margin: 0.5rem 0 0 0; color: #666;">Total Transactions</p>
+                    </div>
+                    <div class="breakdown-card">
+                        <h3 style="margin: 0; color: #2d6a4f;"
+                            th:text="'LKR ' + ${#numbers.formatDecimal(report.totalPayments > 0 ? report.totalRevenue / report.totalPayments : 0, 1, 2)}">0.00</h3>
+                        <p style="margin: 0.5rem 0 0 0; color: #666;">Average Transaction</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Method Breakdown -->
+            <div class="card">
+                <h2>💳 Payment Method Distribution</h2>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Payment Method</th>
+                        <th>Count</th>
+                        <th>Percentage</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="entry : ${report.methodBreakdown}">
+                        <td>
+                            <span th:if="${entry.key.name() == 'CASH'}">💵 Cash</span>
+                            <span th:if="${entry.key.name() == 'RECEIPT_UPLOAD'}">📄 Bank Transfer</span>
+                            <span th:if="${entry.key.name() == 'COD'}">💰 Cash on Delivery</span>
+                        </td>
+                        <td th:text="${entry.value}">0</td>
+                        <td th:text="${#numbers.formatDecimal(report.totalPayments > 0 ? (entry.value * 100.0 / report.totalPayments) : 0, 1, 2)} + '%'">0%</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Payment Status Breakdown -->
+            <div class="card">
+                <h2>✅ Payment Status Distribution</h2>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Count</th>
+                        <th>Percentage</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="entry : ${report.statusBreakdown}">
+                        <td>
+                                    <span class="badge" th:classappend="${entry.key.name().toLowerCase().replace('_', '-')}"
+                                          th:text="${entry.key}">Status</span>
+                        </td>
+                        <td th:text="${entry.value}">0</td>
+                        <td th:text="${#numbers.formatDecimal(report.totalPayments > 0 ? (entry.value * 100.0 / report.totalPayments) : 0, 1, 2)} + '%'">0%</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Top Treatments -->
+            <div class="card">
+                <h2>🌿 Top Treatments by Revenue</h2>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Treatment</th>
+                        <th>Number of Payments</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="entry : ${report.topTreatments}">
+                        <td th:text="${entry.key}">Treatment</td>
+                        <td th:text="${entry.value}">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Top Doctors -->
+            <div class="card">
+                <h2>👨‍⚕️ Top Doctors by Consultations</h2>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Number of Consultations</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="entry : ${report.topDoctors}">
+                        <td th:text="${entry.key}">Doctor</td>
+                        <td th:text="${entry.value}">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- All Transactions -->
+            <div class="card">
+                <h2>📋 All Transactions</h2>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Transaction ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Treatment</th>
+                        <th>Method</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="payment : ${report.payments}">
+                        <td th:text="${#temporals.format(payment.paymentDate, 'yyyy-MM-dd')}">Date</td>
+                        <td th:text="${payment.transactionId}">TXN</td>
+                        <td th:text="${payment.appointment.patient.fullName}">Patient</td>
+                        <td th:text="${payment.appointment.doctor.fullName}">Doctor</td>
+                        <td th:text="${payment.appointment.treatment.name}">Treatment</td>
+                        <td>
+                            <span th:if="${payment.paymentMethod.name() == 'CASH'}">💵</span>
+                            <span th:if="${payment.paymentMethod.name() == 'RECEIPT_UPLOAD'}">📄</span>
+                            <span th:if="${payment.paymentMethod.name() == 'COD'}">💰</span>
+                        </td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(payment.totalAmount, 1, 2)}">0.00</td>
+                        <td>
+                                    <span class="badge" th:classappend="${payment.status.name().toLowerCase().replace('_', '-')}"
+                                          th:text="${payment.status}">Status</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Report Footer -->
+            <div class="card" style="text-align: center; color: #666;">
+                <p>Report generated by Ayur-Link Management System</p>
+                <p>© 2024 Ayur-Link. All rights reserved.</p>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

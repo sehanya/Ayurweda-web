@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ?: 'Ayur-Link'">Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="container">
+        <a th:href="@{/}" class="logo">🌿 Ayur-Link</a>
+        <ul class="nav-menu">
+            <!-- 🌍 Public pages (always visible) -->
+            <li><a th:href="@{/}">Home</a></li>
+            <li><a th:href="@{/treatments}">Treatments</a></li>
+            <li><a th:href="@{/about}">About</a></li>
+            <li><a th:href="@{/contact}">Contact</a></li>
+
+            <!-- 👤 Not logged in -->
+            <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}">Login</a></li>
+            <li sec:authorize="!isAuthenticated()"><a th:href="@{/register}">Register</a></li>
+
+            <!-- 🔐 Logged in -->
+            <li sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></li>
+
+            <!-- 🎯 Role-specific dashboards -->
+            <li sec:authorize="hasRole('PATIENT')"><a th:href="@{/patient/dashboard}">Patient Dashboard</a></li>
+            <li sec:authorize="hasRole('DOCTOR')"><a th:href="@{/doctor/dashboard}">Doctor Dashboard</a></li>
+            <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/dashboard}">Admin Dashboard</a></li>
+            <li sec:authorize="hasRole('SUPER_ADMIN')"><a th:href="@{/superadmin/dashboard}">Super Admin Dashboard</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Flash Messages -->
+<div th:if="${success}" class="alert alert-success">
+    <p th:text="${success}"></p>
+</div>
+<div th:if="${error}" class="alert alert-error">
+    <p th:text="${error}"></p>
+</div>
+
+<!-- Main Content -->
+<main>
+    <div layout:fragment="content">
+        <!-- Page content goes here -->
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2024 Ayur-Link. All rights reserved.</p>
+    </div>
+</footer>
+
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>
