@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <div class="section-label">DOCTOR PORTAL</div>
+            <a th:href="@{/doctor/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/doctor/appointments}">Appointments</a>
+            <a th:href="@{/doctor/availability}">Availability</a>
+            <a th:href="@{/doctor/earnings}">💰 Earnings</a>
+            <a th:href="@{/doctor/profile}">Profile</a>
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}"> Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>👨‍⚕️ My Profile</h1>
+        </header>
+
+        <div class="dashboard-content">
+
+            <!-- Profile Summary Card -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <div style="display: flex; gap: 2rem; align-items: center;">
+                    <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #2d6a4f, #52b788); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white;">
+                        👨‍⚕️
+                    </div>
+                    <div>
+                        <h2 style="margin: 0;" th:text="${doctor.fullName}">Dr. Name</h2>
+                        <p style="color: #666; margin: 0.5rem 0;" th:text="${doctor.specialization}">Specialization</p>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <span class="badge" style="background: #d1e7dd; color: #0f5132;" th:if="${doctor.isActive}">✓ Active</span>
+                            <span style="color: #666;">License: <strong th:text="${doctor.licenseNumber}">LIC123</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Profile Form -->
+            <div class="card">
+                <h3>Edit Profile Information</h3>
+
+                <form th:action="@{/doctor/profile/update}" th:object="${doctor}" method="post">
+
+                    <div class="form-group">
+                        <label for="fullName">Full Name *</label>
+                        <input type="text" id="fullName" th:field="*{fullName}" class="form-control" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" th:field="*{email}" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone *</label>
+                            <input type="tel" id="phone" th:field="*{phone}" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="specialization">Specialization *</label>
+                            <input type="text" id="specialization" th:field="*{specialization}" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="consultationFee">Consultation Fee (LKR) *</label>
+                            <input type="number" id="consultationFee" th:field="*{consultationFee}"
+                                   step="0.01" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="licenseNumber">License Number</label>
+                        <input type="text" id="licenseNumber" th:field="*{licenseNumber}"
+                               class="form-control" readonly style="background-color: #f8f9fa;">
+                        <small style="color: #666;">License number cannot be changed. Contact admin if correction needed.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bio">Professional Bio</label>
+                        <textarea id="bio" th:field="*{bio}" rows="5" class="form-control"
+                                  placeholder="Brief description about your expertise and experience..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                        <a th:href="@{/doctor/dashboard}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Statistics Card -->
+            <div class="card" style="margin-top: 2rem;">
+                <h3>📊 My Statistics</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                    <div style="padding: 1rem; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #2d6a4f;">0</div>
+                        <div style="color: #666; font-size: 0.875rem;">Total Appointments</div>
+                    </div>
+                    <div style="padding: 1rem; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #2d6a4f;">0</div>
+                        <div style="color: #666; font-size: 0.875rem;">This Month</div>
+                    </div>
+                    <div style="padding: 1rem; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #2d6a4f;"
+                             th:text="'LKR ' + ${#numbers.formatDecimal(doctor.consultationFee, 1, 2)}">0.00</div>
+                        <div style="color: #666; font-size: 0.875rem;">Consultation Fee</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <div class="section-label">DOCTOR PORTAL</div>
+            <a th:href="@{/doctor/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/doctor/appointments}">Appointments</a>
+            <a th:href="@{/doctor/availability}">Availability</a>
+            <a th:href="@{/doctor/earnings}">💰 Earnings</a>
+            <a th:href="@{/doctor/profile}">Profile</a>
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}"> Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>Welcome, Dr. <span th:text="${doctor.fullName}">Doctor</span>!</h1>
+            <p class="specialization" th:text="${doctor.specialization}">Specialization</p>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info">
+                        <h3 th:text="${#lists.size(appointments)}">0</h3>
+                        <p>Today's Appointments</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏰</div>
+                    <div class="stat-info">
+                        <h3 th:text="${#lists.size(appointments.?[status.name() == 'SCHEDULED'])}">0</h3>
+                        <p>Scheduled</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3 th:text="${#lists.size(appointments.?[status.name() == 'COMPLETED'])}">0</h3>
+                        <p>Completed</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3 th:text="'LKR ' + ${#numbers.formatDecimal(doctor.consultationFee, 0, 2)}">0</h3>
+                        <p>Consultation Fee</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earnings Summary -->
+            <div class="card" style="margin-top: 2rem;">
+                <h2>💰 Earnings Summary</h2>
+
+                <div class="stats-grid" style="margin-top: 1rem;">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #2d6a4f, #52b788); color: white;">
+                        <div class="stat-icon">💵</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(todayEarnings, 0, 2)}">LKR 0.00</h3>
+                            <p>Today's Earnings</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #40916c, #74c69d); color: white;">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(weekEarnings, 0, 2)}">LKR 0.00</h3>
+                            <p>This Week</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #52b788, #95d5b2); color: white;">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(monthEarnings, 0, 2)}">LKR 0.00</h3>
+                            <p>This Month</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <a th:href="@{/doctor/earnings}" class="btn btn-secondary">View Detailed Earnings Report</a>
+                </div>
+            </div>
+
+            <!-- Today's Appointments -->
+            <div class="card" style="margin-top: 2rem;">
+                <h2>Today's Appointments</h2>
+                <div th:if="${#lists.isEmpty(appointments)}">
+                    <p>No appointments scheduled for today.</p>
+                </div>
+
+                <table th:unless="${#lists.isEmpty(appointments)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Ticket #</th>
+                        <th>Patient Name</th>
+                        <th>Treatment</th>
+                        <th>Time</th>
+                        <th>Contact</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="appointment : ${appointments}">
+                        <td th:text="${appointment.ticketNumber}">APT001</td>
+                        <td th:text="${appointment.patient.fullName}">Patient</td>
+                        <td th:text="${appointment.treatment.name}">Treatment</td>
+                        <td th:text="${#temporals.format(appointment.appointmentTime, 'HH:mm')}">10:00</td>
+                        <td th:text="${appointment.patient.phone}">Phone</td>
+                        <td>
+                            <span class="badge" th:classappend="${appointment.status.name().toLowerCase()}"
+                                  th:text="${appointment.status}">Status</span>
+                        </td>
+                        <td>
+                            <form th:if="${appointment.status.name() == 'SCHEDULED'}"
+                                  th:action="@{'/doctor/appointments/' + ${appointment.id} + '/complete'}"
+                                  method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-success">Complete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Availability Info -->
+            <div class="card">
+                <h2>Your Availability</h2>
+                <div th:if="${#lists.isEmpty(doctor.availability)}">
+                    <p>No availability set. <a th:href="@{/doctor/availability}">Set your availability</a></p>
+                </div>
+                <ul class="availability-list" th:unless="${#lists.isEmpty(doctor.availability)}">
+                    <li th:each="slot : ${doctor.availability}" th:text="${slot}">Monday 9:00-12:00</li>
+                </ul>
+                <a th:href="@{/doctor/availability}" class="btn btn-secondary">Update Availability</a>
+            </div>
+            <!-- Quick Actions -->
+            <div class="card">
+                <h2>Quick Actions</h2>
+                <div class="quick-actions-grid">
+                    <a th:href="@{/doctor/appointments}" class="action-card">
+                        <div class="action-icon">📋</div>
+                        <h3>All Appointments</h3>
+                        <p>View appointment history</p>
+                    </a>
+                    <a th:href="@{/doctor/availability}" class="action-card">
+                        <div class="action-icon">🕒</div>
+                        <h3>Update Availability</h3>
+                        <p>Manage your schedule</p>
+                    </a>
+                    <a th:href="@{/doctor/earnings}" class="action-card">
+                        <div class="action-icon">💰</div>
+                        <h3>Earnings Report</h3>
+                        <p>View detailed earnings</p>
+                    </a>
+                    <a th:href="@{/doctor/profile}" class="action-card">
+                        <div class="action-icon">👤</div>
+                        <h3>Update Profile</h3>
+                        <p>Manage your information</p>
+                    </a>
+                    <a th:href="@{/treatments}" class="action-card">
+                        <div class="action-icon">🌿</div>
+                        <h3>View Treatments</h3>
+                        <p>Browse available treatments</p>
+                    </a>
+                    <a th:href="@{/contact}" class="action-card">
+                        <div class="action-icon">📞</div>
+                        <h3>Contact Support</h3>
+                        <p>Get assistance</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
