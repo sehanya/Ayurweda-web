@@ -1,58 +1,38 @@
-package com.example.AyurvedaWeb.model;
+package com.example.ayurlink.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.example.AyurvedaWeb.model.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name="Doctor")
-public class Doctor {
+@Table(name = "doctors")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@PrimaryKeyJoinColumn(name = "user_id")
+public class Doctor extends User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
 
-    private String name;
+    @Column(nullable = false)
     private String specialization;
-    private double fee;
+
+    @Column(name = "license_number", unique = true)
+    private String licenseNumber;
+
+    @Column(name = "consultation_fee")
+    private Double consultationFee;
+
+    @Column(columnDefinition = "TEXT")
     private String bio;
-    private String contact;
 
-    // One doctor can have many availability slots
-    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonManagedReference
-    private List<DoctorAvailability> availability;
-
-    // Constructors
-    public Doctor() {}
-
-    public Doctor(String name, String specialization, double fee, String bio, String contact) {
-        this.name = name;
-        this.specialization = specialization;
-        this.fee = fee;
-        this.bio = bio;
-        this.contact = contact;
-    }
-
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getSpecialization() { return specialization; }
-    public void setSpecialization(String specialization) { this.specialization = specialization; }
-
-    public double getFee() { return fee; }
-    public void setFee(double fee) { this.fee = fee; }
-
-    public String getBio() { return bio; }
-    public void setBio(String bio) { this.bio = bio; }
-
-    public String getContact() { return contact; }
-    public void setContact(String contact) { this.contact = contact; }
-
-    public List<DoctorAvailability> getAvailability() { return availability; }
-    public void setAvailability(List<DoctorAvailability> availability) { this.availability = availability; }
+    @ElementCollection
+    @CollectionTable(name = "doctor_availability", joinColumns = @JoinColumn(name = "doctor_id"))
+    private List<String> availability; // e.g., ["MON 9-12", "WED 14-17"]
 }
