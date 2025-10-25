@@ -1,6 +1,5 @@
 package com.example.ayurlink.model;
 
-import com.example.AyurvedaWeb.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +20,8 @@ public class Doctor extends User {
     private String fullName;
 
     @Column(nullable = false)
+
+
     private String specialization;
 
     @Column(name = "license_number", unique = true)
