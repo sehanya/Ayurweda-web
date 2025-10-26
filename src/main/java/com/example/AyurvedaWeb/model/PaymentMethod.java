@@ -5,3 +5,5 @@ public enum PaymentMethod {
     RECEIPT_UPLOAD,
 
 }
+
+
