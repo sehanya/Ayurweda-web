@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Financial Summary - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <div class="section-label">ADMIN PORTAL</div>
+            <a th:href="@{/admin/dashboard}">Dashboard</a>
+            <a th:href="@{/admin/treatments}">Treatments</a>
+            <a th:href="@{/admin/doctors}">Doctors</a>
+            <a th:href="@{/admin/appointments}">Appointments</a>
+            <a th:href="@{/admin/payments}">Payments</a>
+            <a th:href="@{/admin/payments/reports}">Reports</a>
+            <a th:href="@{/admin/charges}">💰 Admin Charges</a>
+            <a th:href="@{/admin/earnings/all-doctors}">👨‍⚕️ Doctor Earnings</a>
+            <a th:href="@{/admin/financial-summary}" class="active">📊 Financial Summary</a>
+            <a th:href="@{/admin/admins}">Admin Accounts</a>
+
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>📊 Financial Summary</h1>
+            <p>Complete financial overview of the system</p>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Error Display -->
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <!-- Revenue Summary -->
+            <div class="card">
+                <h3>💰 Revenue Overview</h3>
+                <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #2d6a4f, #52b788); color: white;">
+                        <div class="stat-icon">💵</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(paymentStats.totalRevenue, 1, 2)}">LKR 0.00</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #e76f51, #f4a261); color: white;">
+                        <div class="stat-icon">💳</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(totalAdminCharges, 1, 2)}">LKR 0.00</h3>
+                            <p>Admin Charges</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #40916c, #74c69d); color: white;">
+                        <div class="stat-icon">👨‍⚕️</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(totalDoctorEarnings, 1, 2)}">LKR 0.00</h3>
+                            <p>Total Doctor Earnings</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #d62828, #f77f00); color: white;">
+                        <div class="stat-icon">↩️</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(paymentStats.totalRefunds, 1, 2)}">LKR 0.00</h3>
+                            <p>Total Refunds</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Breakdown -->
+            <div class="card">
+                <h3>📊 Financial Breakdown</h3>
+                <div style="background: #f8f9fa; padding: 2rem; border-radius: 10px;">
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 2px solid #dee2e6;">
+                        <div style="font-weight: 600;">Total Revenue (Gross)</div>
+                        <div style="font-weight: bold; color: #2d6a4f;">
+                            LKR <span th:text="${#numbers.formatDecimal(paymentStats.totalRevenue, 1, 2)}">0.00</span>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; margin-bottom: 0.5rem; padding-left: 1rem;">
+                        <div>Admin Charges (Clinic Revenue)</div>
+                        <div style="color: #e76f51; font-weight: 600;">
+                            - LKR <span th:text="${#numbers.formatDecimal(totalAdminCharges, 1, 2)}">0.00</span>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; margin-bottom: 1rem; padding-bottom: 1rem; padding-left: 1rem; border-bottom: 2px solid #dee2e6;">
+                        <div>Doctor Earnings</div>
+                        <div style="color: #40916c; font-weight: 600;">
+                            - LKR <span th:text="${#numbers.formatDecimal(totalDoctorEarnings, 1, 2)}">0.00</span>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding-left: 1rem;">
+                        <div style="font-style: italic; color: #666;">Refunds Processed</div>
+                        <div style="color: #d62828; font-weight: 600;">
+                            - LKR <span th:text="${#numbers.formatDecimal(paymentStats.totalRefunds, 1, 2)}">0.00</span>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 3px solid #2d6a4f;">
+                        <div style="font-weight: bold; font-size: 1.1em;">Net Revenue</div>
+                        <div style="font-weight: bold; font-size: 1.2em; color: #2d6a4f;">
+                            LKR <span th:text="${#numbers.formatDecimal(paymentStats.netRevenue, 1, 2)}">0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Statistics -->
+            <div class="card">
+                <h3>📈 Payment Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-info">
+                            <h3 th:text="${paymentStats.totalPayments}">0</h3>
+                            <p>Total Payments</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <h3 th:text="${paymentStats.successfulPayments}">0</h3>
+                            <p>Successful</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-info">
+                            <h3 th:text="${paymentStats.pendingVerification}">0</h3>
+                            <p>Pending Verification</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">↩️</div>
+                        <div class="stat-info">
+                            <h3 th:text="${paymentStats.refunded}">0</h3>
+                            <p>Refunded</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctor Information -->
+            <div class="card">
+                <h3>👨‍⚕️ Doctor Information</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3 th:text="${totalDoctors}">0</h3>
+                            <p>Active Doctors</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(totalDoctorEarnings, 1, 2)}">LKR 0.00</h3>
+                            <p>Total Doctor Earnings</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: #fff3cd;">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(totalPendingSettlements, 1, 2)}">LKR 0.00</h3>
+                            <p>Pending Settlements</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="background: #d1e7dd;">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <h3 th:text="'LKR ' + ${#numbers.formatDecimal(totalDoctorEarnings - totalPendingSettlements, 1, 2)}">LKR 0.00</h3>
+                            <p>Settled to Doctors</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="card">
+                <h3>💳 Payment Method Distribution</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;">
+                    <div style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 10px;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+                        <h3 style="color: #2d6a4f;" th:text="${paymentStats.receiptPayments}">0</h3>
+                        <p>Receipt Uploads</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Health Indicators -->
+            <div class="card" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9);">
+                <h3>📊 Financial Health Indicators</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-top: 1.5rem;">
+                    <div style="background: white; padding: 1.5rem; border-radius: 10px;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: #2d6a4f;">Revenue Distribution</h4>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Admin Revenue:</span>
+                                <strong th:text="${#numbers.formatDecimal(totalAdminCharges / paymentStats.totalRevenue * 100, 1, 2)} + '%'">0%</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Doctor Revenue:</span>
+                                <strong th:text="${#numbers.formatDecimal(totalDoctorEarnings / paymentStats.totalRevenue * 100, 1, 2)} + '%'">0%</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: white; padding: 1.5rem; border-radius: 10px;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: #2d6a4f;">Settlement Status</h4>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Pending Settlements:</span>
+                                <strong style="color: #f4a261;"
+                                        th:text="'LKR ' + ${#numbers.formatDecimal(totalPendingSettlements, 1, 2)}">0.00</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Settlement Rate:</span>
+                                <strong th:text="${totalDoctorEarnings > 0 ? #numbers.formatDecimal((totalDoctorEarnings - totalPendingSettlements) / totalDoctorEarnings * 100, 1, 2) : 0} + '%'">0%</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <h3>⚡ Quick Actions</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                    <a th:href="@{/admin/charges}" class="btn btn-primary" style="text-align: center;">
+                        💰 View Admin Charges
+                    </a>
+                    <a th:href="@{/admin/earnings/all-doctors}" class="btn btn-primary" style="text-align: center;">
+                        👨‍⚕️ View Doctor Earnings
+                    </a>
+                    <a th:href="@{/admin/payments/reports}" class="btn btn-primary" style="text-align: center;">
+                        📊 Generate Reports
+                    </a>
+                </div>
+            </div>
+
+            <!-- Information Box -->
+            <div class="card" style="background: #e3f2fd; border-left: 4px solid #2196f3;">
+                <h3>ℹ️ Understanding the Financial Summary</h3>
+                <ul style="line-height: 1.8;">
+                    <li><strong>Total Revenue:</strong> Sum of all successful payments received</li>
+                    <li><strong>Admin Charges:</strong> Fixed LKR 500 per transaction (clinic revenue)</li>
+                    <li><strong>Doctor Earnings:</strong> Consultation Fee + Treatment Fee per appointment</li>
+                    <li><strong>Pending Settlements:</strong> Amount owed to doctors but not yet paid</li>
+                    <li><strong>Net Revenue:</strong> Total Revenue - Refunds</li>
+                </ul>
+            </div>
+
+            <!-- Navigation -->
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <a th:href="@{/admin/dashboard}" class="btn btn-secondary">← Back to Dashboard</a>
+                <button onclick="window.print()" class="btn">🖨️ Print Summary</button>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>;">💵</div>
+<h3 style="color: #2d6a4f;" th:text="${paymentStats.cashPayments}">0</h3>
+<p>Cash Payments</p>
+</div>
+<div style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 10px;">
+    <div style="font-size: 3rem; margin-bottom: 1rem

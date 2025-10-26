@@ -52,6 +52,7 @@
                 <div class="stat-card highlight">
                     <div class="stat-icon">💰</div>
                     <div class="stat-info">
+                        <h3 th:text="'LKR ' + ${summary.totalRevenue}">0.00</h3>
                         <p>Total Revenue</p>
                     </div>
                 </div>
@@ -96,6 +97,7 @@
                         <td th:text="${payment.appointment.patient.fullName}">Patient</td>
                         <td th:text="${payment.appointment.doctor.fullName}">Doctor</td>
                         <td th:text="${payment.appointment.treatment.name}">Treatment</td>
+                        <td th:text="'LKR ' + ${payment.amount}">5000</td>
                         <td th:text="${payment.paymentMethod}">CARD</td>
                         <td th:text="${#temporals.format(payment.paymentDate, 'HH:mm')}">10:00</td>
                         <td>

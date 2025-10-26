@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.core.io.Resource;
 import java.time.LocalDate;
@@ -32,7 +33,7 @@ public class AdminController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        List<Treatment> treatments = treatmentService.getAllTreatments();
+        List<Treatment> activeTreatments = treatmentService.getActiveTreatments();
         List<Doctor> doctors = doctorService.getAllDoctors();
 
         // Get all appointments
@@ -52,7 +53,7 @@ public class AdminController {
                 .distinct()
                 .count();
 
-        model.addAttribute("treatmentCount", treatments.size());
+        model.addAttribute("treatmentCount", activeTreatments.size());
         model.addAttribute("doctorCount", doctors.size());
         model.addAttribute("todayAppointmentCount", todayAppointmentCount);
         model.addAttribute("totalPatientCount", totalPatientCount);
@@ -64,7 +65,7 @@ public class AdminController {
 
     @GetMapping("/treatments")
     public String listTreatments(Model model) {
-        List<Treatment> treatments = treatmentService.getAllTreatments();
+        List<Treatment> treatments = treatmentService.getActiveTreatments();
         model.addAttribute("treatments", treatments);
         return "admin/treatments";
     }
@@ -76,14 +77,14 @@ public class AdminController {
     }
 
     @PostMapping("/treatments/save")
-    public String saveTreatment(@ModelAttribute Treatment treatment,
+    public String saveTreatment(@ModelAttribute Treatment treatment,@RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                                 RedirectAttributes redirectAttributes) {
         try {
             if (treatment.getId() == null) {
-                treatmentService.createTreatment(treatment);
+                treatmentService.createTreatment(treatment,imageFile);
                 redirectAttributes.addFlashAttribute("success", "Treatment created successfully");
             } else {
-                treatmentService.updateTreatment(treatment.getId(), treatment);
+                treatmentService.updateTreatment(treatment.getId(), treatment,imageFile);
                 redirectAttributes.addFlashAttribute("success", "Treatment updated successfully");
             }
             return "redirect:/admin/treatments";
@@ -104,20 +105,43 @@ public class AdminController {
     @PostMapping("/treatments/delete/{id}")
     public String deleteTreatment(@PathVariable Long id,
                                   RedirectAttributes redirectAttributes) {
+        System.out.println("╔════════════════════════════════════════╗");
+        System.out.println("║  DELETE REQUEST RECEIVED!              ║");
+        System.out.println("║  Treatment ID: " + id + "                        ║");
+        System.out.println("╚════════════════════════════════════════╝");
         try {
             treatmentService.deleteTreatment(id);
+            System.out.println("✓ Delete successful!");
             redirectAttributes.addFlashAttribute("success", "Treatment deleted successfully");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            System.err.println("✗ Delete failed: " + e.getMessage());
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error","Failed to delete: " + e.getMessage());
         }
         return "redirect:/admin/treatments";
     }
 
-    @GetMapping("/treatment-image/{id}")
-    public ResponseEntity<byte[]> getTreatmentImage(@PathVariable Long id) {
-        // This method requires BLOB storage implementation
-        // For now, we'll serve static files instead
-        return ResponseEntity.notFound().build();
+    @GetMapping("/treatment-image/{filename}")
+    public ResponseEntity<Resource> getTreatmentImage(@PathVariable String filename) {
+        try {
+            Resource resource = fileStorageService.loadFileAsResource(filename);
+
+            String contentType = "application/octet-stream";
+            if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
+                contentType = "image/jpeg";
+            } else if (filename.endsWith(".png")) {
+                contentType = "image/png";
+            } else if (filename.endsWith(".gif")) {
+                contentType = "image/gif";
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // ==================== DOCTOR MANAGEMENT ====================

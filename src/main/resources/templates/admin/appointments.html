@@ -71,7 +71,14 @@
                         <td th:text="${appointment.ticketNumber}">APT001</td>
                         <td th:text="${appointment.patient.fullName}">Patient</td>
                         <td th:text="${appointment.doctor.fullName}">Doctor</td>
-                        <td th:text="${appointment.treatment.name}">Treatment</td>
+                        <td>
+                           <span th:if="${appointment.treatment != null}"
+                                 th:text="${appointment.treatment.name}">Treatment</span>
+                            <span th:unless="${appointment.treatment != null}"
+                                  style="color: #999; font-style: italic;">
+                                 [Treatment Deleted]
+                             </span>
+                        </td>
                         <td th:text="${#temporals.format(appointment.appointmentDate, 'yyyy-MM-dd')}">Date</td>
                         <td th:text="${#temporals.format(appointment.appointmentTime, 'HH:mm')}">Time</td>
                         <td>

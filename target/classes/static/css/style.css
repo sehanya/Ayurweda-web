@@ -1,7 +1,14 @@
+/*heder section*/
+.header {
     position: relative;
+    height: 100vh; /* Full screen height */
     text-align: center;
+    color: white;
+    font-family: 'Times New Roman';
     overflow: hidden;
 }
+
+.header::before {
     content: '';
     position: absolute;
     top: 0;
@@ -11,8 +18,11 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    animation: changeBackground 15s infinite;
+    z-index: 0;
 }
 
+.header::after {
     content: '';
     position: absolute;
     top: 0;
@@ -20,121 +30,323 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.header-text{
+    position: center;
+    z-index: 2;
+}
+
+
+@keyframes changeBackground {
+    0%   { background-image: url("/images/background.webp"); }
+    33%  { background-image: url("/images/ayurvedic-treatment.png"); }
+    66%  { background-image: url("/images/woman-3701713_960_720.jpg"); }
+    100% { background-image: url("/images/ai-generated-8221928_960_720.webp"); }
+}
+
+.navbar-brand img{
+   
+    width: 50px;
+    text-align: left;
+  height: 35px;
   
 }
+.navbar{
+    background-color:rgba(236, 208, 172, 0.582);
+}
+
+.header-text h1{
+    padding-top: 5%;
+    text-align: left;
+    font-size: 60px;
     text-transform: uppercase;
+    color:#fff;
+    padding-left: 20%;
+    font-family:'Times New Roman' ;
+    font-style:oblique;
+    font-weight: 600;
+    position: relative;
+    z-index: 2; 
 
 }
 
+/*about section*/
+
+.about-section{
+    padding-top:50px ;
+    padding-bottom: 30px;
 
 }
+.about-section h5{
     text-align: center;
+    color: #333;
+    font-size: 30px;
     text-transform: uppercase;
+    font-family: 'Times New Roman';
 }
+.about-section p{
+    color:#333;
     font-size:18px ;
+    margin-top: 45px ;
+    line-height: 28px;
+    font-weight: 300;
+    font-family: calibri
 }
+.about-section p{
+    color:#333;
     font-size:18px ;
+    margin-top: 15px ;
+    line-height: 28px;
+    font-weight: 300;
+    font-family: calibri;
+
+}
+
+
+
+.section-title-02{
+    padding-top:50px ;
+    padding-bottom: 30px;
+   
+}
+.section-title-02 h2{
     text-align: center;
+    color: #333;
+    font-size: 30px;
     text-transform: uppercase;
+    font-family: 'Times New Roman';
 }
+.section-title-02 p{
+    color:#333;
+    font-size:18px ;
+    margin-top: 45px ;
+    line-height: 28px;
+    font-weight: 300;
+    font-family: calibri
 }
+.section-title-03 p{
+    color:#333;
+    font-size:18px ;
+    margin-top: 15px ;
+    line-height: 28px;
+    font-weight: 300;
+    font-family: calibri;
 
 }
+.point-main-02 {
+    color:#333;
+    font-size:18px ;
+    margin-top: 5px ;
+    line-height: 28px;
+    font-weight: 300;
+    font-family: calibri;
 }
+.point-main-02 li{
+      color: #333;
+      font-weight: 300;
 
 }
+.point-main-02 i{
     font-weight: 600;
 
 }
 
 
 
+/* available on*/
 .available-on{
+    background-image: url("/imges/photo-1637070773929-054cf3288cbb.jpg");
     background-size: cover;
 }
 .available-title{
+    padding-top: 75px;
+   
+}
+.available-title p{
+   color: #fff;
+   font-size: 18px; 
+   font-family: 'Times New Roman', Times, serif;
+   font-weight: 100;
 }
 .available-title h2{
+    font-family: 'Times New Roman', Times, serif;
+    color: #fcf9f9;
+    font-size: 25px;
+    font-weight: 200;
 }
 .available-on-item{
     text-align: center;
+    min-height: 230px;
+    padding-bottom: 15px;
+    position:relative;
 }
 
 .available-on-item i{
     color:#078de1;
     text-align: center;
+    font-size: 30px;
+    padding-top: 90px;
+    opacity: 1;
+    transition:all 1s;
 }
+.available-on-item:hover i{
+    opacity: .4;
     
 
 }
+.available-on-item h2{
+    font-size: 25px;
 }
 
 
+/*footer css*/
 .footer{
+    padding-top: 35px;
+    padding-bottom: 35px;
     
+}
+#copyright{
+    width: 50%;
+}
+#copyright p{
+    counter-reset:#8c8b8a ;
+    text-transform: uppercase;
     font-size: 15px;
 }
 .scroll-up{
+    text-align: right;
 
 }
 .scroll-up a{
     background-color: #034168;
     padding: 25px;
+
 }
 .scroll-up a i{
     color: #fff;
+    font-size: 25px;
 }
+.contact-section {
     display: flex;
     height: 100vh;
   }
   
+  .contact-container {
     display: flex;
+    width: 100%;
     height: 100%;
   }
   
+  /* Video Section */
+  .video-container {
     flex: 1;
     overflow: hidden;
     position: relative;
   }
   
+  .video-container .video-bg {
     width: 100%;
     height: 100%;
+    object-fit: cover;
   }
   
+  /* Contact Form Section */
+  .contact-form {
     
+    background-image: url("/imges/istockphoto-1253265312-612x612.jpg");
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-  
+    padding: 40px;
+    background-size: cover;
+    transform: scale(1.00);
+    box-shadow: 1 20px 30px rgba(63, 63, 63, 0.505);
+
   }
   
+  .contact-form h2 {
+    font-size: 2rem;
+    color: #25136b;
+    margin-bottom: 10px;
+  }
+  
+  .contact-form p {
+    color: #333;
     margin-bottom: 20px;
     text-align: center;
   }
   
+  .contact-form form {
     width: 100%;
+    max-width: 400px;
   }
   
-    width: 100%;
+  .contact-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #3e597f;
   }
   
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .contact-form button {
+    background: #2d2c79;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
     font-size: 1rem;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background 0.3s ease;
   }
   
+  .contact-form button:hover {
+    background: #4e72bf;
   }
 
+.available-on-item {
+    border: 1px solid #9d9d9d;
+    padding: 15px;
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
 }
 
+.available-on-item i {
+    font-size: 30px;
+    margin-bottom: 10px;
     display: block;
 }
 
+.available-on-item:hover {
+    background-color: #129CF3;
+    border-color: #129CF3;
     color: #fff;
 }
 
+.social-icons ul li a {
     display: inline-block;
+    border: 1px solid #9d9d9d;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
+    text-align: center;
+    line-height: 45px;
+    transition: 0.3s;
 }
 
+.social-icons ul li a:hover {
+    background-color: #129CF3;
+    border-color: #129CF3;
+    color: #fff;
 }
