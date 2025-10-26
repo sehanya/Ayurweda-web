@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <!-- Patient Section -->
+            <div class="section-label">PATIENT PORTAL</div>
+            <a th:href="@{/patient/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/patient/book-appointment}">Book Appointment</a>
+            <a th:href="@{/patient/appointments}">My Appointments</a>
+            <a th:href="@{/patient/payments}">Payments</a>
+            <a th:href="@{/patient/profile}">Profile</a>
+
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>Book New Appointment</h1>
+            <p>Find and book an available time slot with your preferred doctor</p>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="card">
+                <form id="appointmentForm"   th:action="@{/patient/book-appointment}" method="post" class="appointment-form">
+
+                    <div class="form-group">
+                        <label for="treatmentId">Select Treatment *</label>
+                        <p class="form-hint">Choose the Ayurvedic treatment you want to book</p>
+                        <select id="treatmentId" name="treatmentId" required>
+                            <option value="">Choose a treatment</option>
+                            <option th:each="treatment : ${treatments}"
+                                    th:value="${treatment.id}"
+                                    th:text="${treatment.name} + ' - LKR ' + ${treatment.cost}">
+                                Treatment
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="doctorId">Select Doctor *</label>
+
+                        <p class="form-hint">Choose a doctor specializing in your treatment</p>
+                        <select id="doctorId" name="doctorId" required>
+                            <option value="">Choose a doctor</option>
+                            <option th:each="doctor : ${doctors}"
+                                    th:value="${doctor.id}"
+                                    th:text="${doctor.fullName} + ' (' + ${doctor.specialization} + ')'">
+                                Doctor
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointmentDate">Appointment Date *</label>
+                        <input type="date" id="appointmentDate" name="appointmentDate"
+                               th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                               required
+                               onchange="handleDateChange()">
+                    </div>
+
+                    <!-- Time Slots Container -->
+                    <div id="timeSlotsContainer" class="time-slots-container">
+                        <label>Available Time Slots *</label>
+                        <div id="slotsContent"></div>
+                    </div>
+
+                    <!-- Hidden input for appointment time -->
+                    <input type="hidden" id="appointmentTime" name="appointmentTime" value="">
+
+                    <!-- Display selected time -->
+                    <div id="selectedTimeDisplay" style="margin-top: 1rem; display: none;">
+                        <p><strong>Selected Time: </strong><span id="selectedTimeText"></span></p>
+                    </div>
+
+                    <div class="form-actions">
+                        <button id="submitBtn"   type="submit" class="btn btn-primary">Book Appointment</button>
+                        <a th:href="@{/patient/dashboard}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+            <div class="card" style="margin-top: 2rem;">
+                <h2>💡 Booking Information</h2>
+                <ul style="line-height: 1.8; color: #555;">
+                    <li>Each appointment slot is <strong>15 minutes</strong></li>
+                    <li>You will receive a <strong>ticket number</strong> after successful booking</li>
+                    <li>Check <strong>My Appointments</strong> to view or cancel bookings</li>
+                    <li>Doctors' availability is updated regularly - check back if no slots available</li>
+                    <li>Payment is required at the time of appointment</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const submitBtn = document.getElementById('submitBtn');
+    const timeSlotsContainer = document.getElementById('timeSlotsContainer');
+    const slotsContent = document.getElementById('slotsContent');
+    const appointmentForm = document.getElementById('appointmentForm');
+
+    function handleTreatmentChange() {
+        // Reset when treatment changes
+        resetTimeSelection();
+    }
+
+    function handleDoctorChange() {
+        const doctorId = document.getElementById('doctorId').value;
+        const date = document.getElementById('appointmentDate').value;
+
+        resetTimeSelection();
+
+        if (doctorId && date) {
+            fetchTimeSlots(doctorId, date);
+        } else {
+            timeSlotsContainer.classList.remove('show');
+        }
+    }
+
+    function handleDateChange() {
+        const doctorId = document.getElementById('doctorId').value;
+        const date = document.getElementById('appointmentDate').value;
+
+        resetTimeSelection();
+
+        if (doctorId && date) {
+            fetchTimeSlots(doctorId, date);
+        } else {
+            timeSlotsContainer.classList.remove('show');
+        }
+    }
+
+    function resetTimeSelection() {
+        document.getElementById('appointmentTime').value = '';
+        document.getElementById('selectedTimeDisplay').style.display = 'none';
+        submitBtn.disabled = true;
+
+        document.querySelectorAll('.time-slot-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+    }
+
+    function fetchTimeSlots(doctorId, date) {
+        console.log('Fetching slots for doctor:', doctorId, 'date:', date);
+
+        slotsContent.innerHTML = '<div class="loading-slots"><div class="spinner"></div>Loading available time slots...</div>';
+        timeSlotsContainer.classList.add('show');
+
+        fetch(`/patient/available-slots?doctorId=${doctorId}&date=${date}`)
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(slots => {
+                console.log('Received slots:', slots);
+                displayTimeSlots(slots);
+            })
+            .catch(error => {
+                console.error('Error fetching slots:', error);
+                slotsContent.innerHTML = `
+                    <div class="no-slots-message">
+                        Error loading time slots. Please check console for details.
+                    </div>
+                `;
+                submitBtn.disabled = true;
+            });
+    }
+
+    function displayTimeSlots(slots) {
+        if (!slots || slots.length === 0) {
+            slotsContent.innerHTML = `
+                <div class="no-slots-message">
+                    No available slots for this doctor on the selected date. Please try another date or doctor.
+                </div>
+            `;
+            submitBtn.disabled = true;
+            return;
+        }
+
+        const slotsGrid = document.createElement('div');
+        slotsGrid.className = 'time-slots-grid';
+
+        slots.forEach(slot => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'time-slot-wrapper';
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'time-slot-btn';
+            button.textContent = slot.time;
+
+            if (!slot.available) {
+                button.disabled = true;
+                button.title = 'Already booked';
+            } else {
+                button.onclick = (e) => selectTimeSlot(e, slot.time);
+            }
+
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `slot-status ${slot.available ? 'available' : 'booked'}`;
+            statusDiv.textContent = slot.available ? 'Available' : 'Booked';
+
+            wrapper.appendChild(button);
+            wrapper.appendChild(statusDiv);
+            slotsGrid.appendChild(wrapper);
+        });
+
+        slotsContent.innerHTML = '';
+        slotsContent.appendChild(slotsGrid);
+    }
+
+    function selectTimeSlot(e, time) {
+        e.preventDefault();
+
+        document.querySelectorAll('.time-slot-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+
+        e.target.classList.add('selected');
+        document.getElementById('appointmentTime').value = time;
+        document.getElementById('selectedTimeText').textContent = time;
+        document.getElementById('selectedTimeDisplay').style.display = 'block';
+        submitBtn.disabled = false;
+    }
+
+    appointmentForm.addEventListener('submit', function(e) {
+        const appointmentTime = document.getElementById('appointmentTime').value;
+
+        if (!appointmentTime) {
+            e.preventDefault();
+            alert('Please select a time slot before booking');
+            return false;
+        }
+    });
+</script>
+</body>
+</html>
