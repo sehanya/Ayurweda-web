@@ -1,541 +1,697 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Make Payment - Ayur-Link</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-        .payment-container {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 2rem;
-}
-        .breakdown-table {
-    width: 100%;
-    margin: 2rem 0;
-    border-collapse: collapse;
-}
-        .breakdown-table td {
-padding: 1rem;
-border-bottom: 1px solid #ddd;
-        }
-                .breakdown-table .label {
-    font-weight: 500;
-    color: #666;
-}
-        .breakdown-table .value {
-    text-align: right;
-    font-weight: 600;
-    color: #2d6a4f;
-}
-        .breakdown-table .total {
-    font-size: 1.25rem;
-    background-color: #d8f3dc;
-}
-        .payment-method-selection {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 1rem;
-    margin: 2rem 0;
-}
-        .payment-option {
-    border: 3px solid #ddd;
-    border-radius: 10px;
-    padding: 2rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
-}
-        .payment-option:hover {
-    border-color: #2d6a4f;
-    background-color: #f0f8f4;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-        .payment-option input[type="radio"] {
-display: none;
-        }
-                .payment-option.selected {
-    border-color: #2d6a4f;
-    background-color: #d8f3dc;
-    box-shadow: 0 4px 12px rgba(45, 106, 79, 0.2);
-}
-        .payment-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-        .payment-option h4 {
-color: #2d6a4f;
-margin: 0.5rem 0;
-        }
-        .payment-option p {
-font-size: 0.875rem;
-color: #666;
-margin: 0;
-        }
-        .receipt-upload-section {
-    display: none;
-    margin-top: 1.5rem;
-    padding: 1.5rem;
-    background-color: #fff3cd;
-    border: 2px dashed #ffc107;
-    border-radius: 8px;
-}
-        .receipt-upload-section.active {
-    display: block;
-}
-        .file-upload-wrapper {
-    position: relative;
-    margin: 1rem 0;
-}
-        .file-upload-input {
-    width: 100%;
-    padding: 1rem;
-    border: 2px dashed #2d6a4f;
-    border-radius: 8px;
-    cursor: pointer;
-    background-color: white;
-}
-        .file-upload-input:hover {
-    background-color: #f0f8f4;
-}
-        .payment-instructions {
-    background-color: #e3f2fd;
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin: 1.5rem 0;
-    border-left: 4px solid #2196f3;
-}
-        .instructions-title {
-    font-weight: 600;
-    color: #1976d2;
-    margin-bottom: 0.5rem;
-}
-        .bank-details-box {
-    background: linear-gradient(135deg, #2d6a4f, #40916c);
-    color: white;
-    padding: 1.5rem;
-    border-radius: 10px;
-    margin: 1rem 0;
-    box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
-}
-        .bank-detail-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid rgba(255,255,255,0.2);
-}
-        .bank-detail-row:last-child {
-    border-bottom: none;
-}
-        .bank-detail-label {
-    font-weight: 500;
-    opacity: 0.9;
-}
-        .bank-detail-value {
-    font-weight: 700;
-    font-size: 1.1rem;
-}
-        .copy-btn {
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.5);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.875rem;
-    margin-left: 0.5rem;
-    transition: all 0.3s;
-}
-        .copy-btn:hover {
-    background: rgba(255,255,255,0.3);
-}
-    </style>
-</head>
-<body>
-<div class="dashboard-container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="logo">🌿 Ayur-Link</div>
-        <nav class="sidebar-nav">
-            <!-- Patient Section -->
-            <div class="section-label">PATIENT PORTAL</div>
-            <a th:href="@{/patient/dashboard}" class="active">Dashboard</a>
-            <a th:href="@{/patient/book-appointment}">Book Appointment</a>
-            <a th:href="@{/patient/appointments}">My Appointments</a>
-            <a th:href="@{/patient/payments}">Payments</a>
-            <a th:href="@{/patient/profile}">Profile</a>
+package com.example.ayurlink.service;
 
+import com.example.ayurlink.model.*;
+import com.example.ayurlink.repository.AppointmentRepository;
+import com.example.ayurlink.repository.PaymentRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-            <!-- Public Pages Section -->
-            <div class="public-pages-section">
-                <div class="section-label">PUBLIC PAGES</div>
-                <a th:href="@{/}">🏠 Home</a>
-                <a th:href="@{/treatments}">🌿 Treatments</a>
-                <a th:href="@{/about}">ℹ️ About Us</a>
-                <a th:href="@{/contact}">📞 Contact</a>
-            </div>
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
-            <form th:action="@{/logout}" method="post">
-                <button type="submit" class="btn-logout">Logout</button>
-            </form>
-        </nav>
-    </aside>
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class PaymentService {
 
-    <!-- Main Content -->
-    <main class="dashboard-main">
-        <div class="payment-container">
-            <div class="card">
-                <h2>🧾 Payment Details</h2>
+    private final PaymentRepository paymentRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final FileStorageService fileStorageService;
 
-                <!-- Appointment Info -->
-                <div style="background-color: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-                    <h3 style="margin-bottom: 1rem;">Appointment Information</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div>
-                            <p><strong>Ticket Number:</strong></p>
-                            <p th:text="${appointment.ticketNumber}">APT001</p>
-                        </div>
-                        <div>
-                            <p><strong>Date & Time:</strong></p>
-                            <p th:text="${#temporals.format(appointment.appointmentDate, 'yyyy-MM-dd')} + ' at ' + ${#temporals.format(appointment.appointmentTime, 'HH:mm')}">Date & Time</p>
-                        </div>
-                        <div>
-                            <p><strong>Doctor:</strong></p>
-                            <p th:text="${appointment.doctor.fullName}">Doctor Name</p>
-                        </div>
-                        <div>
-                            <p><strong>Treatment:</strong></p>
-                            <p th:text="${appointment.treatment.name}">Treatment Name</p>
-                        </div>
-                    </div>
-                </div>
+    private static final Double DEFAULT_CLINIC_CHARGES = 500.0;
 
-                <!-- Payment Breakdown -->
-                <h3>💰 Payment Breakdown</h3>
-                <table class="breakdown-table">
-                    <tr>
-                        <td class="label">Doctor Consultation Fee</td>
-                        <td class="value" th:text="'LKR ' + ${#numbers.formatDecimal(breakdown.doctorFee, 1, 2)}">0.00</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Treatment Cost</td>
-                        <td class="value" th:text="'LKR ' + ${#numbers.formatDecimal(breakdown.treatmentFee, 1, 2)}">0.00</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Clinic Charges</td>
-                        <td class="value" th:text="'LKR ' + ${#numbers.formatDecimal(breakdown.clinicCharges, 1, 2)}">0.00</td>
-                    </tr>
-                    <tr class="total">
-                        <td class="label"><strong>Total Amount</strong></td>
-                        <td class="value"><strong th:text="'LKR ' + ${#numbers.formatDecimal(breakdown.totalAmount, 1, 2)}">0.00</strong></td>
-                    </tr>
-                </table>
+    // ==================== BANK ACCOUNT DETAILS ====================
 
-                <!-- Payment Form -->
-                <form th:action="@{/payment/process}" method="post" id="paymentForm" enctype="multipart/form-data">
-                    <input type="hidden" name="appointmentId" th:value="${appointment.id}">
+    public Map<String, String> getBankAccountDetails() {
+        Map<String, String> bankDetails = new HashMap<>();
+        bankDetails.put("bankName", "Commercial Bank");
+        bankDetails.put("accountName", "Ayur-Link Ayurvedic Clinic");
+        bankDetails.put("accountNumber", "8560123456789");
+        bankDetails.put("branch", "Colombo 07");
+        bankDetails.put("swiftCode", "CCEYLKLX");
+        return bankDetails;
+    }
+    // ==================== CREATE OPERATIONS ====================
 
-                    <h3>💳 Select Payment Method</h3>
-                    <div class="payment-method-selection">
-                        <!-- Cash Payment -->
-                        <div class="payment-option" onclick="selectPaymentMethod(this, 'CASH')">
-                            <input type="radio" name="paymentMethod" value="CASH" id="cash" required>
-                            <label for="cash">
-                                <div class="payment-icon">💵</div>
-<h4>Cash Payment</h4>
-<p>Pay with cash at the clinic</p>
-                            </label>
-                        </div>
+    public Payment createCashPayment(Long appointmentId, String notes) {
+        log.info("Creating cash payment for appointment ID: {}", appointmentId);
+        Appointment appointment = validateAppointment(appointmentId);
+        Payment payment = buildPayment(appointment, PaymentMethod.CASH, notes);
+// Cash payment is immediately successful
+        payment.setStatus(PaymentStatus.SUCCESS);
+        payment.setPaymentDate(LocalDateTime.now());
 
-                        <!-- Receipt Upload -->
-                        <div class="payment-option" onclick="selectPaymentMethod(this, 'RECEIPT_UPLOAD')">
-                            <input type="radio" name="paymentMethod" value="RECEIPT_UPLOAD" id="receipt" required>
-                            <div style="pointer-events: none;">
-                                <div class="payment-icon">📄</div>
-<h4>Bank Transfer</h4>
-<p>Upload payment receipt</p>
-                            </div>
-                        </div>
+        // Confirm the appointment
+        appointment.setStatus(AppointmentStatus.CONFIRMED);
+        appointmentRepository.save(appointment);
 
-                    </div>
-
-                    <!-- Receipt Upload Section -->
-                    <div class="receipt-upload-section" id="receiptUploadSection">
-                        <div class="payment-instructions">
-                            <div class="instructions-title">📋 Bank Transfer Instructions:</div>
-                            <p style="color: #666; margin: 0.5rem 0;">
-Please transfer the total amount to our bank account and upload the receipt for verification.
-                            </p>
-                        </div>
-                        <!-- Bank Account Details -->
-                        <div class="bank-details-box">
-                            <h4 style="margin: 0 0 1rem 0; font-size: 1.2rem;">🏦 Bank Account Details</h4>
-
-                            <div class="bank-detail-row">
-                                <span class="bank-detail-label">Bank Name:</span>
-                                <span class="bank-detail-value">
-                                    <span th:text="${bankDetails.bankName}">Commercial Bank</span>
-                                    <button type="button" class="copy-btn" onclick="copyToClipboard(this, '[[${bankDetails.bankName}]]')">📋 Copy</button>
-                                </span>
-                            </div>
-
-                            <div class="bank-detail-row">
-                                <span class="bank-detail-label">Account Name:</span>
-                                <span class="bank-detail-value">
-                                    <span th:text="${bankDetails.accountName}">Ayur-Link Clinic</span>
-                                    <button type="button" class="copy-btn" onclick="copyToClipboard(this, '[[${bankDetails.accountName}]]')">📋 Copy</button>
-                                </span>
-                            </div>
-
-                            <div class="bank-detail-row">
-                                <span class="bank-detail-label">Account Number:</span>
-                                <span class="bank-detail-value" style="font-size: 1.3rem;">
-                                    <span th:text="${bankDetails.accountNumber}">8560123456789</span>
-                                    <button type="button" class="copy-btn" onclick="copyToClipboard(this, '[[${bankDetails.accountNumber}]]')">📋 Copy</button>
-                                </span>
-                            </div>
-
-                            <div class="bank-detail-row">
-                                <span class="bank-detail-label">Branch:</span>
-                                <span class="bank-detail-value">
-                                    <span th:text="${bankDetails.branch}">Colombo 07</span>
-                                </span>
-                            </div>
-
-                            <div class="bank-detail-row">
-                                <span class="bank-detail-label">Amount to Transfer:</span>
-                                <span class="bank-detail-value" style="font-size: 1.4rem; color: #ffeb3b;">
-                                    <span th:text="'LKR ' + ${#numbers.formatDecimal(breakdown.totalAmount, 1, 2)}">0.00</span>
-                                </span>
-                            </div>
-
-                            <div class="bank-detail-row">
-                                <span class="bank-detail-label">Reference:</span>
-                                <span class="bank-detail-value">
-                                    <span th:text="${appointment.ticketNumber}">APT001</span>
-                                    <button type="button" class="copy-btn" onclick="copyToClipboard(this, '[[${appointment.ticketNumber}]]')">📋 Copy</button>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-success" style="margin-top: 1rem; background-color: #d1f2eb; border-left: 4px solid #198754; padding: 1rem;">
-                            <p style="margin: 0; color: #0f5132;">
-                                <strong>📌 Important:</strong> Please include your ticket number (<strong th:text="${appointment.ticketNumber}">APT001</strong>) as the reference when making the transfer.
-                            </p>
-                        </div>
-
-                        <div class="form-group" style="margin-top: 1.5rem;">
-                            <label for="receiptFile"><strong>Upload Payment Receipt *</strong></label>
-                            <p style="color: #666; font-size: 0.875rem; margin-bottom: 0.5rem;">
-Accepted formats: JPG, PNG, PDF (Max 5MB)
-                            </p>
-                            <input type="file"
-id="receiptFile"
-name="receiptFile"
-accept="image/jpeg,image/jpg,image/png,application/pdf"
-class="file-upload-input">
-                            <div id="filePreview" style="margin-top: 1rem; display: none;">
-                                <p style="color: #2d6a4f; font-weight: 500;">✓ File selected: <span id="fileName"></span></p>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-success" style="margin-top: 1rem;">
-                            <p><strong>Note:</strong> Your payment will be verified by our admin team within 24 hours. You'll receive a confirmation once approved.</p>
-                        </div>
-                    </div>
-
-
-
-
-                    <!-- Cash Instructions -->
-                    <div class="payment-instructions" id="cashInstructions" style="display: none;">
-                        <div class="instructions-title">💵 Cash Payment Instructions:</div>
-                        <ul style="margin: 0.5rem 0 0 1.5rem; color: #666;">
-<li>Visit the clinic and make cash payment at reception</li>
-<li>Amount to pay: <strong th:text="'LKR ' + ${#numbers.formatDecimal(breakdown.totalAmount, 1, 2)}">0.00</strong></li>
-<li>Show your ticket number: <strong th:text="${appointment.ticketNumber}">APT001</strong></li>
-<li>Receipt will be issued immediately</li>
-                        </ul>
-                    </div>
-
-                    <!-- Payment Notes -->
-                    <div class="form-group" style="margin-top: 2rem;">
-                        <label for="notes">Additional Notes (Optional)</label>
-                        <textarea id="notes" name="notes" rows="3" class="form-control"
-placeholder="Add any additional information about this payment..."></textarea>
-                    </div>
-
-                    <!-- Terms & Conditions -->
-                    <div class="form-group" style="margin: 2rem 0;">
-                        <label style="display: flex; align-items: start; gap: 0.5rem;">
-                            <input type="checkbox" required style="margin-top: 0.25rem;">
-        <span>I confirm that the payment details are correct and agree to the
-        <a href="#" style="color: #2d6a4f;">terms and conditions</a>.
-I understand that refunds will be processed if the appointment is cancelled before 24 hours.</span>
-                        </label>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary" id="submitBtn" style="font-size: 1.1rem; padding: 1rem 2rem;">
-        ✓ Confirm Payment - LKR <span th:text="${#numbers.formatDecimal(breakdown.totalAmount, 1, 2)}">0.00</span>
-                        </button>
-                        <a th:href="@{/patient/appointments}" class="btn btn-secondary">Cancel</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </main>
-</div>
-
-
-<script>
-        let selectedMethod = null;
-
-function selectPaymentMethod(element, method) {
-    console.log('Payment method selected:', method);
-
-    // Remove selected class from all options
-    document.querySelectorAll('.payment-option').forEach(opt => {
-            opt.classList.remove('selected');
-        });
-
-    // Add selected class to clicked option
-    element.classList.add('selected');
-
-    // Check the radio button
-        const radioButton = element.querySelector('input[type="radio"]');
-    if (radioButton) {
-        radioButton.checked = true;
+        // Save payment to database
+        Payment savedPayment = paymentRepository.save(payment);
+        log.info("Cash payment saved with ID: {}, Status: SUCCESS", savedPayment.getId());
+        return paymentRepository.save(payment);
     }
 
-    selectedMethod = method;
-    console.log('Selected method set to:', selectedMethod);
+    public Payment createReceiptUploadPayment(Long appointmentId, MultipartFile receiptFile, String notes) {
+        log.info("Creating receipt upload payment for appointment ID: {}", appointmentId);
+        Appointment appointment = validateAppointment(appointmentId);
 
-    // Show/hide receipt upload section
-        const receiptSection = document.getElementById('receiptUploadSection');
-        const cashInstructions = document.getElementById('cashInstructions');
-        const submitBtn = document.getElementById('submitBtn');
+        if (receiptFile == null || receiptFile.isEmpty()) {
+            throw new RuntimeException("Receipt file is required");
+        }
 
-    // Hide all instructions first
-    receiptSection.classList.remove('active');
-    cashInstructions.style.display = 'none';
+        if (!isValidReceiptFile(receiptFile.getContentType())) {
+            throw new RuntimeException("Invalid file type. Only JPG, PNG, and PDF allowed.");
+        }
+//store the file
+        String fileName = fileStorageService.storeFile(receiptFile, "receipt_" + appointmentId);
+        log.info("Receipt file stored successfully: {}", fileName);
 
-    // Show relevant section
-    if (method === 'RECEIPT_UPLOAD') {
-        receiptSection.classList.add('active');
-        document.getElementById('receiptFile').required = true;
-        submitBtn.innerHTML = '📤 Upload Receipt & Submit';
-        console.log('Showing receipt upload section');
-    } else if (method === 'CASH') {
-        document.getElementById('receiptFile').required = false;
-        cashInstructions.style.display = 'block';
-        submitBtn.innerHTML = '✓ Confirm Cash Payment';
-        console.log('Showing cash instructions');
+//build payment object
+        Payment payment = buildPayment(appointment, PaymentMethod.RECEIPT_UPLOAD, notes);
+
+
+        payment.setReceiptFileName(fileName);
+        payment.setReceiptFilePath("uploads/receipts/" + fileName);
+        payment.setReceiptUploadDate(LocalDateTime.now());
+        payment.setStatus(PaymentStatus.PENDING_VERIFICATION);
+        payment.setReceiptVerified(false);
+        payment.setPaymentDate(LocalDateTime.now());
+
+        log.info("Payment object created with receipt details");
+
+        // Set appointment to PENDING until admin verifies
+        appointment.setStatus(AppointmentStatus.PENDING);
+        appointmentRepository.save(appointment);
+        log.info("Appointment status set to PENDING");
+
+        // Save payment to database
+        Payment savedPayment = paymentRepository.save(payment);
+
+        log.info("=== PAYMENT SAVED TO DATABASE ===");
+        log.info("Payment ID: {}", savedPayment.getId());
+        log.info("Receipt Number: {}", savedPayment.getReceiptNumber());
+        log.info("Transaction ID: {}", savedPayment.getTransactionId());
+        log.info("Status: {}", savedPayment.getStatus());
+        log.info("Receipt File: {}", savedPayment.getReceiptFileName());
+        log.info("Receipt Path: {}", savedPayment.getReceiptFilePath());
+        log.info("Upload Date: {}", savedPayment.getReceiptUploadDate());
+        log.info("================================");
+
+
+        return paymentRepository.save(payment);
+    }
+
+
+
+    // ==================== READ OPERATIONS ====================
+
+    public Optional<Payment> getPaymentById(Long id) {
+        return paymentRepository.findById(id);
+    }
+
+    public Optional<Payment> getPaymentByAppointmentId(Long appointmentId) {
+        return paymentRepository.findByAppointmentId(appointmentId);
+    }
+
+    public List<Payment> getAllPayments() {
+        return paymentRepository.findAll();
+    }
+
+    public List<Payment> getPatientPayments(Long patientId) {
+        return paymentRepository.findByAppointment_Patient_Id(patientId);
+    }
+
+    public List<Payment> getPendingVerificationPayments() {
+        return paymentRepository.findByStatusOrderByPaymentDateDesc(PaymentStatus.PENDING_VERIFICATION);
+    }
+
+    public List<Payment> getPaymentsByDateRange(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(LocalTime.MAX);
+        return paymentRepository.findByPaymentDateBetweenOrderByPaymentDateDesc(start, end);
+    }
+
+    // ==================== UPDATE OPERATIONS ====================
+
+
+    public Payment verifyReceiptUpload(Long paymentId, boolean approved, String verifiedBy, String reason) {
+        log.info("=== STARTING RECEIPT VERIFICATION ===");
+        log.info("Payment ID: {}", paymentId);
+        log.info("Approved: {}", approved);
+        log.info("Verified by: {}", verifiedBy);
+
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        if (payment.getPaymentMethod() != PaymentMethod.RECEIPT_UPLOAD) {
+            throw new RuntimeException("Not a receipt upload payment");
+        }
+        if (payment.getStatus() != PaymentStatus.PENDING_VERIFICATION) {
+            throw new RuntimeException("Payment is not pending verification. Current status: " + payment.getStatus());
+        }
+        Appointment appointment = payment.getAppointment();
+        log.info("Associated appointment: {}", appointment.getTicketNumber());
+
+        if (approved) {
+            // APPROVE: Payment successful, appointment confirmed
+            payment.setStatus(PaymentStatus.SUCCESS);
+            payment.setReceiptVerified(true);
+            payment.setVerifiedBy(verifiedBy);
+            payment.setVerificationDate(LocalDateTime.now());
+
+            appointment.setStatus(AppointmentStatus.CONFIRMED);
+
+            log.info("✅ APPROVED - Payment: SUCCESS, Appointment: CONFIRMED");
+        } else {
+            // REJECT: Payment rejected, appointment stays pending
+            payment.setStatus(PaymentStatus.REJECTED);
+            payment.setReceiptVerified(false);
+            payment.setVerifiedBy(verifiedBy);
+            payment.setVerificationDate(LocalDateTime.now());
+
+            // Append rejection reason to notes
+            String currentNotes = payment.getPaymentNotes() != null ? payment.getPaymentNotes() : "";
+            String rejectionNote = " | REJECTED by " + verifiedBy + " on " + LocalDateTime.now() +
+                    ": " + (reason != null ? reason : "No reason provided");
+            payment.setPaymentNotes(currentNotes + rejectionNote);
+
+            // Keep appointment as PENDING so patient can retry payment
+            appointment.setStatus(AppointmentStatus.PENDING);
+
+            log.info("❌ REJECTED - Payment: REJECTED, Appointment: PENDING, Reason: {}", reason);
+        }
+        // Save appointment
+        Appointment savedAppointment = appointmentRepository.save(appointment);
+        log.info("Appointment saved - Status: {}", savedAppointment.getStatus());
+
+        // Save payment
+        Payment savedPayment = paymentRepository.save(payment);
+
+        log.info("=== VERIFICATION SAVED TO DATABASE ===");
+        log.info("Payment ID: {}", savedPayment.getId());
+        log.info("Payment Status: {}", savedPayment.getStatus());
+        log.info("Receipt Verified: {}", savedPayment.getReceiptVerified());
+        log.info("Verified By: {}", savedPayment.getVerifiedBy());
+        log.info("Verification Date: {}", savedPayment.getVerificationDate());
+        log.info("Appointment Status: {}", savedAppointment.getStatus());
+        log.info("====================================");
+
+        return paymentRepository.save(payment);
+    }
+
+    public Payment refundPayment(Long paymentId, String refundReason) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        if (payment.getStatus() != PaymentStatus.SUCCESS) {
+            throw new RuntimeException("Only successful payments can be refunded");
+        }
+
+        payment.setStatus(PaymentStatus.REFUNDED);
+        payment.setRefundAmount(payment.getTotalAmount());
+        payment.setRefundDate(LocalDateTime.now());
+        payment.setRefundReason(refundReason);
+
+        Appointment appointment = payment.getAppointment();
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        appointmentRepository.save(appointment);
+
+        return paymentRepository.save(payment);
+    }
+
+    // ==================== DELETE OPERATIONS ====================
+
+    public void deletePayment(Long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        if (payment.getStatus() == PaymentStatus.SUCCESS) {
+            throw new RuntimeException("Cannot delete successful payment. Use refund.");
+        }
+
+        // Delete uploaded receipt file if exists
+        if (payment.getReceiptFileName() != null) {
+            fileStorageService.deleteFile(payment.getReceiptFileName());
+        }
+
+        paymentRepository.delete(payment);
+        log.info("Payment deleted: {}", paymentId);
+    }
+
+    // ==================== CALCULATION & BREAKDOWN ====================
+
+    public Map<String, Double> calculatePaymentBreakdown(Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        Double doctorFee = appointment.getDoctor().getConsultationFee();
+        Double treatmentFee = appointment.getTreatment().getCost();
+        Double total = doctorFee + treatmentFee + DEFAULT_CLINIC_CHARGES;
+
+        Map<String, Double> breakdown = new HashMap<>();
+        breakdown.put("doctorFee", doctorFee);
+        breakdown.put("treatmentFee", treatmentFee);
+        breakdown.put("clinicCharges", DEFAULT_CLINIC_CHARGES);
+        breakdown.put("totalAmount", total);
+        return breakdown;
+    }
+
+    public Map<String, Object> getPaymentReceipt(Long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        Map<String, Object> receipt = new HashMap<>();
+        receipt.put("payment", payment);
+        receipt.put("receiptNumber", payment.getReceiptNumber());
+        receipt.put("transactionId", payment.getTransactionId());
+        receipt.put("patientName", payment.getAppointment().getPatient().getFullName());
+        receipt.put("patientNIC", payment.getAppointment().getPatient().getNic());
+        receipt.put("doctorName", payment.getAppointment().getDoctor().getFullName());
+        receipt.put("treatmentName", payment.getAppointment().getTreatment().getName());
+        receipt.put("appointmentDate", payment.getAppointment().getAppointmentDate());
+        receipt.put("appointmentTime", payment.getAppointment().getAppointmentTime());
+        return receipt;
+    }
+
+    // ==================== REPORTS & STATISTICS ====================
+
+    public Map<String, Object> getDailySummary(LocalDate date) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(LocalTime.MAX);
+        List<Payment> payments = paymentRepository.findByPaymentDateBetween(start, end);
+
+        Double totalRevenue = payments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .mapToDouble(Payment::getTotalAmount)
+                .sum();
+
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("date", date);
+        summary.put("totalPayments", payments.size());
+        summary.put("totalRevenue", totalRevenue);
+        summary.put("payments", payments);
+        return summary;
+    }
+
+    public Map<String, Object> getMonthlySummary(int year, int month) {
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(LocalTime.MAX);
+
+        List<Payment> payments = paymentRepository.findByPaymentDateBetween(start, end);
+
+        Double totalRevenue = payments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .mapToDouble(Payment::getTotalAmount)
+                .sum();
+
+        Double totalRefunds = payments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.REFUNDED)
+                .mapToDouble(p -> p.getRefundAmount() != null ? p.getRefundAmount() : 0.0)
+                .sum();
+
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("year", year);
+        summary.put("month", month);
+        summary.put("totalPayments", payments.size());
+        summary.put("totalRevenue", totalRevenue);
+        summary.put("totalRefunds", totalRefunds);
+        summary.put("netRevenue", totalRevenue - totalRefunds);
+        summary.put("payments", payments);
+        return summary;
+    }
+
+    public Map<String, Object> getPaymentStatistics() {
+        List<Payment> allPayments = paymentRepository.findAll();
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalPayments", allPayments.size());
+        stats.put("successfulPayments", allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS).count());
+        stats.put("pendingVerification", allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.PENDING_VERIFICATION).count());
+        stats.put("pendingCOD", allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.PENDING).count());
+        stats.put("refunded", allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.REFUNDED).count());
+
+        Double totalRevenue = allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .mapToDouble(Payment::getTotalAmount).sum();
+
+        Double totalRefunds = allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.REFUNDED)
+                .mapToDouble(p -> p.getRefundAmount() != null ? p.getRefundAmount() : 0.0).sum();
+
+        stats.put("totalRevenue", totalRevenue);
+        stats.put("totalRefunds", totalRefunds);
+        stats.put("netRevenue", totalRevenue - totalRefunds);
+
+        stats.put("cashPayments", allPayments.stream()
+                .filter(p -> p.getPaymentMethod() == PaymentMethod.CASH).count());
+        stats.put("receiptPayments", allPayments.stream()
+                .filter(p -> p.getPaymentMethod() == PaymentMethod.RECEIPT_UPLOAD).count());
+
+
+        return stats;
+    }
+
+    public String exportPaymentsToCSV(LocalDate startDate, LocalDate endDate) {
+        List<Payment> payments = getPaymentsByDateRange(startDate, endDate);
+        StringBuilder csv = new StringBuilder();
+        csv.append("Receipt,Transaction,Patient,NIC,Doctor,Treatment,Amount,Method,Status,Date\n");
+
+        for (Payment p : payments) {
+            csv.append(p.getReceiptNumber()).append(",")
+                    .append(p.getTransactionId()).append(",")
+                    .append(p.getAppointment().getPatient().getFullName()).append(",")
+                    .append(p.getAppointment().getPatient().getNic()).append(",")
+                    .append(p.getAppointment().getDoctor().getFullName()).append(",")
+                    .append(p.getAppointment().getTreatment().getName()).append(",")
+                    .append(p.getTotalAmount()).append(",")
+                    .append(p.getPaymentMethod()).append(",")
+                    .append(p.getStatus()).append(",")
+                    .append(p.getPaymentDate()).append("\n");
+        }
+        return csv.toString();
+    }
+
+    public Map<String, Object> generateDetailedReport(LocalDate startDate, LocalDate endDate) {
+        List<Payment> payments = getPaymentsByDateRange(startDate, endDate);
+
+        Map<String, Object> report = new HashMap<>();
+        report.put("startDate", startDate);
+        report.put("endDate", endDate);
+        report.put("totalPayments", payments.size());
+
+        // Revenue breakdown
+        Double totalRevenue = payments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .mapToDouble(Payment::getTotalAmount).sum();
+
+        Double doctorFees = payments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .mapToDouble(Payment::getDoctorFee).sum();
+
+        Double treatmentFees = payments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .mapToDouble(Payment::getTreatmentFee).sum();
+
+        Double clinicCharges = payments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .mapToDouble(Payment::getClinicCharges).sum();
+
+        report.put("totalRevenue", totalRevenue);
+        report.put("doctorFees", doctorFees);
+        report.put("treatmentFees", treatmentFees);
+        report.put("clinicCharges", clinicCharges);
+
+        // Payment method breakdown
+        Map<PaymentMethod, Long> methodBreakdown = payments.stream()
+                .collect(Collectors.groupingBy(Payment::getPaymentMethod, Collectors.counting()));
+        report.put("methodBreakdown", methodBreakdown);
+
+        // Status breakdown
+        Map<PaymentStatus, Long> statusBreakdown = payments.stream()
+                .collect(Collectors.groupingBy(Payment::getStatus, Collectors.counting()));
+        report.put("statusBreakdown", statusBreakdown);
+
+        // Top treatments
+        Map<String, Long> treatmentStats = payments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .collect(Collectors.groupingBy(
+                        p -> p.getAppointment().getTreatment().getName(),
+                        Collectors.counting()
+                ));
+        report.put("topTreatments", treatmentStats);
+
+        // Top doctors
+        Map<String, Long> doctorStats = payments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .collect(Collectors.groupingBy(
+                        p -> p.getAppointment().getDoctor().getFullName(),
+                        Collectors.counting()
+                ));
+        report.put("topDoctors", doctorStats);
+
+        report.put("payments", payments);
+        return report;
+    }
+
+    // ==================== HELPER METHODS ====================
+
+    private Appointment validateAppointment(Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new RuntimeException("Cannot process payment for cancelled appointment");
+        }
+
+        Optional<Payment> existing = paymentRepository.findByAppointmentId(appointmentId);
+        if (existing.isPresent() &&
+                existing.get().getStatus() != PaymentStatus.REJECTED &&
+                existing.get().getStatus() != PaymentStatus.FAILED) {
+            throw new RuntimeException("Payment already exists");
+        }
+
+        return appointment;
+    }
+
+    private Payment buildPayment(Appointment appointment, PaymentMethod method, String notes) {
+        Payment payment = new Payment();
+        payment.setAppointment(appointment);
+        payment.setDoctorFee(appointment.getDoctor().getConsultationFee());
+        payment.setTreatmentFee(appointment.getTreatment().getCost());
+        payment.setClinicCharges(DEFAULT_CLINIC_CHARGES);
+        payment.calculateTotal();
+        payment.setPaymentMethod(method);
+        payment.setPaymentNotes(notes);
+        return payment;
+    }
+
+    private boolean isValidReceiptFile(String contentType) {
+        return contentType != null && (
+                contentType.equals("image/jpeg") ||
+                        contentType.equals("image/jpg") ||
+                        contentType.equals("image/png") ||
+                        contentType.equals("application/pdf")
+        );
+    }
+
+    public Payment getPaymentByAppointment(Long appointmentId) {
+        return paymentRepository.findByAppointmentId(appointmentId)
+                .orElse(null);
+    }
+
+// Add these methods to your PaymentService class (after the existing generateDetailedReport method)
+
+// ==================== ADDITIONAL REPORT METHODS ====================
+
+    public Map<String, Object> getPaymentMethodAnalysis() {
+        List<Payment> allPayments = paymentRepository.findAll();
+
+        Map<String, Object> analysis = new HashMap<>();
+
+        // Count by payment method
+        Map<PaymentMethod, Long> methodCounts = allPayments.stream()
+                .collect(Collectors.groupingBy(Payment::getPaymentMethod, Collectors.counting()));
+
+        // Revenue by payment method
+        Map<PaymentMethod, Double> methodRevenue = allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .collect(Collectors.groupingBy(
+                        Payment::getPaymentMethod,
+                        Collectors.summingDouble(Payment::getTotalAmount)
+                ));
+
+        analysis.put("methodCounts", methodCounts);
+        analysis.put("methodRevenue", methodRevenue);
+        analysis.put("totalPayments", allPayments.size());
+
+        return analysis;
+    }
+
+    public Map<String, Object> getDoctorPerformanceReport() {
+        List<Payment> successfulPayments = paymentRepository.findByStatus(PaymentStatus.SUCCESS);
+
+        Map<String, Object> report = new HashMap<>();
+
+        // Group by doctor
+        Map<String, List<Payment>> paymentsByDoctor = successfulPayments.stream()
+                .collect(Collectors.groupingBy(
+                        p -> p.getAppointment().getDoctor().getFullName()
+                ));
+
+        // Calculate stats per doctor
+        Map<String, Map<String, Object>> doctorStats = new HashMap<>();
+        for (Map.Entry<String, List<Payment>> entry : paymentsByDoctor.entrySet()) {
+            String doctorName = entry.getKey();
+            List<Payment> payments = entry.getValue();
+
+            Map<String, Object> stats = new HashMap<>();
+            stats.put("totalAppointments", payments.size());
+            stats.put("totalRevenue", payments.stream()
+                    .mapToDouble(Payment::getTotalAmount).sum());
+            stats.put("doctorFees", payments.stream()
+                    .mapToDouble(Payment::getDoctorFee).sum());
+
+            doctorStats.put(doctorName, stats);
+        }
+
+        report.put("doctorStats", doctorStats);
+        report.put("totalDoctors", doctorStats.size());
+
+        return report;
+    }
+
+    public Map<String, Object> getTreatmentAnalysis() {
+        List<Payment> successfulPayments = paymentRepository.findByStatus(PaymentStatus.SUCCESS);
+
+        Map<String, Object> analysis = new HashMap<>();
+
+        // Group by treatment
+        Map<String, List<Payment>> paymentsByTreatment = successfulPayments.stream()
+                .collect(Collectors.groupingBy(
+                        p -> p.getAppointment().getTreatment().getName()
+                ));
+
+
+
+        // Calculate stats per treatment
+        Map<String, Map<String, Object>> treatmentStats = new HashMap<>();
+        for (Map.Entry<String, List<Payment>> entry : paymentsByTreatment.entrySet()) {
+            String treatmentName = entry.getKey();
+            List<Payment> payments = entry.getValue();
+
+            Map<String, Object> stats = new HashMap<>();
+            stats.put("count", payments.size());
+            stats.put("totalRevenue", payments.stream()
+                    .mapToDouble(Payment::getTotalAmount).sum());
+            stats.put("averageRevenue", payments.stream()
+                    .mapToDouble(Payment::getTotalAmount).average().orElse(0.0));
+
+            treatmentStats.put(treatmentName, stats);
+        }
+
+        analysis.put("treatmentStats", treatmentStats);
+        analysis.put("totalTreatments", treatmentStats.size());
+
+        return analysis;
+    }
+
+    public Map<String, Object> getRefundReport() {
+        List<Payment> refundedPayments = paymentRepository.findByStatus(PaymentStatus.REFUNDED);
+
+        Map<String, Object> report = new HashMap<>();
+
+        Double totalRefundAmount = refundedPayments.stream()
+                .mapToDouble(p -> p.getRefundAmount() != null ? p.getRefundAmount() : 0.0)
+                .sum();
+
+        // Group by refund reason
+        Map<String, Long> refundReasons = refundedPayments.stream()
+                .filter(p -> p.getRefundReason() != null)
+                .collect(Collectors.groupingBy(
+                        Payment::getRefundReason,
+                        Collectors.counting()
+                ));
+
+        report.put("totalRefunds", refundedPayments.size());
+        report.put("totalRefundAmount", totalRefundAmount);
+        report.put("refundReasons", refundReasons);
+        report.put("refundedPayments", refundedPayments);
+
+        return report;
+    }
+
+    public Map<String, Object> getPatientAnalytics() {
+        List<Payment> allPayments = paymentRepository.findAll();
+
+        Map<String, Object> analytics = new HashMap<>();
+
+        // Unique patients
+        Set<Long> uniquePatients = allPayments.stream()
+                .map(p -> p.getAppointment().getPatient().getId())
+                .collect(Collectors.toSet());
+
+        // Patient payment frequency
+        Map<String, Long> patientFrequency = allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .collect(Collectors.groupingBy(
+                        p -> p.getAppointment().getPatient().getFullName(),
+                        Collectors.counting()
+                ));
+
+        // Patient total spending
+        Map<String, Double> patientSpending = allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .collect(Collectors.groupingBy(
+                        p -> p.getAppointment().getPatient().getFullName(),
+                        Collectors.summingDouble(Payment::getTotalAmount)
+                ));
+
+        analytics.put("totalPatients", uniquePatients.size());
+        analytics.put("patientFrequency", patientFrequency);
+        analytics.put("patientSpending", patientSpending);
+
+        return analytics;
+    }
+
+    public Map<String, Object> getSystemOverview() {
+        Map<String, Object> overview = new HashMap<>();
+
+        // Get all payments
+        List<Payment> allPayments = paymentRepository.findAll();
+        List<Appointment> allAppointments = appointmentRepository.findAll();
+
+        // Payment statistics
+        overview.put("totalPayments", allPayments.size());
+        overview.put("successfulPayments", allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS).count());
+        overview.put("pendingPayments", allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.PENDING_VERIFICATION).count());
+
+        // Revenue statistics
+        Double totalRevenue = allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.SUCCESS)
+                .mapToDouble(Payment::getTotalAmount).sum();
+
+        Double totalRefunds = allPayments.stream()
+                .filter(p -> p.getStatus() == PaymentStatus.REFUNDED)
+                .mapToDouble(p -> p.getRefundAmount() != null ? p.getRefundAmount() : 0.0).sum();
+
+        overview.put("totalRevenue", totalRevenue);
+        overview.put("totalRefunds", totalRefunds);
+        overview.put("netRevenue", totalRevenue - totalRefunds);
+
+        // Appointment statistics
+        overview.put("totalAppointments", allAppointments.size());
+        overview.put("confirmedAppointments", allAppointments.stream()
+                .filter(a -> a.getStatus() == AppointmentStatus.CONFIRMED).count());
+        overview.put("cancelledAppointments", allAppointments.stream()
+                .filter(a -> a.getStatus() == AppointmentStatus.CANCELLED).count());
+
+        // Unique counts
+        Set<Long> uniquePatients = allAppointments.stream()
+                .map(a -> a.getPatient().getId())
+                .collect(Collectors.toSet());
+
+        Set<Long> uniqueDoctors = allAppointments.stream()
+                .map(a -> a.getDoctor().getId())
+                .collect(Collectors.toSet());
+
+        overview.put("totalPatients", uniquePatients.size());
+        overview.put("totalDoctors", uniqueDoctors.size());
+
+        return overview;
     }
 }
-
-// File upload preview
-    document.getElementById('receiptFile').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        const preview = document.getElementById('filePreview');
-        const fileName = document.getElementById('fileName');
-
-    if (file) {
-        // Validate file size (5MB max)
-        if (file.size > 5 * 1024 * 1024) {
-            alert('File size must be less than 5MB');
-            this.value = '';
-            preview.style.display = 'none';
-            return;
-        }
-
-        // Validate file type
-            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
-        if (!allowedTypes.includes(file.type)) {
-            alert('Only JPG, PNG, and PDF files are allowed');
-            this.value = '';
-            preview.style.display = 'none';
-            return;
-        }
-
-        fileName.textContent = file.name;
-        preview.style.display = 'block';
-        console.log('File selected:', file.name, 'Size:', file.size, 'Type:', file.type);
-    } else {
-        preview.style.display = 'none';
-    }
-});
-
-// Copy to clipboard function
-function copyToClipboard(button, text) {
-    navigator.clipboard.writeText(text).then(function() {
-            const originalText = button.innerHTML;
-        button.innerHTML = '✓ Copied!';
-        button.style.background = 'rgba(76, 175, 80, 0.3)';
-
-        setTimeout(function() {
-            button.innerHTML = originalText;
-            button.style.background = 'rgba(255,255,255,0.2)';
-        }, 2000);
-    }).catch(function(err) {
-        console.error('Failed to copy:', err);
-        alert('Failed to copy: ' + err);
-    });
-}
-
-// Form submission validation
-    document.getElementById('paymentForm').addEventListener('submit', function(e) {
-    console.log('Form submitted, selected method:', selectedMethod);
-
-    if (!selectedMethod) {
-        e.preventDefault();
-        alert('Please select a payment method');
-        return false;
-    }
-
-    if (selectedMethod === 'RECEIPT_UPLOAD') {
-            const fileInput = document.getElementById('receiptFile');
-        if (!fileInput.files || fileInput.files.length === 0) {
-            e.preventDefault();
-            alert('Please upload payment receipt');
-            return false;
-        }
-
-        console.log('Receipt file ready for upload:', fileInput.files[0].name);
-    }
-
-    // Confirm submission
-        const amount = document.querySelector('.total .value strong').textContent;
-        const methodText = {
-            'CASH': 'cash payment',
-            'RECEIPT_UPLOAD': 'receipt upload (Your receipt will be verified within 24 hours)'
-        };
-
-        const confirmMessage = `Confirm ${methodText[selectedMethod]} of ${amount}?`;
-    console.log('Showing confirmation:', confirmMessage);
-
-    if (!confirm(confirmMessage)) {
-        e.preventDefault();
-        return false;
-    }
-
-    // Show loading state
-        const submitBtn = document.getElementById('submitBtn');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = selectedMethod === 'RECEIPT_UPLOAD'
-            ? '⏳ Uploading Receipt...'
-            : '⏳ Processing...';
-
-    console.log('Form validation passed, submitting...');
-    return true;
-});
-
-        // Debug: Log when page loads
-        console.log('Payment form initialized');
-</script>
-</body>
-</html>
