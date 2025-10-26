@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports & Analytics - Ayur-Link</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
@@ -159,15 +160,19 @@
                 <h3>Quick Statistics</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
                     <div style="padding: 1rem; background: linear-gradient(135deg, #2d6a4f, #52b788); color: white; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;" th:text="'LKR ' + ${#numbers.formatDecimal(todayRevenue != null ? todayRevenue : 0, 1, 2)}">LKR 0.00</div>
                         <div style="font-size: 0.875rem; opacity: 0.9;">Today's Revenue</div>
                     </div>
                     <div style="padding: 1rem; background: linear-gradient(135deg, #40916c, #74c69d); color: white; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;" th:text="'LKR ' + ${#numbers.formatDecimal(monthRevenue != null ? monthRevenue : 0, 1, 2)}">LKR 0.00</div>
                         <div style="font-size: 0.875rem; opacity: 0.9;">This Month</div>
                     </div>
                     <div style="padding: 1rem; background: linear-gradient(135deg, #52b788, #95d5b2); color: white; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;" th:text="${totalDoctors != null ? totalDoctors : 0}">0</div>
                         <div style="font-size: 0.875rem; opacity: 0.9;">Total Doctors</div>
                     </div>
                     <div style="padding: 1rem; background: linear-gradient(135deg, #74c69d, #b7e4c7); color: white; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;"  th:text="${totalPatients != null ? totalPatients : 0}">0</div>
                         <div style="font-size: 0.875rem; opacity: 0.9;">Total Patients</div>
                     </div>
                 </div>

@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Treatments - Ayur-Link</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .treatment-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+        .no-image {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            border-radius: 8px;
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
 <div class="dashboard-container">
@@ -50,6 +70,7 @@
                     <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Image</th>
                         <th>Name</th>
                         <th>Description</th>
                         <th>Cost (LKR)</th>
@@ -61,6 +82,16 @@
                     <tbody>
                     <tr th:each="treatment : ${treatments}">
                         <td th:text="${treatment.id}">1</td>
+                        <td>
+                            <img th:if="${treatment.image != null and !#strings.isEmpty(treatment.image)}"
+                                 th:src="@{/admin/treatment-image/{filename}(filename=${treatment.image})}"
+                                 alt="Treatment image"
+                                 class="treatment-image">
+                            <div th:if="${treatment.image == null or #strings.isEmpty(treatment.image)}" class="no-image">
+                                No Image
+                            </div>
+                        </td>
+
                         <td th:text="${treatment.name}">Treatment Name</td>
                         <td th:text="${#strings.abbreviate(treatment.description, 50)}">Description</td>
                         <td th:text="${treatment.cost}">5000</td>
@@ -75,7 +106,7 @@
                             <form th:action="@{/admin/treatments/delete/{id}(id=${treatment.id})}"
                                   method="post" style="display: inline;">
                                 <button type="submit" class="btn-icon" title="Delete"
-                                        onclick="return confirm('Are you sure?')">🗑️</button>
+                                        onclick="return confirm('Are you sure you want to delete this treatment? This action cannot be undone.')">🗑️</button>
                             </form>
                         </td>
                     </tr>
