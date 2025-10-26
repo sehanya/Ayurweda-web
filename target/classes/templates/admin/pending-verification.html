@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pending Verification - Ayur-Link</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
@@ -55,7 +56,7 @@
     <main class="dashboard-main">
         <header class="dashboard-header">
             <h1>📋 Pending Receipt Verification</h1>
-            <a th:href="@{/payment/admin/all}" class="btn btn-secondary">← Back to All Payments</a>
+            <a th:href="@{/admin/payments}" class="btn btn-secondary">← Back to All Payments</a>
         </header>
 
         <div class="dashboard-content">
@@ -116,7 +117,7 @@
                     <!-- Verification Form -->
                     <div>
                         <h4>Verification Decision</h4>
-                        <form th:action="@{/payment/admin/verify/{id}(id=${payment.id})}" method="post">
+                        <form th:action="@{/admin/payments/verify/{id}(id=${payment.id})}" method="post">
                             <div class="form-group">
                                 <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
                                     <input type="radio" name="approved" value="true" required>
