@@ -17,7 +17,33 @@
     <script th:src="@{js/script.js}"></script>
 
     <script th:src="@{js/bootstrap.min.js}"></script>
+    <style>
+        .treatment-image-container {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            border-radius: 8px 8px 0 0;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
+        .treatment-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .treatment-image-container.no-image {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
 
 </head>
 <body>
@@ -26,53 +52,72 @@
     <div class="nav-container">
         <a th:href="@{/}" class="nav-brand">🌿 AyurLink</a>
 
-        <ul class="nav-links">
-            <li><a th:href="@{/}">Home</a></li>
-            <li><a th:href="@{/treatments}">Treatments</a></li>
-            <li><a th:href="@{/about}">About</a></li>
-            <li><a th:href="@{/contact}">Contact</a></li>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a th:href="@{/}">Home</a></li>
+                <li><a th:href="@{/treatments}">Treatments</a></li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li><a th:href="@{/contact}">Contact</a></li>
 
-            <li sec:authorize="hasRole('PATIENT')">
-                <a th:href="@{/patient/dashboard}">Dashboard</a>
-            </li>
-            <li sec:authorize="hasRole('DOCTOR')">
-                <a th:href="@{/doctor/dashboard}">Dashboard</a>
-            </li>
-            <li sec:authorize="hasRole('ADMIN')">
-                <a th:href="@{/admin/dashboard}">Dashboard</a>
-            </li>
-            <li sec:authorize="hasRole('SUPER_ADMIN')">
-                <a th:href="@{/superadmin/dashboard}">Dashboard</a>
-            </li>
 
-            <li sec:authorize="!isAuthenticated()">
-                <a th:href="@{/login}" class="btn-primary">Login</a>
-            </li>
-            <li sec:authorize="isAuthenticated()">
-                <form th:action="@{/logout}" method="post" style="display: inline;">
-                    <button type="submit" class="btn-logout">Logout</button>
-                </form>
-            </li>
-        </ul>
+                <li sec:authorize="hasRole('PATIENT')">
+                    <a th:href="@{/patient/dashboard}">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('DOCTOR')">
+                    <a th:href="@{/doctor/dashboard}">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/admin/dashboard}">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('SUPER_ADMIN')">
+                    <a th:href="@{/superadmin/dashboard}">Dashboard</a>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="nav-right">
+            <ul class="nav-buttons">
+                <li sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}" class="btn-primary">Login</a>
+                </li>
+                <li sec:authorize="!isAuthenticated()"><a th:href="@{/register}" class="btn-register">Register</a></li>
+                <li sec:authorize="isAuthenticated()">
+
+                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                        <button type="submit" class="btn-logout">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
     </div>
 </nav>
 
 <!-- Page Header -->
+<section class="page-header-treatments">
     <div class="container">
         <h1>Our Treatments</h1>
         <p>Explore our range of traditional Ayurvedic treatments</p>
+
     </div>
 </section>
 
 <!-- Treatments List -->
 <section class="treatments-section">
     <div class="container">
+        <h2 class="section-title">TREATMENTS</h2>
         <div class="treatment-grid">
             <div th:each="treatment : ${treatments}" class="treatment-card-detailed" th:if="${treatment.isActive}">
 
-                <div class="treatment-image-container">
-                <span th:text="${treatment.name}">Treatment Image</span>
-            </div>
+                <!-- Treatment Image with fallback -->
+                <div class="treatment-image-container" th:classappend="${treatment.image == null or #strings.isEmpty(treatment.image) ? 'no-image' : ''}">
+                    <img th:if="${treatment.image != null and !#strings.isEmpty(treatment.image)}"
+                         th:src="@{/treatment-image/{filename}(filename=${treatment.image})}"
+                         th:alt="${treatment.name}">
+                    <span th:if="${treatment.image == null or #strings.isEmpty(treatment.image)}" th:text="${treatment.name}">Treatment</span>
+                </div>
+
 
                 <h3 th:text="${treatment.name}">Treatment Name</h3>
                 <p class="treatment-description" th:text="${treatment.description}">Description</p>
@@ -100,23 +145,109 @@
 
 
 <!-- Footer -->
-<footer class="footer">
+<section class="available-on">
     <div class="container">
         <div class="row">
-            <div class="col-md-6">
-                <div id="copyright">
-                    <p>copyright &copy;2025 <a th:href="@{/}">Ayurweda</a></p>
+            <!-- Contact Info -->
+            <div class="col-md-8">
+                <div class="available-title wow fadeInLeft">
+                    <div class="col-md-4">
+                        <h2>Our Location</h2>
+                        <p>
+                            153/5,<br>
+                            Miriswaththa road,<br>
+                            Gampaha,<br>
+                            Sri Lanka
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <h2>Quick Contact</h2>
+                        <p>
+                            01112454657<br>
+                            0732565576<br>
+                            <a href="mailto:ayurwedainfo@gmail.com">ayurwedainfo@gmail.com</a>
+                        </p>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="scroll-up">
-                    <a th:href="@{/}"><i class="fa fa-angle-up"></i></a>
+
+            <!-- App Links -->
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <a th:href="@{/ios-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-apple"></i>
+                                <div class="available-on-inner">
+                                    <h2>IOS</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4">
+                        <a th:href="@{/android-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-android"></i>
+                                <div class="available-on-inner">
+                                    <h2>Android</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4">
+                        <a th:href="@{/windows-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-windows"></i>
+                                <div class="available-on-inner">
+                                    <h2>Windows</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</footer>
+
+    <!-- Social Icons -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="social-icons">
+
+                    <ul>
+                        <li><a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                        <li><a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="copyright">
+                        <p>copyright &copy;2025 <a th:href="@{/}">Ayurweda</a></p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="scroll-up">
+                        <a th:href="@{/}"><i class="fa fa-angle-up"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 </section>
+
 
 </body>
 </html>

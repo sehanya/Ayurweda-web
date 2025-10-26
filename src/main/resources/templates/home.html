@@ -17,18 +17,48 @@
     <script th:src="@{js/script.js}"></script>
 
     <script th:src="@{js/bootstrap.min.js}"></script>
+    <style>
+        .treatment-image-container {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            border-radius: 8px 8px 0 0;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .treatment-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .treatment-image-container.no-image {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
 
 </head>
 <body>
+
 <nav class="navbar">
     <div class="nav-container">
-        <a th:href="@{/}" class="nav-brand">🌿 AyurLink</a>
+        <a th:href="@{/}" class="nav-brand"> AyurLink</a>
 
+        <div class="nav-center">
         <ul class="nav-links">
             <li><a th:href="@{/}">Home</a></li>
             <li><a th:href="@{/treatments}">Treatments</a></li>
             <li><a th:href="@{/about}">About</a></li>
             <li><a th:href="@{/contact}">Contact</a></li>
+
 
             <li sec:authorize="hasRole('PATIENT')">
                 <a th:href="@{/patient/dashboard}">Dashboard</a>
@@ -42,16 +72,25 @@
             <li sec:authorize="hasRole('SUPER_ADMIN')">
                 <a th:href="@{/superadmin/dashboard}">Dashboard</a>
             </li>
+        </ul>
+        </div>
 
+
+        <div class="nav-right">
+            <ul class="nav-buttons">
             <li sec:authorize="!isAuthenticated()">
                 <a th:href="@{/login}" class="btn-primary">Login</a>
             </li>
+            <li sec:authorize="!isAuthenticated()"><a th:href="@{/register}" class="btn-register">Register</a></li>
             <li sec:authorize="isAuthenticated()">
+
                 <form th:action="@{/logout}" method="post" style="display: inline;">
                     <button type="submit" class="btn-logout">Logout</button>
                 </form>
             </li>
-        </ul>
+            </ul>
+        </div>
+
     </div>
 </nav>
 
@@ -66,18 +105,80 @@
         </div>
     </div>
 </section>
+<section id="HISTORY" class="history-section" >
+    <div class="container wow fadeInLeft" >
+        <div class="row">
+                <div class="section-title-02">
+                    <h2>HISTORY OF AYURVEDA</h2>
+                    <p>Ayurveda is a science of life.It offers a body of wisdom designed to help people stay vital while realizing their full human potential.Sri Lanka's indigenous medicine has similar origins, linked to the 30,000 year old native habitants of the land known as the Balangoda man (manavaya). With its ancient history, traditional ayurveda medicine as it is practiced today in the country, is based on an indigenous heritage preserved over 3000 years.
+                        In Ayurveda concept is mainly devided into two types.</p>
+                    <div class="point-main-02">
+                        <ol>
+                            <li>Prevention from dieases
+                                <i>(Swastha sanrakshana)</i>
+                                <ol>Providing guidelines on ideal daily and seasonal routines, diet, behavior and the proper use of our senses,
+                                    Ayurveda reminds us that health is the balanced and dynamic integration between our environment, body, mind, and spirit</ol>
+                            </li>
+
+                            <li>Cure from dieases
+                                <i >(Athura prashamana)</i>
+                                <ol>Providing guidelines to cure dieases by using medicines theraputic methods and surgeries</ol>
+
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="section-title-03">
+                        <p>Ayurveda texts list out purificatory measures which not just restore, but also boost our bodily functions.Kshudra karma(Minor theraputic methods),Panchakarma (Major theraputic methods), Rasayana karma(Rejuvenation of body),Vajeekarana (increase sexuality) are natural theraputic pathways in ayurveda concept.</p>
+                    </div>
+                </div>
+        </div>
+    </div>
+</section>
+
 
 <!-- Featured Treatments -->
 <section class="treatments-section">
     <div class="container">
-        <h2>Our Treatments</h2>
+        <h2 class="section-title">Our Treatments</h2>
+        <p style="text-align: center; color: #666; font-size: 18px; max-width: 800px; margin: 0 auto 60px; font-weight: 300; line-height: 1.8;">
+            Experience the ancient healing wisdom of Ayurveda through our carefully curated treatments,
+            designed to restore balance and harmony to your mind, body, and spirit.
+        </p>
+
         <div class="treatment-grid">
-            <div th:each="treatment : ${treatments}" class="treatment-card">
+            <div th:each="treatment : ${treatments}" class="treatment-card-detailed">
+                <div class="treatment-image-container" th:classappend="${treatment.image == null or #strings.isEmpty(treatment.image) ? 'no-image' : ''}">
+                    <img th:if="${treatment.image != null and !#strings.isEmpty(treatment.image)}"
+                         th:src="@{/treatment-image/{filename}(filename=${treatment.image})}"
+                         th:alt="${treatment.name}">
+                    <span th:if="${treatment.image == null or #strings.isEmpty(treatment.image)}" th:text="${treatment.name}">Treatment Name</span>
+                </div>
+
                 <h3 th:text="${treatment.name}">Treatment Name</h3>
-                <p th:text="${treatment.description}">Description</p>
-                <p class="price">LKR <span th:text="${treatment.cost}">0.00</span></p>
-                <p class="duration" th:text="${treatment.duration} + ' minutes'">Duration</p>
+
+                <p class="treatment-description" th:text="${treatment.description}">
+                    Description of the treatment goes here with detailed information about benefits and procedures.
+                </p>
+
+                <div class="treatment-info">
+                    <div class="info-item">
+                        <span class="label">Duration:</span>
+                        <span th:text="${treatment.duration} + ' minutes'">60 minutes</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Investment:</span>
+                        <span class="price">LKR <span th:text="${treatment.cost}">5000.00</span></span>
+                    </div>
+                </div>
+
+                <a th:href="@{/register}" class="btn">Book Now</a>
             </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 80px;">
+            <a th:href="@{/treatments}" class="btn" style="display: inline-block; margin: 0; padding: 18px 50px; font-size: 14px;">
+                View All Treatments
+            </a>
         </div>
     </div>
 </section>
@@ -86,30 +187,39 @@
 <section class="about-section">
     <div class="container">
         <h2>Why Choose Ayur-Link?</h2>
+        <p style="text-align: center; color: #666; font-size: 18px; max-width: 800px; margin: 0 auto 60px; font-weight: 300; line-height: 1.8;">
+            Discover the perfect blend of ancient wisdom and modern convenience,
+            creating a seamless journey towards holistic wellness.
+        </p>
+
         <div class="features">
             <div class="feature">
                 <div class="feature-icon">👨‍⚕️</div>
-                <h3>Expert Doctors</h3>
-                <p>Experienced Ayurvedic practitioners</p>
+                <h3>Expert Practitioners</h3>
+                <p>Our team of highly experienced Ayurvedic doctors brings generations of traditional knowledge combined with modern medical expertise to provide you with the best care.</p>
             </div>
+
             <div class="feature">
                 <div class="feature-icon">🌿</div>
                 <h3>Natural Treatments</h3>
-                <p>Traditional herbal remedies</p>
+                <p>We use only authentic, organic herbal remedies and traditional therapeutic methods to ensure the purest and most effective healing experience.</p>
             </div>
+
             <div class="feature">
                 <div class="feature-icon">📅</div>
                 <h3>Easy Booking</h3>
-                <p>Simple online appointment system</p>
+                <p>Our intuitive online appointment system makes scheduling your wellness journey effortless, with flexible time slots to fit your busy lifestyle.</p>
             </div>
+
             <div class="feature">
                 <div class="feature-icon">💳</div>
                 <h3>Flexible Payment</h3>
-                <p>Card and cash payment options</p>
+                <p>Multiple payment options including card and cash, designed to make your experience as convenient and stress-free as possible.</p>
             </div>
         </div>
     </div>
 </section>
+
 
 <!-- Footer -->
 <section class="available-on">
