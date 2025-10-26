@@ -24,6 +24,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final AppointmentRepository appointmentRepository;
     private final FileStorageService fileStorageService;
+    private final DoctorEarningService doctorEarningService;
 
     private static final Double DEFAULT_CLINIC_CHARGES = 500.0;
 
@@ -169,6 +170,14 @@ public class PaymentService {
             appointment.setStatus(AppointmentStatus.CONFIRMED);
 
             log.info("✅ APPROVED - Payment: SUCCESS, Appointment: CONFIRMED");
+            try {
+                doctorEarningService.createEarningRecords(payment);
+                log.info("Earning records created successfully for payment: {}", payment.getId());
+            } catch (Exception e) {
+                log.error("Error creating earning records: {}", e.getMessage());
+                // Continue even if earning record creation fails
+            }
+
         } else {
             // REJECT: Payment rejected, appointment stays pending
             payment.setStatus(PaymentStatus.REJECTED);
@@ -222,6 +231,13 @@ public class PaymentService {
         Appointment appointment = payment.getAppointment();
         appointment.setStatus(AppointmentStatus.CANCELLED);
         appointmentRepository.save(appointment);
+        // Cancel earning records when payment is refunded
+        try {
+            doctorEarningService.handleRefund(payment);
+            log.info("Earning records cancelled for refunded payment: {}", payment.getId());
+        } catch (Exception e) {
+            log.error("Error cancelling earning records: {}", e.getMessage());
+        }
 
         return paymentRepository.save(payment);
     }
