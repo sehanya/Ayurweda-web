@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Charges - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <div class="section-label">ADMIN PORTAL</div>
+            <a th:href="@{/admin/dashboard}">Dashboard</a>
+            <a th:href="@{/admin/treatments}">Treatments</a>
+            <a th:href="@{/admin/doctors}">Doctors</a>
+            <a th:href="@{/admin/appointments}">Appointments</a>
+            <a th:href="@{/admin/payments}">Payments</a>
+            <a th:href="@{/admin/payments/reports}">Reports</a>
+            <a th:href="@{/admin/charges}" class="active">💰 Admin Charges</a>
+            <a th:href="@{/admin/earnings/all-doctors}">👨‍⚕️ Doctor Earnings</a>
+            <a th:href="@{/admin/financial-summary}">📊 Financial Summary</a>
+            <a th:href="@{/admin/admins}">Admin Accounts</a>
+
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}">🏠 Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>💰 Admin Charges Management</h1>
+            <p>Clinic charges collected from payments</p>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Error Display -->
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <!-- Summary Cards -->
+            <div class="stats-grid">
+                <div class="stat-card" style="background: linear-gradient(135deg, #2d6a4f, #52b788); color: white;">
+                    <div class="stat-icon">💵</div>
+                    <div class="stat-info">
+                        <h3 th:text="'LKR ' + ${#numbers.formatDecimal(totalCharges, 1, 2)}">LKR 0.00</h3>
+                        <p>Total Admin Charges (All Time)</p>
+                    </div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #40916c, #74c69d); color: white;">
+                    <div class="stat-icon">📆</div>
+                    <div class="stat-info">
+                        <h3 th:text="'LKR ' + ${#numbers.formatDecimal(monthlyCharges, 1, 2)}">LKR 0.00</h3>
+                        <p>This Month's Charges</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-info">
+                        <h3 th:text="${#lists.size(charges)}">0</h3>
+                        <p>Total Charge Records</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💲</div>
+                    <div class="stat-info">
+                        <h3>LKR 500.00</h3>
+                        <p>Charge Per Transaction</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charges Table -->
+            <div class="card">
+                <h3>All Admin Charge Records</h3>
+
+                <div th:if="${#lists.isEmpty(charges)}">
+                    <p style="text-align: center; padding: 2rem; color: #666;">No charge records found.</p>
+                </div>
+
+                <table th:unless="${#lists.isEmpty(charges)}" class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Transaction ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Treatment</th>
+                        <th>Total Payment</th>
+                        <th>Admin Charge</th>
+                        <th>Doctor Earning</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="charge : ${charges}">
+                        <td th:text="${#temporals.format(charge.chargeDate, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
+                        <td th:text="${charge.payment.transactionId}">TXN001</td>
+                        <td th:text="${charge.patientName}">Patient</td>
+                        <td th:text="${charge.doctorName}">Doctor</td>
+                        <td th:text="${charge.treatmentName}">Treatment</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(charge.totalPaymentAmount, 1, 2)}">LKR 0.00</td>
+                        <td style="color: #2d6a4f; font-weight: bold;"
+                            th:text="'LKR ' + ${#numbers.formatDecimal(charge.clinicCharge, 1, 2)}">LKR 500.00</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(charge.doctorEarning, 1, 2)}">LKR 0.00</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${charge.status.name() == 'COLLECTED' ? 'confirmed' : 'cancelled'}"
+                                  th:text="${charge.status}">Status</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr style="background: #f8f9fa; font-weight: bold;">
+                        <td colspan="6" style="text-align: right;">Total Admin Charges:</td>
+                        <td style="color: #2d6a4f; font-size: 1.1em;">
+                            LKR <span th:text="${#numbers.formatDecimal(totalCharges, 1, 2)}">0.00</span>
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Info Box -->
+            <div class="card" style="background: #e8f5e9; margin-top: 2rem;">
+                <h3>ℹ️ About Admin Charges</h3>
+                <p>• Each successful payment includes a fixed clinic charge of LKR 500.00</p>
+                <p>• This charge covers administrative costs, facility usage, and system maintenance</p>
+                <p>• Doctor earnings are calculated separately (Consultation Fee + Treatment Fee)</p>
+                <p>• Total Payment = Doctor Earning + Admin Charge</p>
+            </div>
+
+            <!-- Navigation -->
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <a th:href="@{/admin/earnings/all-doctors}" class="btn btn-primary">View Doctor Earnings</a>
+                <a th:href="@{/admin/financial-summary}" class="btn btn-secondary">Financial Summary</a>
+                <a th:href="@{/admin/payments}" class="btn">Back to Payments</a>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
