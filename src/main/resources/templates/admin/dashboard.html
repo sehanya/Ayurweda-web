@@ -69,14 +69,12 @@
                 <div class="stat-card">
                     <div class="stat-icon">📅</div>
                     <div class="stat-info">
-                        <h3 th:text="${todayAppointmentCount}">0</h3>
                         <p>Today's Appointments</p>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">👥</div>
                     <div class="stat-info">
-                        <h3  th:text="${totalPatientCount}">0</h3>
                         <p>Total Patients</p>
                     </div>
                 </div>
@@ -91,27 +89,6 @@
                     </div>
                 </div>
 
-            </div>
-            <!-- Financial Management Cards -->
-            <div class="card">
-                <h2>💰 Financial Management</h2>
-                <div class="quick-actions-grid">
-                    <a th:href="@{/admin/charges}" class="action-card">
-                        <div class="action-icon">💰</div>
-                        <h3>Admin Charges</h3>
-                        <p>View clinic revenue</p>
-                    </a>
-                    <a th:href="@{/admin/earnings/all-doctors}" class="action-card">
-                        <div class="action-icon">👨‍⚕️</div>
-                        <h3>Doctor Earnings</h3>
-                        <p>Manage settlements</p>
-                    </a>
-                    <a th:href="@{/admin/financial-summary}" class="action-card">
-                        <div class="action-icon">📊</div>
-                        <h3>Financial Summary</h3>
-                        <p>Complete overview</p>
-                    </a>
-                </div>
             </div>
 
             <!-- Quick Actions -->

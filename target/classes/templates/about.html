@@ -1,372 +1,77 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 <head>
-    <meta charset="UTF-8">
+     <meta charset="UTF-8">
+    <title>Home - Ayur-Link</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - AyurLink</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #f8f9fa;
-        }
+    <link rel="stylesheet" type="text/css" th:href="@{css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/animate.css}" >
+    <link rel="stylesheet" type="text/css" th:href="@{css/font-awesome.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/responsive.css}">
 
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css}">
 
+    <script th:src="@{js/jquery.js}"></script>
+    <script th:src="@{js/script.js}"></script>
 
-        .btn-logout {
-            background: rgba(255,255,255,0.2);
-            border: 2px solid white;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: white;
-            color: #2d6a4f;
-        }
-
-        .btn-primary {
-            background: white;
-            color: #2d6a4f;
-            padding: 0.75rem 1.5rem;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, rgba(45, 106, 79, 0.95), rgba(64, 145, 108, 0.95)),
-            url('https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1200') center/cover;
-            color: white;
-            padding: 5rem 2rem;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            animation: fadeInDown 0.8s;
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            max-width: 700px;
-            margin: 0 auto;
-            opacity: 0.95;
-            animation: fadeInUp 0.8s;
-        }
-
-        /* Main Content */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-        }
-
-        .section {
-            margin-bottom: 4rem;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            color: #2d6a4f;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .section-subtitle {
-            text-align: center;
-            color: #666;
-            font-size: 1.1rem;
-            margin-bottom: 3rem;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Mission & Vision Cards */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-
-        .card {
-            background: white;
-            border-radius: 15px;
-            padding: 2.5rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
-
-        .card-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .card h3 {
-            color: #2d6a4f;
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-        }
-
-        .card p {
-            color: #666;
-            line-height: 1.8;
-        }
-
-        /* Values Section */
-        .values-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-
-        .value-item {
-            background: linear-gradient(135deg, #2d6a4f, #40916c);
-            color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-
-        .value-item:hover {
-            transform: scale(1.05);
-        }
-
-        .value-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .value-item h4 {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Stats Section */
-        .stats {
-            background: linear-gradient(135deg, #2d6a4f, #40916c);
-            color: white;
-            padding: 4rem 2rem;
-            margin: 4rem 0;
-            border-radius: 15px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            text-align: center;
-        }
-
-        .stat-item h3 {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-item p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        /* Team Section */
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-
-        .team-member {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        .team-member:hover {
-            transform: translateY(-5px);
-        }
-
-        .member-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2d6a4f, #52b788);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            margin: 0 auto 1rem;
-            color: white;
-        }
-
-        .member-name {
-            font-size: 1.5rem;
-            color: #2d6a4f;
-            margin-bottom: 0.5rem;
-        }
-
-        .member-role {
-            color: #666;
-            margin-bottom: 1rem;
-            font-style: italic;
-        }
-
-        /* Footer */
-        .footer {
-            background: #1a1a1a;
-            color: white;
-            padding: 3rem 2rem 1rem;
-            margin-top: 4rem;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h3 {
-            color: #52b788;
-            margin-bottom: 1rem;
-        }
-
-        .footer-section p,
-        .footer-section a {
-            color: #ccc;
-            text-decoration: none;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-section a:hover {
-            color: #52b788;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid #333;
-            color: #888;
-        }
-
-        /* Animations */
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            .nav-links {
-                gap: 1rem;
-                flex-wrap: wrap;
-            }
-        }
-    </style>
+    <script th:src="@{js/bootstrap.min.js}"></script>
 </head>
 <body>
 <!-- Navigation -->
 <nav class="navbar">
     <div class="nav-container">
         <a th:href="@{/}" class="nav-brand">🌿 AyurLink</a>
-        <ul class="nav-links">
-            <li><a th:href="@{/}">Home</a></li>
-            <li><a th:href="@{/treatments}">Treatments</a></li>
-            <li><a th:href="@{/about}">About</a></li>
-            <li><a th:href="@{/contact}">Contact</a></li>
 
-            <!-- Show dashboard link if logged in -->
-            <li sec:authorize="hasRole('PATIENT')">
-                <a th:href="@{/patient/dashboard}">Dashboard</a>
-            </li>
-            <li sec:authorize="hasRole('DOCTOR')">
-                <a th:href="@{/doctor/dashboard}">Dashboard</a>
-            </li>
-            <li sec:authorize="hasRole('ADMIN')">
-                <a th:href="@{/admin/dashboard}">Dashboard</a>
-            </li>
-            <li sec:authorize="hasRole('SUPER_ADMIN')">
-                <a th:href="@{/superadmin/dashboard}">Dashboard</a>
-            </li>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a th:href="@{/}">Home</a></li>
+                <li><a th:href="@{/treatments}">Treatments</a></li>
+                <li><a th:href="@{/about}">About</a></li>
+                <li><a th:href="@{/contact}">Contact</a></li>
 
-            <!-- Show login/register or logout -->
-            <li sec:authorize="!isAuthenticated()">
-                <a th:href="@{/login}" class="btn-primary">Login</a>
-            </li>
-            <li sec:authorize="isAuthenticated()">
-                <form th:action="@{/logout}" method="post" style="display: inline;">
-                    <button type="submit" class="btn-logout">Logout</button>
-                </form>
-            </li>
-        </ul>
+
+                <li sec:authorize="hasRole('PATIENT')">
+                    <a th:href="@{/patient/dashboard}">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('DOCTOR')">
+                    <a th:href="@{/doctor/dashboard}">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/admin/dashboard}">Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('SUPER_ADMIN')">
+                    <a th:href="@{/superadmin/dashboard}">Dashboard</a>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="nav-right">
+            <ul class="nav-buttons">
+                <li sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}" class="btn-primary">Login</a>
+                </li>
+                <li sec:authorize="!isAuthenticated()"><a th:href="@{/register}" class="btn-register">Register</a></li>
+                <li sec:authorize="isAuthenticated()">
+
+                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                        <button type="submit" class="btn-logout">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
     </div>
 </nav>
 
 <!-- Hero Section -->
-<section class="hero">
+<section class="about-hero">
+    <div class="container">
     <h1>🌿 About AyurLink</h1>
-    <p>Bridging Ancient Wisdom with Modern Healthcare for Your Holistic Wellness</p>
+        <p>Bridging Ancient Wisdom with Modern Healthcare for Your Holistic Wellness</p>
+    </div>
 </section>
 
 <!-- Main Content -->
@@ -519,35 +224,108 @@
 </div>
 
 <!-- Footer -->
-<footer class="footer">
-    <div class="footer-content">
-        <div class="footer-section">
-            <h3>🌿 AyurLink</h3>
-            <p>Your trusted partner in Ayurvedic healthcare, combining ancient wisdom with modern technology.</p>
-        </div>
-        <div class="footer-section">
-            <h3>Quick Links</h3>
-            <a th:href="@{/}">Home</a>
-            <a th:href="@{/treatments}">Treatments</a>
-            <a th:href="@{/about}">About Us</a>
-            <a th:href="@{/contact}">Contact</a>
-        </div>
-        <div class="footer-section">
-            <h3>Contact Info</h3>
-            <p>📧 info@ayurlink.com</p>
-            <p>📞 +94 11 234 5678</p>
-            <p>📍 123 Wellness Street, Colombo</p>
-        </div>
-        <div class="footer-section">
-            <h3>Opening Hours</h3>
-            <p>Monday - Friday: 8AM - 8PM</p>
-            <p>Saturday: 9AM - 6PM</p>
-            <p>Sunday: 10AM - 4PM</p>
+<section class="available-on">
+    <div class="container">
+        <div class="row">
+            <!-- Contact Info -->
+            <div class="col-md-8">
+                <div class="available-title wow fadeInLeft">
+                    <div class="col-md-4">
+                        <h2>Our Location</h2>
+                        <p>
+                            153/5,<br>
+                            Miriswaththa road,<br>
+                            Gampaha,<br>
+                            Sri Lanka
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <h2>Quick Contact</h2>
+                        <p>
+                            01112454657<br>
+                            0732565576<br>
+                            <a href="mailto:ayurwedainfo@gmail.com">ayurwedainfo@gmail.com</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- App Links -->
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <a th:href="@{/ios-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-apple"></i>
+                                <div class="available-on-inner">
+                                    <h2>IOS</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4">
+                        <a th:href="@{/android-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-android"></i>
+                                <div class="available-on-inner">
+                                    <h2>Android</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-4">
+                        <a th:href="@{/windows-download}">
+                            <div class="available-on-item wow fadeInUp">
+                                <i class="fab fa-windows"></i>
+                                <div class="available-on-inner">
+                                    <h2>Windows</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="footer-bottom">
-        <p>&copy; 2025 AyurLink. All rights reserved. | Designed with ❤️ for your wellness</p>
+
+    <!-- Social Icons -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="social-icons">
+
+                    <ul>
+                        <li><a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                        <li><a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
     </div>
-</footer>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="copyright">
+                        <p>copyright &copy;2025 <a th:href="@{/}">Ayurweda</a></p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="scroll-up">
+                        <a th:href="@{/}"><i class="fa fa-angle-up"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</section>
+
 </body>
 </html>

@@ -32,7 +32,6 @@
             <li><a th:href="@{/about}">About</a></li>
             <li><a th:href="@{/contact}">Contact</a></li>
 
-            <!-- Show dashboard link if logged in -->
             <li sec:authorize="hasRole('PATIENT')">
                 <a th:href="@{/patient/dashboard}">Dashboard</a>
             </li>
@@ -46,7 +45,6 @@
                 <a th:href="@{/superadmin/dashboard}">Dashboard</a>
             </li>
 
-            <!-- Show login/register or logout -->
             <li sec:authorize="!isAuthenticated()">
                 <a th:href="@{/login}" class="btn-primary">Login</a>
             </li>
@@ -60,7 +58,6 @@
 </nav>
 
 <!-- Page Header -->
-<section class="page-header">
     <div class="container">
         <h1>Our Treatments</h1>
         <p>Explore our range of traditional Ayurvedic treatments</p>

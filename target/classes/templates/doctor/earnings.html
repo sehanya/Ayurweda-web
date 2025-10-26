@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor - Earnings</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <div class="section-label">DOCTOR PORTAL</div>
+            <a th:href="@{/doctor/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/doctor/appointments}">Appointments</a>
+            <a th:href="@{/doctor/availability}">Availability</a>
+            <a th:href="@{/doctor/earnings}">💰 Earnings</a>
+            <a th:href="@{/doctor/profile}">Profile</a>
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}"> Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>Earnings</h1>
+            <p th:text="'Dr. ' + ${doctor.fullName}">Doctor</p>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="card">
+                <h3>Total Earnings</h3>
+                <div style="font-size: 2em; font-weight: bold; color: #2d5f3f; margin: 20px 0;">
+                    Rs. <span th:text="${#numbers.formatDecimal(totalEarnings, 1, 2)}">0.00</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Completed Appointments</h3>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Ticket #</th>
+                        <th>Patient</th>
+                        <th>Treatment</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="a : ${completedAppointments}">
+                        <td th:text="${a.ticketNumber}">APT001</td>
+                        <td th:text="${a.patient.fullName}">Patient</td>
+                        <td th:text="${a.treatment.name}">Treatment</td>
+                        <td th:text="${#temporals.format(a.appointmentDate, 'yyyy-MM-dd')}">2024-01-01</td>
+                        <td>
+                            <span th:if="${a.payment != null}"
+                                  th:text="'Rs. ' + ${#numbers.formatDecimal(a.payment.totalAmount, 1, 'COMMA', 2, 'POINT')}">
+                                Rs. 0.00
+                            </span>
+                            <span th:if="${a.payment == null}" class="text-muted">No payment</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(completedAppointments)}">
+                        <td colspan="5" style="text-align: center;">No completed appointments found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a th:href="@{/doctor/dashboard}" class="btn">Back to Dashboard</a>
+        </div>
+    </main>
+</div>
+</body>
+</html>

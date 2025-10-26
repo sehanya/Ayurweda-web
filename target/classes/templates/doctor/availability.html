@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Availability - Ayur-Link</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🌿 Ayur-Link</div>
+        <nav class="sidebar-nav">
+            <div class="section-label">DOCTOR PORTAL</div>
+            <a th:href="@{/doctor/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/doctor/appointments}">Appointments</a>
+            <a th:href="@{/doctor/availability}">Availability</a>
+            <a th:href="@{/doctor/earnings}">💰 Earnings</a>
+            <a th:href="@{/doctor/profile}">Profile</a>
+
+            <!-- Public Pages Section -->
+            <div class="public-pages-section">
+                <div class="section-label">PUBLIC PAGES</div>
+                <a th:href="@{/}"> Home</a>
+                <a th:href="@{/treatments}">🌿 Treatments</a>
+                <a th:href="@{/about}">ℹ️ About Us</a>
+                <a th:href="@{/contact}">📞 Contact</a>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h1>Manage Your Availability</h1>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="card">
+                <form th:action="@{/doctor/availability/update}" method="post">
+                    <div class="availability-form">
+                        <p class="form-hint">Add your available time slots. Format: DAY HH:MM-HH:MM (e.g., MON 09:00-12:00)</p>
+
+                        <div id="availability-slots">
+                            <div class="form-group" th:each="slot, iterStat : ${doctor.availability}">
+                                <label th:text="'Slot ' + ${iterStat.index + 1}">Slot 1</label>
+                                <input type="text" name="availability" th:value="${slot}"
+                                       placeholder="e.g., MON 09:00-12:00" class="form-control">
+                            </div>
+
+                            <!-- Default slots if none exist -->
+                            <div class="form-group" th:if="${#lists.isEmpty(doctor.availability)}">
+                                <label>Slot 1</label>
+                                <input type="text" name="availability" placeholder="e.g., MON 09:00-12:00" class="form-control">
+                            </div>
+                        </div>
+
+                        <button type="button" id="addSlot" class="btn btn-secondary">+ Add Another Slot</button>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Availability</button>
+                        <a th:href="@{/doctor/dashboard}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Current Availability Display -->
+            <div class="card" th:unless="${#lists.isEmpty(doctor.availability)}">
+                <h2>Current Availability</h2>
+                <ul class="availability-list">
+                    <li th:each="slot : ${doctor.availability}" th:text="${slot}">Time slot</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    document.getElementById('addSlot').addEventListener('click', function() {
+        const container = document.getElementById('availability-slots');
+        const slotCount = container.querySelectorAll('.form-group').length + 1;
+
+        const newSlot = document.createElement('div');
+        newSlot.className = 'form-group';
+        newSlot.innerHTML = `
+                <label>Slot ${slotCount}</label>
+                <input type="text" name="availability" placeholder="e.g., TUE 14:00-17:00" class="form-control">
+            `;
+        container.appendChild(newSlot);
+    });
+</script>
+</body>
+</html>

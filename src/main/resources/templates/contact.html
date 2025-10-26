@@ -20,54 +20,6 @@
     <style>
 
 
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, rgba(45, 106, 79, 0.95), rgba(64, 145, 108, 0.95)),
-            url('https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=1200') center/cover;
-            color: white;
-            padding: 5rem 2rem;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            animation: fadeInDown 0.8s;
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            max-width: 700px;
-            margin: 0 auto;
-            opacity: 0.95;
-            animation: fadeInUp 0.8s;
-        }
-
-        /* Main Content */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-        }
-
-        .section {
-            margin-bottom: 4rem;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            color: #2d6a4f;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .section-subtitle {
-            text-align: center;
-            color: #666;
-            font-size: 1.1rem;
-            margin-bottom: 3rem;
-        }
-
         /* Contact Grid */
         .contact-grid {
             display: grid;
@@ -310,46 +262,6 @@
             transform: rotate(45deg);
         }
 
-        /* Footer */
-        .footer {
-            background: #1a1a1a;
-            color: white;
-            padding: 3rem 2rem 1rem;
-            margin-top: 4rem;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h3 {
-            color: #52b788;
-            margin-bottom: 1rem;
-        }
-
-        .footer-section p,
-        .footer-section a {
-            color: #ccc;
-            text-decoration: none;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-section a:hover {
-            color: #52b788;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid #333;
-            color: #888;
-        }
 
         /* Alert Messages */
         .alert {
@@ -406,10 +318,6 @@
                 font-size: 1rem;
             }
 
-            .nav-links {
-                gap: 1rem;
-                flex-wrap: wrap;
-            }
 
             .contact-grid {
                 grid-template-columns: 1fr;
@@ -433,7 +341,6 @@
             <li><a th:href="@{/about}">About</a></li>
             <li><a th:href="@{/contact}">Contact</a></li>
 
-            <!-- Show dashboard link if logged in -->
             <li sec:authorize="hasRole('PATIENT')">
                 <a th:href="@{/patient/dashboard}">Dashboard</a>
             </li>
@@ -447,7 +354,6 @@
                 <a th:href="@{/superadmin/dashboard}">Dashboard</a>
             </li>
 
-            <!-- Show login/register or logout -->
             <li sec:authorize="!isAuthenticated()">
                 <a th:href="@{/login}" class="btn-primary">Login</a>
             </li>
@@ -459,79 +365,42 @@
         </ul>
     </div>
 </nav>
-
-<!-- Hero Section -->
-<section class="hero">
-    <h1>📞 Get In Touch</h1>
     <p>We're here to answer your questions and guide you on your wellness journey</p>
 </section>
 
 <!-- Main Content -->
-<div class="container">
-    <!-- Contact Information & Form -->
     <div class="contact-grid">
-        <!-- Contact Cards -->
-        <div class="contact-cards">
             <div class="contact-card">
-                <div class="contact-icon">📍</div>
                 <div class="contact-info">
                     <h3>Visit Us</h3>
-                    <p>123 Wellness Street<br>Colombo 00700<br>Sri Lanka</p>
                 </div>
             </div>
 
             <div class="contact-card">
-                <div class="contact-icon">📞</div>
                 <div class="contact-info">
                     <h3>Call Us</h3>
                     <p>
-                        Main: <a href="tel:+94112345678">+94 11 234 5678</a><br>
-                        Emergency: <a href="tel:+94777654321">+94 77 765 4321</a><br>
-                        Appointments: <a href="tel:+94112345679">+94 11 234 5679</a>
                     </p>
                 </div>
             </div>
 
             <div class="contact-card">
-                <div class="contact-icon">📧</div>
                 <div class="contact-info">
                     <h3>Email Us</h3>
                     <p>
-                        General: <a href="mailto:info@ayurlink.com">info@ayurlink.com</a><br>
-                        Appointments: <a href="mailto:appointments@ayurlink.com">appointments@ayurlink.com</a><br>
-                        Support: <a href="mailto:support@ayurlink.com">support@ayurlink.com</a>
                     </p>
                 </div>
             </div>
 
             <div class="contact-card">
-                <div class="contact-icon">🕒</div>
                 <div class="contact-info">
                     <h3>Working Hours</h3>
                     <p>
-                        Monday - Friday: 8:00 AM - 8:00 PM<br>
-                        Saturday: 9:00 AM - 6:00 PM<br>
-                        Sunday: 10:00 AM - 4:00 PM
                     </p>
                 </div>
             </div>
         </div>
 
-        <!-- Contact Form -->
-        <div class="contact-form">
-            <h2 style="color: #2d6a4f; margin-bottom: 1.5rem;">Send Us a Message</h2>
-
-            <!-- Success/Error Messages -->
-            <div th:if="${success}" class="alert alert-success">
-                <span>✓</span>
-                <span th:text="${success}">Message sent successfully!</span>
-            </div>
-            <div th:if="${error}" class="alert alert-error">
-                <span>✗</span>
-                <span th:text="${error}">Error sending message.</span>
-            </div>
-
-            <form th:action="@{/contact/send}" method="post">
                 <div class="form-group">
                     <label for="name">Full Name *</label>
                     <input type="text" id="name" name="name" required placeholder="Enter your full name">
@@ -562,77 +431,42 @@
 
                 <div class="form-group">
                     <label for="message">Message *</label>
-                    <textarea id="message" name="message" required placeholder="How can we help you?"></textarea>
                 </div>
 
-                <button type="submit" class="btn-submit">Send Message 📤</button>
-            </form>
 
-            <p style="margin-top: 1.5rem; color: #666; font-size: 0.9rem; text-align: center;">
                 We typically respond within 24 hours during business days.
             </p>
         </div>
     </div>
 
     <!-- Map Section -->
-    <div class="map-section">
-        <h2 class="section-title">Find Us on the Map</h2>
         <div class="map-container">
             <div class="map-placeholder">
-                <div class="icon">🗺️</div>
-                <h3>123 Wellness Street, Colombo 00700</h3>
-                <p>Interactive map would be integrated here</p>
             </div>
         </div>
     </div>
 
     <!-- Business Hours Detailed -->
-    <div class="hours-section">
-        <h2 style="text-align: center; margin-bottom: 1rem;">Operating Hours</h2>
-        <p style="text-align: center; opacity: 0.9; margin-bottom: 2rem;">
-            We're here when you need us most
-        </p>
         <div class="hours-grid">
             <div class="hours-card">
-                <h4>⏰ Consultation Hours</h4>
-                <p><strong>Monday - Friday:</strong> 8:00 AM - 8:00 PM</p>
-                <p><strong>Saturday:</strong> 9:00 AM - 6:00 PM</p>
-                <p><strong>Sunday:</strong> 10:00 AM - 4:00 PM</p>
             </div>
             <div class="hours-card">
-                <h4>🏥 Treatment Hours</h4>
-                <p><strong>Monday - Friday:</strong> 9:00 AM - 7:00 PM</p>
-                <p><strong>Saturday:</strong> 10:00 AM - 5:00 PM</p>
-                <p><strong>Sunday:</strong> By appointment only</p>
             </div>
-            <div class="hours-card">
-                <h4>📞 Emergency Contact</h4>
-                <p><strong>24/7 Helpline:</strong></p>
-                <p>+94 77 765 4321</p>
-                <p style="margin-top: 1rem; font-size: 0.9rem;">For urgent medical concerns</p>
             </div>
         </div>
     </div>
 
     <!-- FAQ Section -->
-    <div class="faq-section">
-        <h2 class="section-title">Frequently Asked Questions</h2>
-        <p class="section-subtitle">Quick answers to common questions about our services</p>
 
         <div class="faq-item" onclick="toggleFaq(this)">
             <div class="faq-question">
-                <span>How do I book an appointment?</span>
-                <span class="faq-toggle">+</span>
             </div>
             <div class="faq-answer">
-                You can book an appointment online through our website by logging into your account and selecting your preferred treatment, doctor, and time slot. Alternatively, you can call us at +94 11 234 5679 during business hours.
             </div>
         </div>
 
         <div class="faq-item" onclick="toggleFaq(this)">
             <div class="faq-question">
-                <span>What should I bring to my first consultation?</span>
-                <span class="faq-toggle">+</span>
             </div>
             <div class="faq-answer">
                 Please bring any previous medical records, a list of current medications, your NIC or identification, and arrive 15 minutes early to complete any necessary paperwork.
@@ -641,8 +475,6 @@
 
         <div class="faq-item" onclick="toggleFaq(this)">
             <div class="faq-question">
-                <span>Do you accept insurance?</span>
-                <span class="faq-toggle">+</span>
             </div>
             <div class="faq-answer">
                 We work with most major insurance providers. Please contact your insurance company to verify coverage for Ayurvedic treatments, or call our office for assistance with insurance-related questions.
@@ -651,8 +483,6 @@
 
         <div class="faq-item" onclick="toggleFaq(this)">
             <div class="faq-question">
-                <span>Can I cancel or reschedule my appointment?</span>
-                <span class="faq-toggle">+</span>
             </div>
             <div class="faq-answer">
                 Yes, you can cancel or reschedule your appointment through your patient dashboard or by calling us. We require at least 24 hours notice for cancellations to avoid cancellation fees.
@@ -661,8 +491,6 @@
 
         <div class="faq-item" onclick="toggleFaq(this)">
             <div class="faq-question">
-                <span>Are consultations available in languages other than English?</span>
-                <span class="faq-toggle">+</span>
             </div>
             <div class="faq-answer">
                 Yes, our doctors are fluent in Sinhala, Tamil, and English. You can specify your language preference when booking your appointment.
@@ -672,33 +500,12 @@
 </div>
 
 <!-- Footer -->
-<footer class="footer">
-    <div class="footer-content">
-        <div class="footer-section">
-            <h3>🌿 AyurLink</h3>
-            <p>Your trusted partner in Ayurvedic healthcare, combining ancient wisdom with modern technology.</p>
         </div>
-        <div class="footer-section">
-            <h3>Quick Links</h3>
-            <a th:href="@{/}">Home</a>
-            <a th:href="@{/treatments}">Treatments</a>
-            <a th:href="@{/about}">About Us</a>
-            <a th:href="@{/contact}">Contact</a>
         </div>
-        <div class="footer-section">
-            <h3>Contact Info</h3>
-            <p>📧 info@ayurlink.com</p>
-            <p>📞 +94 11 234 5678</p>
-            <p>📍 123 Wellness Street, Colombo</p>
         </div>
-        <div class="footer-section">
-            <h3>Follow Us</h3>
-            <p>Stay connected on social media</p>
-            <p>Facebook | Instagram | Twitter</p>
         </div>
     </div>
     <!-- Footer -->
-    <footer class="footer-bottom">
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
@@ -715,7 +522,6 @@
         </div>
     </footer>
 
-</footer>
 
 <script>
     function toggleFaq(element) {
