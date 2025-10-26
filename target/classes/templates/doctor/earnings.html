@@ -42,197 +42,45 @@
             <div class="card">
                 <h3>Total Earnings</h3>
                 <div style="font-size: 2em; font-weight: bold; color: #2d5f3f; margin: 20px 0;">
-                    Rs. <span th:text="'LKR ' + ${#numbers.formatDecimal(totalEarnings, 1, 2)}">LKR 0.00</span>
-                    <small style="opacity: 0.9;">(After Admin Charges)</small>
+                    Rs. <span th:text="${#numbers.formatDecimal(totalEarnings, 1, 2)}">0.00</span>
                 </div>
             </div>
 
-            <div class="stat-card" style="background: linear-gradient(135deg, #f4a261, #e76f51); color: white;">
-                <div class="stat-icon">⏳</div>
-                <div class="stat-info">
-                    <h3 th:text="'LKR ' + ${#numbers.formatDecimal(pendingAmount, 1, 2)}">LKR 0.00</h3>
-                    <p>Pending Settlement</p>
-                    <small style="opacity: 0.9;">(To be paid)</small>
-                </div>
-            </div>
-            <div class="stat-card" style="background: linear-gradient(135deg, #40916c, #74c69d); color: white;">
-                <div class="stat-icon">✅</div>
-                <div class="stat-info">
-                    <h3 th:text="'LKR ' + ${#numbers.formatDecimal(settledAmount, 1, 2)}">LKR 0.00</h3>
-                    <p>Settled Earnings</p>
-                    <small style="opacity: 0.9;">(Already paid)</small>
-                </div>
-            </div>
-
-            <div class="stat-card" style="background: linear-gradient(135deg, #2a9d8f, #76c893); color: white;">
-                <div class="stat-icon">📊</div>
-                <div class="stat-info">
-                    <h3 th:text="${#lists.size(allEarnings)}">0</h3>
-                    <p>Total Transactions</p>
-                    <small style="opacity: 0.9;">(Completed)</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Period-wise Earnings -->
-        <div class="card" style="margin-top: 2rem;">
-            <h3>📈 Earnings by Period</h3>
-            <div class="stats-grid" style="margin-top: 1rem;">
-                <div class="stat-card">
-                    <div class="stat-icon">📅</div>
-                    <div class="stat-info">
-                        <h3 th:text="'LKR ' + ${#numbers.formatDecimal(earningSummary.todayEarnings, 1, 2)}">LKR 0.00</h3>
-                        <p>Today's Earnings</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📆</div>
-                    <div class="stat-info">
-                        <h3 th:text="'LKR ' + ${#numbers.formatDecimal(earningSummary.weekEarnings, 1, 2)}">LKR 0.00</h3>
-                        <p>This Week</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🗓️</div>
-                    <div class="stat-info">
-                        <h3 th:text="'LKR ' + ${#numbers.formatDecimal(earningSummary.monthEarnings, 1, 2)}">LKR 0.00</h3>
-                        <p>This Month</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="card">
-            <h3>Completed Appointments</h3>
-            <table class="data-table">
-                <thead>
-                <tr>
-                    <th>Ticket #</th>
-                    <th>Patient</th>
-                    <th>Treatment</th>
-                    <th>Date</th>
-                    <th>Amount</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="a : ${completedAppointments}">
-                    <td th:text="${a.ticketNumber}">APT001</td>
-                    <td th:text="${a.patient.fullName}">Patient</td>
-                    <td th:text="${a.treatment.name}">Treatment</td>
-                    <td th:text="${#temporals.format(a.appointmentDate, 'yyyy-MM-dd')}">2024-01-01</td>
-                    <td>
+            <div class="card">
+                <h3>Completed Appointments</h3>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Ticket #</th>
+                        <th>Patient</th>
+                        <th>Treatment</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="a : ${completedAppointments}">
+                        <td th:text="${a.ticketNumber}">APT001</td>
+                        <td th:text="${a.patient.fullName}">Patient</td>
+                        <td th:text="${a.treatment.name}">Treatment</td>
+                        <td th:text="${#temporals.format(a.appointmentDate, 'yyyy-MM-dd')}">2024-01-01</td>
+                        <td>
                             <span th:if="${a.payment != null}"
                                   th:text="'Rs. ' + ${#numbers.formatDecimal(a.payment.totalAmount, 1, 'COMMA', 2, 'POINT')}">
                                 Rs. 0.00
                             </span>
-                        <span th:if="${a.payment == null}" class="text-muted">No payment</span>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(completedAppointments)}">
-                    <td colspan="5" style="text-align: center;">No completed appointments found.</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Earnings Breakdown Table -->
-        <div class="card" style="margin-top: 2rem;">
-            <h3>💳 Detailed Earnings Breakdown</h3>
-            <p style="color: #666; margin-bottom: 1rem;">
-                <strong>Note:</strong> Net earnings = Consultation Fee + Treatment Fee (Admin charges deducted)
-            </p>
-
-            <table class="data-table">
-                <thead>
-                <tr>
-                    <th>Payment Date</th>
-                    <th>Patient</th>
-                    <th>Treatment</th>
-                    <th>Gross Amount</th>
-                    <th>Admin Charge</th>
-                    <th>Your Earning</th>
-                    <th>Status</th>
-                    <th>Settlement</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="earning : ${allEarnings}">
-                    <td th:text="${#temporals.format(earning.paymentDate, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
-                    <td th:text="${earning.payment.appointment.patient.fullName}">Patient Name</td>
-                    <td th:text="${earning.payment.appointment.treatment.name}">Treatment</td>
-                    <td style="color: #666;">
-                        <span th:text="'LKR ' + ${#numbers.formatDecimal(earning.grossAmount, 1, 2)}">LKR 0.00</span>
-                    </td>
-                    <td style="color: #e76f51;">
-                        <span th:text="'- LKR ' + ${#numbers.formatDecimal(earning.adminCharge, 1, 2)}">LKR 0.00</span>
-                    </td>
-                    <td style="color: #2d6a4f; font-weight: bold;">
-                        <span th:text="'LKR ' + ${#numbers.formatDecimal(earning.netEarning, 1, 2)}">LKR 0.00</span>
-                        <br>
-                        <small style="color: #666; font-weight: normal;">
-                            (Fee: <span th:text="${#numbers.formatDecimal(earning.doctorFee, 1, 2)}">0</span> +
-                            Treatment: <span th:text="${#numbers.formatDecimal(earning.treatmentFee, 1, 2)}">0</span>)
-                        </small>
-                    </td>
-                    <td>
-                            <span class="badge"
-                                  th:classappend="${earning.status.name() == 'PENDING' ? 'pending' :
-                                                   earning.status.name() == 'SETTLED' ? 'confirmed' : 'cancelled'}"
-                                  th:text="${earning.status}">Status</span>
-                    </td>
-                    <td>
-                            <span th:if="${earning.settlementDate != null}">
-                                <small th:text="${#temporals.format(earning.settlementDate, 'yyyy-MM-dd')}">Date</small>
-                                <br>
-                                <small th:if="${earning.settlementReference != null}"
-                                       th:text="'Ref: ' + ${earning.settlementReference}"
-                                       style="color: #666;">Ref</small>
-                            </span>
-                        <span th:if="${earning.settlementDate == null}" style="color: #999;">
-                                Not settled
-                            </span>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(allEarnings)}">
-                    <td colspan="8" style="text-align: center;">No earnings recorded yet.</td>
-                </tr>
-                </tbody>
-                <tfoot th:if="${!#lists.isEmpty(allEarnings)}">
-                <tr style="background: #f8f9fa; font-weight: bold;">
-                    <td colspan="5" style="text-align: right;">Total Net Earnings:</td>
-                    <td style="color: #2d6a4f; font-size: 1.1em;">
-                        LKR <span th:text="${#numbers.formatDecimal(totalEarnings, 1, 2)}">0.00</span>
-                    </td>
-                    <td colspan="2"></td>
-                </tr>
-                </tfoot>
-            </table>
-        </div>
-
-        <!-- Calculation Info -->
-        <div class="card" style="margin-top: 2rem; background: #e8f5e9;">
-            <h3>ℹ️ How Earnings are Calculated</h3>
-            <div style="line-height: 1.8;">
-                <p><strong>Gross Payment Amount</strong> = Consultation Fee + Treatment Fee + Clinic Charges (LKR 500)</p>
-                <p><strong>Your Net Earning</strong> = Consultation Fee + Treatment Fee</p>
-                <p><strong>Admin Keeps</strong> = Clinic Charges (LKR 500.00 per appointment)</p>
-                <hr style="margin: 1rem 0;">
-                <p style="color: #2d6a4f;"><strong>Example:</strong></p>
-                <ul style="margin-left: 1.5rem;">
-                    <li>If Consultation Fee = LKR 3,000</li>
-                    <li>And Treatment Fee = LKR 5,000</li>
-                    <li>Total Patient Pays = LKR 8,500 (includes LKR 500 clinic charge)</li>
-                    <li><strong>You Receive = LKR 8,000</strong> (3,000 + 5,000)</li>
-                    <li>Admin Keeps = LKR 500 (clinic charges)</li>
-                </ul>
+                            <span th:if="${a.payment == null}" class="text-muted">No payment</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(completedAppointments)}">
+                        <td colspan="5" style="text-align: center;">No completed appointments found.</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-        </div>
-        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-            <a th:href="@{/doctor/dashboard}" class="btn">Back to Dashboard</a>
-            <a th:href="@{/doctor/earnings/details}" class="btn">View Detailed Report</a>
-        </div>
 
+            <a th:href="@{/doctor/dashboard}" class="btn">Back to Dashboard</a>
+        </div>
     </main>
 </div>
 </body>

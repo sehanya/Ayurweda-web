@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Payment Summary - Ayur-Link</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
@@ -52,6 +53,7 @@
                 <div class="stat-card highlight">
                     <div class="stat-icon">💰</div>
                     <div class="stat-info">
+                        <h3 th:text="'LKR ' + ${#numbers.formatDecimal(summary.totalRevenue, 1, 2)}">0.00</h3>
                         <p>Total Revenue</p>
                     </div>
                 </div>
@@ -96,6 +98,7 @@
                         <td th:text="${payment.appointment.patient.fullName}">Patient</td>
                         <td th:text="${payment.appointment.doctor.fullName}">Doctor</td>
                         <td th:text="${payment.appointment.treatment.name}">Treatment</td>
+                        <td th:text="'LKR ' + ${#numbers.formatDecimal(payment.totalAmount, 1, 2)}">5000</td>
                         <td th:text="${payment.paymentMethod}">CARD</td>
                         <td th:text="${#temporals.format(payment.paymentDate, 'HH:mm')}">10:00</td>
                         <td>
